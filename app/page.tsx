@@ -47,7 +47,7 @@ function LoadingScreen() {
     if (phase !== "igniting") return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const timer = window.setTimeout(() => setPhase("complete"), reduceMotion ? 350 : 4700);
+    const timer = window.setTimeout(() => setPhase("complete"), reduceMotion ? 350 : 2800);
     return () => window.clearTimeout(timer);
   }, [phase]);
 
