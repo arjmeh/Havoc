@@ -198,7 +198,7 @@
 
 .splash-blackout {
   position: absolute;
-  z-index: 50;
+  z-index: 65;
   top: 38%;
   left: 50%;
   width: 72px;
