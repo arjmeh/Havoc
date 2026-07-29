@@ -34,6 +34,14 @@ function Status() {
 
 function LoadingScreen() {
   const [phase, setPhase] = useState<"idle" | "igniting" | "complete">("idle");
+  const [flameSettled, setFlameSettled] = useState(false);
+
+  useEffect(() => {
+    const loopImage = new Image();
+    loopImage.src = "/havoc-controller-fire-loop-v5.gif";
+    const timer = window.setTimeout(() => setFlameSettled(true), 1040);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (phase !== "igniting") return;
@@ -57,14 +65,13 @@ function LoadingScreen() {
     aria-label={phase === "idle" ? "Start Havoc opening animation" : "Havoc opening animation playing"}
     aria-disabled={phase !== "idle"}
   >
-    <span className="splash-glow" aria-hidden="true" />
-    <span className="splash-orbit splash-orbit-one" aria-hidden="true" />
-    <span className="splash-orbit splash-orbit-two" aria-hidden="true" />
     <span className="splash-mark">
       <span className="splash-mark-core">
         <img
           className="splash-controller-gif"
-          src="/havoc-controller-fire-animated-cropped-v4.gif"
+          src={flameSettled
+            ? "/havoc-controller-fire-loop-v5.gif"
+            : "/havoc-controller-fire-intro-v5.gif"}
           alt=""
           width={500}
           height={500}
