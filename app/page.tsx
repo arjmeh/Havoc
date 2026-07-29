@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const screens = [
   { id: "loading", group: "Entry & setup", label: "Loading", job: "Brand ignition", emoji: "💥" },
@@ -35,17 +35,26 @@ function Status() {
 
 function LoadingScreen() {
   const [phase, setPhase] = useState<"idle" | "igniting" | "complete">("idle");
+  const flameVideo = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (phase !== "igniting") return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const timer = window.setTimeout(() => setPhase("complete"), reduceMotion ? 350 : 4300);
+    const timer = window.setTimeout(() => setPhase("complete"), reduceMotion ? 350 : 4700);
     return () => window.clearTimeout(timer);
   }, [phase]);
 
   const startIgnition = () => {
-    if (phase === "idle") setPhase("igniting");
+    if (phase !== "idle") return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (flameVideo.current && !reduceMotion) {
+      flameVideo.current.currentTime = 0;
+      flameVideo.current.playbackRate = .86;
+      void flameVideo.current.play();
+    }
+    setPhase("igniting");
   };
 
   const letters = ["H", "A", "V", "O", "C"];
@@ -71,15 +80,27 @@ function LoadingScreen() {
           priority
           loading="eager"
         />
-        <Image
-          className="splash-fire-layer"
+        <span className="splash-video-flame-mask" aria-hidden="true">
+          <video
+            ref={flameVideo}
+            className="splash-video-flame"
+            src="/havoc-flame-animated.mp4"
+            muted
+            playsInline
+            preload="auto"
+          />
+        </span>
+      </span>
+      <span className="splash-shards" aria-hidden="true">
+        {Array.from({ length: 8 }, (_, index) => <Image
+          className={`splash-shard splash-shard-${index + 1}`}
           src="/havoc-controller-fire.png"
           alt=""
           width={1254}
           height={1254}
-          aria-hidden="true"
           loading="eager"
-        />
+          key={index}
+        />)}
       </span>
     </span>
     <span className="splash-wordmark" aria-label="HAVOC">
