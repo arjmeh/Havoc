@@ -1,7 +1,6 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const screens = [
   { id: "loading", group: "Entry & setup", label: "Loading", job: "Brand ignition", emoji: "💥" },
@@ -35,7 +34,6 @@ function Status() {
 
 function LoadingScreen() {
   const [phase, setPhase] = useState<"idle" | "igniting" | "complete">("idle");
-  const flameVideo = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (phase !== "igniting") return;
@@ -47,13 +45,6 @@ function LoadingScreen() {
 
   const startIgnition = () => {
     if (phase !== "idle") return;
-
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (flameVideo.current && !reduceMotion) {
-      flameVideo.current.currentTime = 0;
-      flameVideo.current.playbackRate = .86;
-      void flameVideo.current.play();
-    }
     setPhase("igniting");
   };
 
@@ -71,36 +62,27 @@ function LoadingScreen() {
     <span className="splash-orbit splash-orbit-two" aria-hidden="true" />
     <span className="splash-mark">
       <span className="splash-mark-core">
-        <Image
-          className="splash-controller-image"
-          src="/havoc-controller-fire.png"
+        <img
+          className="splash-controller-gif"
+          src="/havoc-controller-fire-animated.gif"
           alt=""
-          width={1254}
-          height={1254}
-          priority
-          loading="eager"
+          width={720}
+          height={1280}
         />
-        <span className="splash-video-flame-mask" aria-hidden="true">
-          <video
-            ref={flameVideo}
-            className="splash-video-flame"
-            src="/havoc-flame-animated.mp4"
-            muted
-            playsInline
-            preload="auto"
-          />
-        </span>
       </span>
       <span className="splash-shards" aria-hidden="true">
-        {Array.from({ length: 8 }, (_, index) => <Image
+        {Array.from({ length: 8 }, (_, index) => <span
           className={`splash-shard splash-shard-${index + 1}`}
-          src="/havoc-controller-fire.png"
-          alt=""
-          width={1254}
-          height={1254}
-          loading="eager"
           key={index}
-        />)}
+        >
+          <img
+            className="splash-shard-image"
+            src="/havoc-controller-fire-shatter.png"
+            alt=""
+            width={1254}
+            height={1254}
+          />
+        </span>)}
       </span>
     </span>
     <span className="splash-wordmark" aria-label="HAVOC">
