@@ -32,7 +32,7 @@ function Status() {
   return <div className="status"><span>9:41</span><span>● ●●</span></div>;
 }
 
-function LoadingScreen() {
+function LoadingScreen({ next }: { next: () => void }) {
   const [phase, setPhase] = useState<"idle" | "igniting" | "complete">("idle");
   const [flameSettled, setFlameSettled] = useState(false);
 
@@ -47,9 +47,18 @@ function LoadingScreen() {
     if (phase !== "igniting") return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const timer = window.setTimeout(() => setPhase("complete"), reduceMotion ? 350 : 3100);
-    return () => window.clearTimeout(timer);
+    const completionDelay = reduceMotion ? 350 : 3100;
+    const completeTimer = window.setTimeout(() => setPhase("complete"), completionDelay);
+    return () => window.clearTimeout(completeTimer);
   }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "complete") return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const handoffTimer = window.setTimeout(next, reduceMotion ? 100 : 140);
+    return () => window.clearTimeout(handoffTimer);
+  }, [next, phase]);
 
   const startIgnition = () => {
     if (phase !== "idle") return;
@@ -106,8 +115,34 @@ function LoadingScreen() {
   </button>;
 }
 
-function WelcomeScreen({ next }: { next: () => void }) {
-  return <div className="screen welcome-screen"><Status /><span className="pill">Friends only · party mode</span><div className="welcome-faces">😎🤪😱</div><h2>Turn your group chat into a game show.</h2><p>Fast challenges. Live reactions. Instant revenge.</p><button className="cta" onClick={next}>Get started 💥</button><button className="text-button">I already have an account</button></div>;
+function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => void }) {
+  return <div className="screen welcome-screen">
+    <div className="welcome-joystick-stage" aria-hidden="true">
+      <img
+        className="welcome-joystick welcome-joystick-motion"
+        src="/havoc-joystick-transparent.webp"
+        alt=""
+        width={360}
+        height={480}
+      />
+      <img
+        className="welcome-joystick welcome-joystick-still"
+        src="/havoc-joystick-still.png"
+        alt=""
+        width={360}
+        height={480}
+      />
+    </div>
+    <div className="welcome-copy">
+      <span className="welcome-eyebrow">Friends-only party games</span>
+      <h2>Turn your group chat into a game.</h2>
+      <p>Fast challenges. Live reactions. Instant revenge.</p>
+    </div>
+    <div className="welcome-actions">
+      <button className="welcome-primary" onClick={next}>Get started</button>
+      <button className="welcome-secondary" onClick={onLogin}>I already have an account</button>
+    </div>
+  </div>;
 }
 
 function AgeScreen({ next }: { next: () => void }) {
@@ -246,8 +281,8 @@ function SafetyScreen() {
 function AppScreen({ index, setIndex }: { index: number; setIndex: (value: number) => void }) {
   const next = () => setIndex(Math.min(index + 1, screens.length - 1));
   const id = screens[index].id;
-  if (id === "loading") return <LoadingScreen />;
-  if (id === "welcome") return <WelcomeScreen next={next} />;
+  if (id === "loading") return <LoadingScreen next={next} />;
+  if (id === "welcome") return <WelcomeScreen next={next} onLogin={() => setIndex(5)} />;
   if (id === "age") return <AgeScreen next={next} />;
   if (id === "permissions") return <PermissionsScreen next={next} />;
   if (id === "calibration") return <CalibrationScreen next={next} />;
