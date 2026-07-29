@@ -4,10 +4,10 @@ This is the editable source for the interactive Havoc app-layout prototype.
 
 ## Run it locally
 
-Install Node.js 22.13 or newer, then run:
+Install Node.js 22, then run:
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
@@ -23,8 +23,10 @@ Open the local URL printed in the terminal.
 
 ```bash
 npm test
-npm run build
 ```
+
+`npm test` runs TypeScript validation and the same production Next.js build
+used by Vercel.
 
 The original design direction is emoji-first Gen Z neo-brutalism: controlled
 chaos, tactile outlines and shadows, warm social screens, dark live-gameplay

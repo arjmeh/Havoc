@@ -7,7 +7,19 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+const deploymentHost =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  process.env.VERCEL_PROJECT_PRODUCTION_URL ??
+  process.env.VERCEL_URL;
+
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    deploymentHost
+      ? deploymentHost.startsWith("http")
+        ? deploymentHost
+        : `https://${deploymentHost}`
+      : "http://localhost:3000",
+  ),
   title: "Havoc — Complete Interactive App Layout",
   description: "Explore 21 main screens across onboarding, parties, live games, Highlights, progression, settings, and safety.",
   openGraph: {
