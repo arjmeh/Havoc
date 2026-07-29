@@ -175,25 +175,25 @@
 .splash-letter:nth-child(2) {
   --fall-x: -38px;
   --fall-r: 17deg;
-  --letter-delay: 55ms;
+  --letter-delay: 35ms;
 }
 
 .splash-letter:nth-child(3) {
   --fall-x: 8px;
   --fall-r: -14deg;
-  --letter-delay: 95ms;
+  --letter-delay: 70ms;
 }
 
 .splash-letter:nth-child(4) {
   --fall-x: 48px;
   --fall-r: 20deg;
-  --letter-delay: 135ms;
+  --letter-delay: 105ms;
 }
 
 .splash-letter:nth-child(5) {
   --fall-x: 94px;
   --fall-r: -18deg;
-  --letter-delay: 175ms;
+  --letter-delay: 140ms;
 }
 
 .splash-blackout {
@@ -225,34 +225,34 @@
 
 .is-igniting .splash-mark {
   will-change: transform;
-  animation: accelerating-vibration 2.4s linear both;
+  animation: accelerating-vibration 2.65s linear both;
 }
 
 .is-igniting .splash-mark-core {
   will-change: opacity, filter;
-  animation: core-to-shards 2.8s linear both;
+  animation: core-to-shards 3.1s linear both;
 }
 
 .is-igniting .splash-shard {
   will-change: transform, opacity;
-  animation: shard-burst 2.8s cubic-bezier(.16,.76,.22,1) both;
+  animation: shard-burst 3.1s cubic-bezier(.16,.76,.22,1) both;
 }
 
 .is-igniting .letter-piece-top {
-  animation: crumble-top .65s cubic-bezier(.46,0,.9,.52) calc(1.34s + var(--letter-delay)) both;
+  animation: crumble-top .54s cubic-bezier(.46,0,.9,.52) calc(2.06s + var(--letter-delay)) both;
 }
 
 .is-igniting .letter-piece-middle {
-  animation: crumble-middle .68s cubic-bezier(.46,0,.9,.52) calc(1.38s + var(--letter-delay)) both;
+  animation: crumble-middle .56s cubic-bezier(.46,0,.9,.52) calc(2.1s + var(--letter-delay)) both;
 }
 
 .is-igniting .letter-piece-bottom {
-  animation: crumble-bottom .72s cubic-bezier(.46,0,.9,.52) calc(1.42s + var(--letter-delay)) both;
+  animation: crumble-bottom .58s cubic-bezier(.46,0,.9,.52) calc(2.14s + var(--letter-delay)) both;
 }
 
 .is-igniting .splash-blackout {
   will-change: transform, opacity;
-  animation: black-detonation 2.8s cubic-bezier(.16,.84,.22,1) both;
+  animation: black-detonation 3.1s cubic-bezier(.16,.84,.22,1) both;
 }
 
 .loading-screen.is-complete {
@@ -323,18 +323,18 @@
 }
 
 @keyframes core-to-shards {
-  0%,75.5% { opacity: 1; filter: none; }
-  77% { opacity: 1; filter: brightness(1.55) contrast(1.1); }
-  79.5% { opacity: .9; filter: brightness(1.9) contrast(1.18); }
-  83%,100% { opacity: 0; filter: brightness(2.2) contrast(1.24); }
+  0%,80% { opacity: 1; filter: none; }
+  81.5% { opacity: 1; filter: brightness(1.55) contrast(1.1); }
+  84% { opacity: .9; filter: brightness(1.9) contrast(1.18); }
+  87%,100% { opacity: 0; filter: brightness(2.2) contrast(1.24); }
 }
 
 @keyframes shard-burst {
-  0%,76% { opacity: 0; translate: 0 0; rotate: 0deg; }
-  77.5% { opacity: 1; translate: 0 0; rotate: 0deg; }
-  83% { opacity: 1; }
-  92% { opacity: .94; }
-  100% { opacity: 0; translate: var(--shard-x) var(--shard-y); rotate: var(--shard-r); }
+  0%,81% { opacity: 0; translate: 0 0; rotate: 0deg; }
+  82.5% { opacity: 1; translate: 0 0; rotate: 0deg; }
+  87% { opacity: 1; }
+  90.5% { opacity: .72; }
+  92.5%,100% { opacity: 0; translate: var(--shard-x) var(--shard-y); rotate: var(--shard-r); }
 }
 
 @keyframes crumble-top {
@@ -356,10 +356,10 @@
 }
 
 @keyframes black-detonation {
-  0%,75.5% { opacity: 0; transform: translate(-50%,-50%) scale(0); }
-  77% { opacity: 1; transform: translate(-50%,-50%) scale(.2); }
-  85% { opacity: 1; transform: translate(-50%,-50%) scale(3); }
-  95%,100% { opacity: 1; transform: translate(-50%,-50%) scale(24); }
+  0%,80.5% { opacity: 0; transform: translate(-50%,-50%) scale(0); }
+  82% { opacity: 1; transform: translate(-50%,-50%) scale(.2); }
+  88% { opacity: 1; transform: translate(-50%,-50%) scale(3); }
+  94%,100% { opacity: 1; transform: translate(-50%,-50%) scale(24); }
 }
 
 @media (prefers-reduced-motion: reduce) {

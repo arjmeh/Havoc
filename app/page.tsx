@@ -38,8 +38,8 @@ function LoadingScreen() {
 
   useEffect(() => {
     const loopImage = new Image();
-    loopImage.src = "/havoc-controller-fire-loop-v5.gif";
-    const timer = window.setTimeout(() => setFlameSettled(true), 1040);
+    loopImage.src = "/havoc-controller-fire-loop-v6.gif";
+    const timer = window.setTimeout(() => setFlameSettled(true), 2130);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -47,7 +47,7 @@ function LoadingScreen() {
     if (phase !== "igniting") return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const timer = window.setTimeout(() => setPhase("complete"), reduceMotion ? 350 : 2800);
+    const timer = window.setTimeout(() => setPhase("complete"), reduceMotion ? 350 : 3100);
     return () => window.clearTimeout(timer);
   }, [phase]);
 
@@ -70,8 +70,8 @@ function LoadingScreen() {
         <img
           className="splash-controller-gif"
           src={flameSettled
-            ? "/havoc-controller-fire-loop-v5.gif"
-            : "/havoc-controller-fire-intro-v5.gif"}
+            ? "/havoc-controller-fire-loop-v6.gif"
+            : "/havoc-controller-fire-intro-v6.gif"}
           alt=""
           width={500}
           height={500}
