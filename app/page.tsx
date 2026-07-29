@@ -64,10 +64,10 @@ function LoadingScreen() {
       <span className="splash-mark-core">
         <img
           className="splash-controller-gif"
-          src="/havoc-controller-fire-animated.gif"
+          src="/havoc-controller-fire-animated-cropped-v4.gif"
           alt=""
-          width={720}
-          height={1280}
+          width={500}
+          height={500}
         />
       </span>
       <span className="splash-shards" aria-hidden="true">
