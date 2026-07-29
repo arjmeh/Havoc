@@ -33,23 +33,65 @@ function Status() {
   return <div className="status"><span>9:41</span><span>● ●●</span></div>;
 }
 
-function LoadingScreen({ next }: { next: () => void }) {
-  return <button className="screen loading-screen" onClick={next} aria-label="Continue from loading screen">
+function LoadingScreen() {
+  const [phase, setPhase] = useState<"idle" | "igniting" | "complete">("idle");
+
+  useEffect(() => {
+    if (phase !== "igniting") return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timer = window.setTimeout(() => setPhase("complete"), reduceMotion ? 350 : 4300);
+    return () => window.clearTimeout(timer);
+  }, [phase]);
+
+  const startIgnition = () => {
+    if (phase === "idle") setPhase("igniting");
+  };
+
+  const letters = ["H", "A", "V", "O", "C"];
+
+  return <button
+    type="button"
+    className={`screen loading-screen is-${phase}`}
+    onClick={startIgnition}
+    aria-label={phase === "idle" ? "Start Havoc opening animation" : "Havoc opening animation playing"}
+    aria-disabled={phase !== "idle"}
+  >
     <span className="splash-glow" aria-hidden="true" />
     <span className="splash-orbit splash-orbit-one" aria-hidden="true" />
     <span className="splash-orbit splash-orbit-two" aria-hidden="true" />
     <span className="splash-mark">
-      <Image
-        src="/havoc-controller-fire.png"
-        alt=""
-        width={1254}
-        height={1254}
-        priority
-      />
+      <span className="splash-mark-core">
+        <Image
+          className="splash-controller-image"
+          src="/havoc-controller-fire.png"
+          alt=""
+          width={1254}
+          height={1254}
+          priority
+          loading="eager"
+        />
+        <Image
+          className="splash-fire-layer"
+          src="/havoc-controller-fire.png"
+          alt=""
+          width={1254}
+          height={1254}
+          aria-hidden="true"
+          loading="eager"
+        />
+      </span>
     </span>
-    <span className="splash-wordmark">HAVOC</span>
+    <span className="splash-wordmark" aria-label="HAVOC">
+      {letters.map((letter) => <span className="splash-letter" aria-hidden="true" key={letter}>
+        <span className="letter-piece letter-piece-top">{letter}</span>
+        <span className="letter-piece letter-piece-middle">{letter}</span>
+        <span className="letter-piece letter-piece-bottom">{letter}</span>
+      </span>)}
+    </span>
     <span className="splash-tagline">Your friends. Your chaos.</span>
-    <small>Tap to enter</small>
+    <small className="splash-hint">Tap to start</small>
+    <span className="splash-blackout" aria-hidden="true" />
   </button>;
 }
 
@@ -193,7 +235,7 @@ function SafetyScreen() {
 function AppScreen({ index, setIndex }: { index: number; setIndex: (value: number) => void }) {
   const next = () => setIndex(Math.min(index + 1, screens.length - 1));
   const id = screens[index].id;
-  if (id === "loading") return <LoadingScreen next={next} />;
+  if (id === "loading") return <LoadingScreen />;
   if (id === "welcome") return <WelcomeScreen next={next} />;
   if (id === "age") return <AgeScreen next={next} />;
   if (id === "permissions") return <PermissionsScreen next={next} />;
