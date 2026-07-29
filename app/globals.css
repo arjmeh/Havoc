@@ -210,6 +210,15 @@
   transform: translate(-50%,-50%) scale(0);
 }
 
+.splash-black-cover {
+  position: absolute;
+  z-index: 90;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .loading-screen.is-igniting {
   cursor: wait;
 }
@@ -255,12 +264,16 @@
   animation: black-detonation 3.1s cubic-bezier(.16,.84,.22,1) both;
 }
 
+.is-igniting .splash-black-cover {
+  animation: black-cover 3.1s linear both;
+}
+
 .loading-screen.is-complete {
   background: #000;
   cursor: default;
 }
 
-.is-complete > :not(.splash-blackout) {
+.is-complete > :not(.splash-blackout):not(.splash-black-cover) {
   opacity: 0 !important;
   visibility: hidden;
 }
@@ -274,6 +287,11 @@
   background: #000;
   opacity: 1;
   transform: none;
+}
+
+.is-complete .splash-black-cover {
+  opacity: 1;
+  visibility: visible;
 }
 
 @keyframes splash-settle {
@@ -362,6 +380,11 @@
   94%,100% { opacity: 1; transform: translate(-50%,-50%) scale(24); }
 }
 
+@keyframes black-cover {
+  0%,93.99% { opacity: 0; }
+  94%,100% { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .is-igniting .splash-hint,
   .is-igniting .splash-tagline,
@@ -382,5 +405,10 @@
     transform: none;
     animation: none !important;
     transition: opacity .3s ease !important;
+  }
+
+  .is-igniting .splash-black-cover {
+    opacity: 0;
+    animation: none !important;
   }
 }

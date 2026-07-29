@@ -38,7 +38,7 @@ function LoadingScreen() {
 
   useEffect(() => {
     const loopImage = new Image();
-    loopImage.src = "/havoc-controller-fire-loop-v6.gif";
+    loopImage.src = "/havoc-controller-fire-loop-v7.gif";
     const timer = window.setTimeout(() => setFlameSettled(true), 2130);
     return () => window.clearTimeout(timer);
   }, []);
@@ -70,7 +70,7 @@ function LoadingScreen() {
         <img
           className="splash-controller-gif"
           src={flameSettled
-            ? "/havoc-controller-fire-loop-v6.gif"
+            ? "/havoc-controller-fire-loop-v7.gif"
             : "/havoc-controller-fire-intro-v6.gif"}
           alt=""
           width={500}
@@ -102,6 +102,7 @@ function LoadingScreen() {
     <span className="splash-tagline">Your friends. Your chaos.</span>
     <small className="splash-hint">Tap to start</small>
     <span className="splash-blackout" aria-hidden="true" />
+    <span className="splash-black-cover" aria-hidden="true" />
   </button>;
 }
 
