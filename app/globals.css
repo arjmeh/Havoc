@@ -17,11 +17,16 @@
 .splash-mark,
 .loading-screen .splash-wordmark,
 .splash-tagline {
-  top: -24px;
+  top: -32px;
 }
 
 .splash-tagline {
   position: relative;
+}
+
+.loading-screen .splash-hint {
+  color: #6f6778;
+  font-size: 12px;
 }
 
 .splash-mark {
