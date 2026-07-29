@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const screens = [
@@ -34,7 +35,21 @@ function Status() {
 
 function LoadingScreen({ next }: { next: () => void }) {
   return <button className="screen loading-screen" onClick={next} aria-label="Continue from loading screen">
-    <div className="loading-burst"><span>💥</span></div><b>HAVOC</b><p>Warming up the chaos…</p><div className="loading-track"><i /></div><small>Tap to continue</small>
+    <span className="splash-glow" aria-hidden="true" />
+    <span className="splash-orbit splash-orbit-one" aria-hidden="true" />
+    <span className="splash-orbit splash-orbit-two" aria-hidden="true" />
+    <span className="splash-mark">
+      <Image
+        src="/havoc-controller-fire.png"
+        alt=""
+        width={1254}
+        height={1254}
+        priority
+      />
+    </span>
+    <span className="splash-wordmark">HAVOC</span>
+    <span className="splash-tagline">Your friends. Your chaos.</span>
+    <small>Tap to enter</small>
   </button>;
 }
 
