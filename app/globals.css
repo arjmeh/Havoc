@@ -1640,16 +1640,20 @@
   --lever-pull: 0px;
   position: absolute;
   z-index: 60;
-  top: 25%;
-  right: -0.5%;
-  width: 20.5%;
-  height: 30%;
+  top: 38%;
+  right: -1.5%;
+  width: 23%;
+  height: 32%;
   padding: 0;
   border: 0;
   outline: 0;
   background: transparent;
   cursor: grab;
   touch-action: none;
+}
+
+.birthday-slot-screen[data-slot-phase="celebrating"] .birthday-slot-lever {
+  display: none;
 }
 
 .birthday-slot-lever:active {
@@ -1738,20 +1742,23 @@
 }
 
 .slot-lever-cue b {
-  padding: 5px 8px;
-  border: 2px solid var(--ink);
+  padding: 6px 10px;
+  border: 3px solid var(--ink);
   border-radius: 99px;
-  background: #fffef8;
-  box-shadow: 2px 3px 0 var(--ink);
-  font-size: 10px;
+  background: var(--ink);
+  box-shadow: 3px 4px 0 #f5c84b;
+  color: #fffef8;
+  font-size: 11px;
   font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
 .slot-lever-cue i {
-  margin: -1px 6px 0 0;
+  margin: 1px 8px 0 0;
   color: var(--coral);
-  font-size: 34px;
+  font-size: 40px;
   font-style: normal;
   font-weight: 950;
   line-height: .8;
@@ -1762,9 +1769,10 @@
 .birthday-slot-continue {
   position: absolute;
   z-index: 70;
-  right: 21%;
-  bottom: max(19px, env(safe-area-inset-bottom));
-  left: 21%;
+  top: max(22px, env(safe-area-inset-top));
+  right: 23%;
+  bottom: auto;
+  left: 23%;
   min-height: 48px;
   border: 3px solid var(--ink);
   border-radius: 999px;

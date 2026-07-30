@@ -54,7 +54,7 @@ const ENTRY_END_FRAME = 18;
 const SPIN_START_FRAME = 19;
 const RESULT_FRAME = 88;
 const CELEBRATION_START_FRAME = 90;
-const FINAL_FRAME = 164;
+const FINAL_FRAME = 190;
 
 type SlotPhase =
   | "entering"
@@ -151,12 +151,12 @@ function SlotReel({
       style={{
         position: "relative",
         overflow: "hidden",
-        height: 238,
-        borderRadius: 31,
+        height: 211,
+        borderRadius: 28,
         background:
           "linear-gradient(180deg,#d33a39 0%,#f45c54 25%,#ef4b47 60%,#bd272f 100%)",
         boxShadow:
-          "inset 0 20px 29px rgba(89,10,26,.38), inset 0 -23px 29px rgba(89,10,26,.38), 0 0 0 5px #17131f",
+          "inset 0 18px 26px rgba(89,10,26,.38), inset 0 -20px 26px rgba(89,10,26,.38), 0 0 0 4px #17131f",
       }}
     >
       <div
@@ -164,7 +164,7 @@ function SlotReel({
           position: "absolute",
           zIndex: 2,
           inset: 0,
-          borderRadius: 31,
+          borderRadius: 28,
           background:
             "linear-gradient(180deg,rgba(23,19,31,.42),transparent 29%,transparent 70%,rgba(23,19,31,.46))",
           pointerEvents: "none",
@@ -177,7 +177,7 @@ function SlotReel({
             height: "100%",
             placeItems: "center",
             color: "#fffef8",
-            fontSize: 119,
+            fontSize: 105,
             fontWeight: 950,
             lineHeight: 1,
             textShadow: "0 5px 0 rgba(83,8,25,.45)",
@@ -199,12 +199,12 @@ function SlotReel({
                 right: 0,
                 left: 0,
                 color: "#fffef8",
-                fontSize: 148,
+                fontSize: 131,
                 fontWeight: 950,
                 lineHeight: 1,
                 textAlign: "center",
                 textShadow: "0 6px 0 rgba(83,8,25,.46)",
-                translate: `0px calc(-50% + ${(relativeIndex - fraction) * 191 + stopImpact * 1.56}px)`,
+                translate: `0px calc(-50% + ${(relativeIndex - fraction) * 169 + stopImpact * 1.38}px)`,
               }}
             >
               {digit}
@@ -239,7 +239,7 @@ function BirthdaySlotComposition({
   );
   const machineOpacity = interpolate(
     frame,
-    [121, 133],
+    [124, 140],
     [1, 0],
     {
       extrapolateLeft: "clamp",
@@ -288,11 +288,11 @@ function BirthdaySlotComposition({
           height={1821}
           style={{
             position: "absolute",
-            top: -38,
-            left: -24,
-            width: 688,
-            height: 1450,
-            clipPath: "polygon(0 0,87% 0,87% 100%,0 100%)",
+            top: 195,
+            left: 15,
+            width: 610,
+            height: 1285,
+            clipPath: "polygon(0 0,87% 0,87% 90%,0 90%)",
           }}
         />
 
@@ -300,12 +300,12 @@ function BirthdaySlotComposition({
           style={{
             position: "absolute",
             zIndex: 4,
-            top: 325,
-            left: 96,
+            top: 517,
+            left: 121,
             display: "grid",
-            width: 418,
+            width: 371,
             gridTemplateColumns: "repeat(3,1fr)",
-            gap: 11,
+            gap: 10,
           }}
         >
           {digits.map((digit, index) => (
@@ -323,19 +323,19 @@ function BirthdaySlotComposition({
           style={{
             position: "absolute",
             zIndex: 5,
-            top: 741,
-            left: 117,
+            top: 886,
+            left: 140,
             display: "grid",
-            width: 406,
-            minHeight: 75,
+            width: 360,
+            minHeight: 67,
             placeItems: "center",
-            padding: "0 24px",
-            border: "6px solid #e4b54b",
-            borderRadius: 25,
+            padding: "0 21px",
+            border: "5px solid #e4b54b",
+            borderRadius: 22,
             background: "#17131f",
-            boxShadow: "0 8px 0 rgba(23,19,31,.32)",
+            boxShadow: "0 7px 0 rgba(23,19,31,.32)",
             color: "#fffef8",
-            fontSize: 26,
+            fontSize: 23,
             fontWeight: 950,
             letterSpacing: ".05em",
             lineHeight: 1.05,
@@ -368,13 +368,13 @@ function BirthdaySlotComposition({
           style={{
             position: "absolute",
             zIndex: 5,
-            top: 1042,
-            left: 157,
+            top: 1153,
+            left: 176,
             display: "grid",
-            width: 325,
-            minHeight: 144,
+            width: 288,
+            minHeight: 128,
             alignContent: "center",
-            padding: "12px 16px",
+            padding: "11px 14px",
             color: "#17131f",
             opacity: resultVisible
               ? interpolate(frame, [76, 84], [0, 1], {
@@ -396,7 +396,7 @@ function BirthdaySlotComposition({
           <span
             style={{
               display: "block",
-              fontSize: 15,
+              fontSize: 13,
               fontWeight: 950,
               letterSpacing: ".08em",
               textTransform: "uppercase",
@@ -408,7 +408,7 @@ function BirthdaySlotComposition({
             style={{
               display: "block",
               marginTop: 6,
-              fontSize: famousName.length > 22 ? 22 : 26,
+              fontSize: famousName.length > 22 ? 20 : 23,
               lineHeight: 1.02,
               letterSpacing: "-.02em",
             }}
@@ -427,23 +427,17 @@ function BirthdaySlotComposition({
             height={1820}
             style={{
               position: "absolute",
-              zIndex: 20,
-              top: -370,
-              left: 151,
-              width: 338,
-              height: 711,
-              opacity: interpolate(frame, [90, 94, 128, 136], [0, 1, 1, 0], {
+              zIndex: 35,
+              top: -390,
+              left: 170,
+              width: 300,
+              height: 632,
+              opacity: interpolate(frame, [90, 94, 140, 148], [0, 1, 1, 0], {
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
               }),
-              rotate: reducedMotion
-                ? "0deg"
-                : interpolate(frame, [90, 102], ["-240deg", "0deg"], {
-                    easing: Easing.bezier(0.16, 1, 0.3, 1),
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                  }),
-              scale: interpolate(frame, [90, 102, 105], [0.72, 1.04, 1], {
+              rotate: "0deg",
+              scale: interpolate(frame, [90, 100, 103], [0.88, 1.02, 1], {
                 easing: Easing.spring({ damping: 170 }),
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
@@ -451,19 +445,43 @@ function BirthdaySlotComposition({
               }),
               translate: reducedMotion
                 ? "0px 0px"
-                : interpolate(frame, [90, 102], ["0px -150px", "0px 0px"], {
-                    easing: Easing.bezier(0.16, 1, 0.3, 1),
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                  }),
+                : interpolate(
+                    frame,
+                    [90, 100, 106, 112, 118, 124, 130, 138, 148],
+                    [
+                      "0px -190px",
+                      "0px 0px",
+                      "-130px 0px",
+                      "130px 0px",
+                      "-115px 0px",
+                      "115px 0px",
+                      "0px 0px",
+                      "0px 0px",
+                      "0px -220px",
+                    ],
+                    {
+                      easing: Easing.bezier(0.16, 1, 0.3, 1),
+                      extrapolateLeft: "clamp",
+                      extrapolateRight: "clamp",
+                    },
+                  ),
             }}
           />
 
-          {Array.from({ length: 96 }, (_, index) => {
-            const startFrame = 103 + (index % 7) * 0.7;
+          {Array.from({ length: 220 }, (_, index) => {
+            const startFrame = 100 + (index % 48) * 0.5;
+            const sourceX = interpolate(
+              startFrame,
+              [100, 106, 112, 118, 124, 130, 136],
+              [320, 190, 450, 205, 435, 320, 320],
+              {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              },
+            );
             const progress = interpolate(
               frame,
-              [startFrame, startFrame + 50 + (index % 5) * 3],
+              [startFrame, startFrame + 50 + (index % 9)],
               [0, 1],
               {
                 easing: Easing.in(Easing.quad),
@@ -471,15 +489,12 @@ function BirthdaySlotComposition({
                 extrapolateRight: "clamp",
               },
             );
-            const horizontal = ((index * 73) % 690) - 345;
-            const drift = ((index * 29) % 74) - 37;
-            const y =
-              182 +
-              (720 + (index % 9) * 42) * progress +
-              (index % 4) * 22 * progress * progress;
+            const horizontal = ((index * 47) % 140) - 70;
+            const drift = ((index * 31) % 96) - 48;
+            const y = 140 + (1380 + (index % 8) * 38) * progress;
             const opacity = interpolate(
               progress,
-              [0, 0.05, 0.88, 1],
+              [0, 0.02, 0.86, 1],
               [0, 1, 1, 0],
               {
                 extrapolateLeft: "clamp",
@@ -492,11 +507,11 @@ function BirthdaySlotComposition({
                 key={index}
                 style={{
                   position: "absolute",
-                  zIndex: index % 3 === 0 ? 31 : 24,
+                  zIndex: 30 + (index % 3),
                   top: 0,
-                  left: 320,
-                  width: index % 4 === 0 ? 25 : index % 3 === 0 ? 18 : 12,
-                  height: index % 4 === 0 ? 11 : index % 3 === 0 ? 31 : 20,
+                  left: sourceX,
+                  width: index % 4 === 0 ? 28 : index % 3 === 0 ? 20 : 14,
+                  height: index % 4 === 0 ? 13 : index % 3 === 0 ? 36 : 22,
                   border: "2px solid rgba(23,19,31,.38)",
                   borderRadius: index % 5 === 0 ? 999 : 3,
                   background:
@@ -508,43 +523,6 @@ function BirthdaySlotComposition({
               />
             );
           })}
-
-          <Interactive.Div
-            name="Confetti color wipe"
-            style={{
-              position: "absolute",
-              zIndex: 22,
-              top: -380,
-              left: -580,
-              width: 1800,
-              height: 1800,
-              borderRadius: "50%",
-              background:
-                "conic-gradient(from 15deg,#ef4b47,#f5c84b,#c9ff2f,#20d9df,#7c3aed,#ff7b70,#ef4b47)",
-              opacity: reducedMotion
-                ? interpolate(frame, [103, 111, 126, 136], [0, 1, 1, 0], {
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                  })
-                : interpolate(frame, [106, 120, 129, 141], [0, 0.94, 0.94, 0], {
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                  }),
-              scale: reducedMotion
-                ? interpolate(frame, [103, 111], [0.25, 1], {
-                    easing: Easing.bezier(0.16, 1, 0.3, 1),
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                    output: "perceptual-scale",
-                  })
-                : interpolate(frame, [106, 120], [0.04, 1], {
-                    easing: Easing.bezier(0.12, 0.82, 0.22, 1),
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                    output: "perceptual-scale",
-                  }),
-            }}
-          />
         </>
       ) : null}
 
@@ -556,7 +534,7 @@ function BirthdaySlotComposition({
           background: "#fffef8",
           opacity: interpolate(
             celebrationProgress,
-            [0.48, 0.64],
+            [0.34, 0.52],
             [0, 1],
             {
               extrapolateLeft: "clamp",
@@ -644,7 +622,7 @@ export function BirthdayCountdownScreen({
   const startSpin = useCallback(() => {
     if (phase !== "ready") return;
     committedPullRef.current = true;
-    setLeverPull(72);
+    setLeverPull(82);
     setPhase("spinning");
     navigator.vibrate?.(16);
 
@@ -671,7 +649,7 @@ export function BirthdayCountdownScreen({
     playFrames(
       CELEBRATION_START_FRAME,
       FINAL_FRAME,
-      reducedMotion ? 760 : 2250,
+      reducedMotion ? 900 : 3000,
       next,
     );
   }, [next, phase, playFrames, reducedMotion]);
@@ -698,7 +676,7 @@ export function BirthdayCountdownScreen({
   const onLeverPointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (phase !== "ready" || pullStartRef.current === null) return;
     event.preventDefault();
-    const distance = Math.max(0, Math.min(78, event.clientY - pullStartRef.current));
+    const distance = Math.max(0, Math.min(88, event.clientY - pullStartRef.current));
     setLeverPull(distance);
   };
 
@@ -711,7 +689,7 @@ export function BirthdayCountdownScreen({
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
 
-    if (distance >= 48) {
+    if (distance >= 32) {
       startSpin();
       return;
     }
@@ -743,7 +721,7 @@ export function BirthdayCountdownScreen({
             monthIndex,
             reducedMotion,
           }}
-          durationInFrames={165}
+          durationInFrames={191}
           compositionWidth={640}
           compositionHeight={1355}
           fps={30}
