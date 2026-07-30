@@ -850,7 +850,7 @@
   padding: max(54px, env(safe-area-inset-top)) 20px max(22px, env(safe-area-inset-bottom));
   background: #fffaf0;
   color: var(--ink);
-  animation: age-screen-in .46s .03s cubic-bezier(.16,1,.3,1) both;
+  animation: age-surface-in 180ms cubic-bezier(.22,1,.36,1) both;
 }
 
 .age-screen::before {
@@ -864,6 +864,8 @@
   background: #ff5d5730;
   content: "";
   pointer-events: none;
+  transform-origin: 50% 50%;
+  animation: age-orbit-drop-in 420ms 110ms cubic-bezier(.16,1,.3,1) backwards;
 }
 
 .age-screen > * {
@@ -883,10 +885,14 @@
 }
 
 .age-screen .status {
+  --age-enter-delay: 35ms;
+  --age-enter-distance: -10px;
   margin-bottom: 18px;
 }
 
 .age-heading {
+  --age-enter-delay: 75ms;
+  --age-enter-distance: -14px;
   text-align: center;
 }
 
@@ -909,6 +915,8 @@
 }
 
 .age-carousel {
+  --age-enter-delay: 115ms;
+  --age-enter-distance: -22px;
   display: flex;
   gap: 12px;
   align-items: center;
@@ -1010,6 +1018,8 @@
 }
 
 .age-fact {
+  --age-enter-delay: 155ms;
+  --age-enter-distance: -17px;
   display: grid;
   min-height: 94px;
   align-content: center;
@@ -1032,6 +1042,8 @@
 }
 
 .age-confirm {
+  --age-enter-delay: 195ms;
+  --age-enter-distance: -12px;
   margin-top: 16px;
 }
 
@@ -1046,6 +1058,7 @@
 .age-screen .age-confirm,
 .age-screen .status,
 .age-screen .age-heading {
+  animation: age-component-drop-in 340ms var(--age-enter-delay) cubic-bezier(.22,1,.36,1) backwards;
   transition: opacity 90ms ease;
 }
 
@@ -1122,15 +1135,42 @@
   transition: transform 500ms cubic-bezier(.45,0,.9,.5);
 }
 
-@keyframes age-screen-in {
+@keyframes age-surface-in {
   from {
     opacity: 0;
-    translate: 0 18px;
   }
 
   to {
     opacity: 1;
-    translate: 0;
+  }
+}
+
+@keyframes age-component-drop-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0,var(--age-enter-distance),0) scale(.985);
+  }
+
+  72% {
+    opacity: 1;
+    transform: translate3d(0,2px,0) scale(1.002);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0,0,0) scale(1);
+  }
+}
+
+@keyframes age-orbit-drop-in {
+  from {
+    opacity: 0;
+    transform: translate3d(34px,-42px,0) rotate(10deg) scale(.76);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0,0,0) rotate(0) scale(1);
   }
 }
 
@@ -1189,6 +1229,12 @@
 
 @media (prefers-reduced-motion: reduce) {
   .age-screen,
+  .age-screen::before,
+  .age-screen .age-carousel,
+  .age-screen .age-fact,
+  .age-screen .age-confirm,
+  .age-screen .status,
+  .age-screen .age-heading,
   .age-keycap,
   .age-keycap.is-selected,
   .age-keycap.is-popping,
