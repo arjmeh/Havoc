@@ -362,7 +362,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   } | null>(null);
   const [dragDistance, setDragDistance] = useState(0);
   const pointerStartRef = useRef<number | null>(null);
-  const screenRef = useRef<HTMLDivElement>(null);
+  const calendarRef = useRef<HTMLElement>(null);
   const flipIdRef = useRef(0);
   const monthRef = useRef(0);
   const wheelDistanceRef = useRef(0);
@@ -463,18 +463,21 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   }, [reducedMotion]);
 
   useEffect(() => {
-    const screen = screenRef.current;
-    if (!screen) return;
+    const calendar = calendarRef.current;
+    if (!calendar) return;
 
     const handleCalendarWheel = (event: WheelEvent) => {
+      // Keep every wheel/trackpad gesture over the calendar inside the phone
+      // preview, including small or diagonal movement that does not flip a page.
+      event.preventDefault();
+      event.stopPropagation();
+
       const verticalDistance = Math.abs(event.deltaY);
       const horizontalDistance = Math.abs(event.deltaX);
       if (verticalDistance < 3 || verticalDistance < horizontalDistance) {
         return;
       }
 
-      event.preventDefault();
-      event.stopPropagation();
       wheelDistanceRef.current += event.deltaY;
 
       const now = window.performance.now();
@@ -491,18 +494,16 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
       changeMonth(direction);
     };
 
-    screen.addEventListener("wheel", handleCalendarWheel, {
+    calendar.addEventListener("wheel", handleCalendarWheel, {
       capture: true,
       passive: false,
     });
-    return () => screen.removeEventListener("wheel", handleCalendarWheel, true);
+    return () =>
+      calendar.removeEventListener("wheel", handleCalendarWheel, true);
   }, [reducedMotion]);
 
   return (
-    <div
-      className={`screen birthday-screen season-${season}`}
-      ref={screenRef}
-    >
+    <div className={`screen birthday-screen season-${season}`}>
       <SeasonalScene season={season} />
 
       <div className="status">
@@ -521,6 +522,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
       <div className="birthday-calendar-stage">
         <section
           className="tear-calendar"
+          ref={calendarRef}
           aria-label={`Choose a birthday in ${MONTHS[month]}`}
         >
           <div className="calendar-binding">
