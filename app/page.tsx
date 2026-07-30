@@ -120,14 +120,14 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
 
   useEffect(() => {
     const rocket = new Image();
-    rocket.src = "/havoc-rocket-launch.webp";
+    rocket.src = "/havoc-rocket-cutout.png";
   }, []);
 
   useEffect(() => {
     if (!launching) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const timer = window.setTimeout(next, reduceMotion ? 240 : 860);
+    const timer = window.setTimeout(next, reduceMotion ? 240 : 1040);
     return () => window.clearTimeout(timer);
   }, [launching, next]);
 
@@ -168,14 +168,16 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
       </button>
     </div>
     <div className="rocket-transition" aria-hidden="true">
-      <span className="rocket-wipe rocket-wipe-edge" />
-      <span className="rocket-wipe rocket-wipe-surface" />
+      <span className="rocket-divider-mask">
+        <span className="rocket-divider-edge" />
+        <span className="rocket-divider-surface" />
+      </span>
       <img
         className="rocket-launch rocket-launch-motion"
-        src="/havoc-rocket-launch.webp"
+        src="/havoc-rocket-cutout.png"
         alt=""
-        width={383}
-        height={665}
+        width={343}
+        height={552}
       />
     </div>
   </div>;

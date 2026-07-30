@@ -430,8 +430,9 @@
 
 /* Black-frame handoff into the first-launch welcome screen */
 .welcome-screen {
+  --welcome-divider-top: min(71%, 427px);
   isolation: isolate;
-  position: relative;
+  position: absolute;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -447,19 +448,19 @@
   bottom: -1px;
   left: -1px;
   content: "";
-  clip-path: polygon(0 16%,100% 0,100% 100%,0 100%);
+  clip-path: polygon(0 28px,100% 0,100% 100%,0 100%);
   pointer-events: none;
 }
 
 .welcome-screen::before {
   z-index: 0;
-  top: 71%;
+  top: var(--welcome-divider-top);
   background: #ff5d57;
 }
 
 .welcome-screen::after {
   z-index: 0;
-  top: calc(71% + 7px);
+  top: calc(var(--welcome-divider-top) + 7px);
   background: #fffaf0;
 }
 
@@ -617,60 +618,61 @@
   visibility: visible;
 }
 
-.rocket-wipe {
-  position: absolute;
-  right: -15%;
-  bottom: -15%;
-  left: -15%;
-  height: 135%;
-  clip-path: polygon(0 18%,50% 0,100% 18%,100% 100%,0 100%);
-  translate: 0 110%;
-  will-change: transform;
+.welcome-screen.is-launching::before,
+.welcome-screen.is-launching::after {
+  opacity: 0;
 }
 
-.rocket-wipe-edge {
+.rocket-divider-mask {
+  position: absolute;
   z-index: 1;
+  top: var(--welcome-divider-top);
+  right: -1px;
+  left: -1px;
+  height: 100%;
+  will-change: top;
+}
+
+.rocket-divider-edge,
+.rocket-divider-surface {
+  position: absolute;
+  inset: 0;
+  display: block;
+  clip-path: polygon(0 28px,100% 0,100% 100%,0 100%);
+}
+
+.rocket-divider-edge {
   background: #ff5d57;
 }
 
-.rocket-wipe-surface {
-  z-index: 2;
-  background: #f6f1e8;
+.rocket-divider-surface {
+  top: 7px;
+  background: #fffaf0;
 }
 
 .rocket-launch {
   position: absolute;
-  z-index: 3;
-  bottom: -84%;
+  z-index: 2;
+  top: 100%;
   left: 50%;
   display: block;
   width: min(112%, 430px);
   height: auto;
   object-fit: contain;
   translate: -50% 0;
-  will-change: transform;
+  will-change: top;
 }
 
 .welcome-screen.is-launching {
   animation: welcome-ignition-shake .25s cubic-bezier(.36,.07,.19,.97) both;
 }
 
-.is-launching .welcome-joystick-stage,
-.is-launching .welcome-copy,
-.is-launching .welcome-actions {
-  animation: welcome-launch-clear .24s .08s ease-in both;
-}
-
-.is-launching .rocket-wipe-edge {
-  animation: rocket-wipe-rise .6s .18s cubic-bezier(.5,.02,.22,1) both;
-}
-
-.is-launching .rocket-wipe-surface {
-  animation: rocket-wipe-rise .6s .22s cubic-bezier(.5,.02,.22,1) both;
+.is-launching .rocket-divider-mask {
+  animation: rocket-divider-lift .9s .08s both;
 }
 
 .is-launching .rocket-launch {
-  animation: rocket-takeoff .74s .11s cubic-bezier(.42,0,.6,1) both;
+  animation: rocket-divider-push .9s .08s both;
 }
 
 @keyframes welcome-ignition-shake {
@@ -686,22 +688,28 @@
   90% { transform: translate3d(-2px,1px,0) rotate(-.15deg); }
 }
 
-@keyframes welcome-launch-clear {
-  to {
-    opacity: 0;
-    transform: scale(.97);
-    filter: blur(2px);
+@keyframes rocket-divider-lift {
+  0%,
+  36% {
+    top: var(--welcome-divider-top);
+    animation-timing-function: cubic-bezier(.22,.8,.3,1);
   }
+
+  100% { top: -6%; }
 }
 
-@keyframes rocket-wipe-rise {
-  from { transform: translate3d(0,0,0); }
-  to { transform: translate3d(0,-116%,0); }
-}
+@keyframes rocket-divider-push {
+  0% {
+    top: 100%;
+    animation-timing-function: cubic-bezier(.18,.78,.25,1);
+  }
 
-@keyframes rocket-takeoff {
-  from { transform: translate3d(0,0,0); }
-  to { transform: translate3d(0,-190%,0); }
+  36% {
+    top: calc(var(--welcome-divider-top) + 14px);
+    animation-timing-function: cubic-bezier(.22,.8,.3,1);
+  }
+
+  100% { top: calc(-6% + 14px); }
 }
 
 @keyframes welcome-joystick-in {
@@ -759,21 +767,24 @@
     animation: none !important;
   }
 
-  .is-launching .rocket-wipe-edge,
+  .is-launching .rocket-divider-edge,
   .is-launching .rocket-launch {
     display: none;
     animation: none !important;
   }
 
-  .rocket-wipe-surface {
+  .rocket-divider-mask {
     inset: 0;
     height: auto;
-    clip-path: none;
     opacity: 0;
-    translate: 0;
   }
 
-  .is-launching .rocket-wipe-surface {
+  .rocket-divider-surface {
+    inset: 0;
+    clip-path: none;
+  }
+
+  .is-launching .rocket-divider-mask {
     display: block;
     animation: rocket-reduced-cover .2s ease-out both !important;
   }
