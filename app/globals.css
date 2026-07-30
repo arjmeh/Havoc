@@ -560,6 +560,13 @@
   line-height: 1;
 }
 
+.welcome-primary .welcome-rocket-mark {
+  width: 19px;
+  height: 29px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .welcome-secondary {
   min-height: 52px;
   border: 0;
