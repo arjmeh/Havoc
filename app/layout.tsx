@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Fredoka, Geist } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+});
+
+const fredoka = Fredoka({
+  variable: "--font-fredoka",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
 const deploymentHost =
@@ -47,7 +53,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} antialiased`}
+        className={`${geistSans.variable} ${fredoka.variable} antialiased`}
       >
         {children}
       </body>
