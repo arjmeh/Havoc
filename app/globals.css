@@ -1640,10 +1640,10 @@
   --lever-pull: 0px;
   position: absolute;
   z-index: 60;
-  top: 34%;
-  right: 3.2%;
-  width: 16.5%;
-  height: 24%;
+  top: 25%;
+  right: -0.5%;
+  width: 20.5%;
+  height: 30%;
   padding: 0;
   border: 0;
   outline: 0;
@@ -1728,7 +1728,7 @@
 .slot-lever-cue {
   position: absolute;
   top: 4%;
-  right: 74%;
+  right: 105%;
   display: grid;
   min-width: 86px;
   justify-items: end;

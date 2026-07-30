@@ -151,12 +151,12 @@ function SlotReel({
       style={{
         position: "relative",
         overflow: "hidden",
-        height: 152,
-        borderRadius: 20,
+        height: 238,
+        borderRadius: 31,
         background:
           "linear-gradient(180deg,#d33a39 0%,#f45c54 25%,#ef4b47 60%,#bd272f 100%)",
         boxShadow:
-          "inset 0 13px 18px rgba(89,10,26,.38), inset 0 -14px 18px rgba(89,10,26,.38), 0 0 0 3px #17131f",
+          "inset 0 20px 29px rgba(89,10,26,.38), inset 0 -23px 29px rgba(89,10,26,.38), 0 0 0 5px #17131f",
       }}
     >
       <div
@@ -164,7 +164,7 @@ function SlotReel({
           position: "absolute",
           zIndex: 2,
           inset: 0,
-          borderRadius: 20,
+          borderRadius: 31,
           background:
             "linear-gradient(180deg,rgba(23,19,31,.42),transparent 29%,transparent 70%,rgba(23,19,31,.46))",
           pointerEvents: "none",
@@ -177,7 +177,7 @@ function SlotReel({
             height: "100%",
             placeItems: "center",
             color: "#fffef8",
-            fontSize: 76,
+            fontSize: 119,
             fontWeight: 950,
             lineHeight: 1,
             textShadow: "0 5px 0 rgba(83,8,25,.45)",
@@ -199,12 +199,12 @@ function SlotReel({
                 right: 0,
                 left: 0,
                 color: "#fffef8",
-                fontSize: 94,
+                fontSize: 148,
                 fontWeight: 950,
                 lineHeight: 1,
                 textAlign: "center",
                 textShadow: "0 6px 0 rgba(83,8,25,.46)",
-                translate: `0px calc(-50% + ${(relativeIndex - fraction) * 122 + stopImpact}px)`,
+                translate: `0px calc(-50% + ${(relativeIndex - fraction) * 191 + stopImpact * 1.56}px)`,
               }}
             >
               {digit}
@@ -281,48 +281,6 @@ function BirthdaySlotComposition({
               }),
         }}
       >
-        <Interactive.Div
-          name="Birthday prompt"
-          style={{
-            position: "absolute",
-            zIndex: 5,
-            top: 56,
-            right: 34,
-            left: 34,
-            textAlign: "center",
-          }}
-        >
-          <span
-            style={{
-              display: "inline-flex",
-              minHeight: 32,
-              alignItems: "center",
-              padding: "0 15px",
-              border: "3px solid #17131f",
-              borderRadius: 999,
-              background: "#c9ff2f",
-              boxShadow: "3px 4px 0 #17131f",
-              fontSize: 13,
-              fontWeight: 950,
-              letterSpacing: ".09em",
-              textTransform: "uppercase",
-            }}
-          >
-            {MONTHS[monthIndex]} {day}
-          </span>
-          <h2
-            style={{
-              margin: "18px 0 0",
-              fontSize: 48,
-              fontWeight: 950,
-              lineHeight: 0.92,
-              letterSpacing: "-.055em",
-            }}
-          >
-            Give it a pull.
-          </h2>
-        </Interactive.Div>
-
         <CanvasImage
           name="Havoc birthday slot machine"
           src={staticFile("havoc-birthday-slot-machine.png")}
@@ -330,10 +288,10 @@ function BirthdaySlotComposition({
           height={1821}
           style={{
             position: "absolute",
-            top: 144,
-            left: 100,
-            width: 440,
-            height: 927,
+            top: -38,
+            left: -24,
+            width: 688,
+            height: 1450,
             clipPath: "polygon(0 0,87% 0,87% 100%,0 100%)",
           }}
         />
@@ -342,12 +300,12 @@ function BirthdaySlotComposition({
           style={{
             position: "absolute",
             zIndex: 4,
-            top: 376,
-            left: 177,
+            top: 325,
+            left: 96,
             display: "grid",
-            width: 267,
+            width: 418,
             gridTemplateColumns: "repeat(3,1fr)",
-            gap: 7,
+            gap: 11,
           }}
         >
           {digits.map((digit, index) => (
@@ -365,19 +323,19 @@ function BirthdaySlotComposition({
           style={{
             position: "absolute",
             zIndex: 5,
-            top: 642,
-            left: 190,
+            top: 741,
+            left: 117,
             display: "grid",
-            width: 260,
-            minHeight: 48,
+            width: 406,
+            minHeight: 75,
             placeItems: "center",
-            padding: "0 15px",
-            border: "4px solid #e4b54b",
-            borderRadius: 16,
+            padding: "0 24px",
+            border: "6px solid #e4b54b",
+            borderRadius: 25,
             background: "#17131f",
-            boxShadow: "0 5px 0 rgba(23,19,31,.32)",
+            boxShadow: "0 8px 0 rgba(23,19,31,.32)",
             color: "#fffef8",
-            fontSize: 17,
+            fontSize: 26,
             fontWeight: 950,
             letterSpacing: ".05em",
             lineHeight: 1.05,
@@ -410,13 +368,13 @@ function BirthdaySlotComposition({
           style={{
             position: "absolute",
             zIndex: 5,
-            top: 829,
-            left: 216,
+            top: 1042,
+            left: 157,
             display: "grid",
-            width: 208,
-            minHeight: 92,
+            width: 325,
+            minHeight: 144,
             alignContent: "center",
-            padding: "8px 11px",
+            padding: "12px 16px",
             color: "#17131f",
             opacity: resultVisible
               ? interpolate(frame, [76, 84], [0, 1], {
@@ -438,7 +396,7 @@ function BirthdaySlotComposition({
           <span
             style={{
               display: "block",
-              fontSize: 11,
+              fontSize: 15,
               fontWeight: 950,
               letterSpacing: ".08em",
               textTransform: "uppercase",
@@ -449,8 +407,8 @@ function BirthdaySlotComposition({
           <strong
             style={{
               display: "block",
-              marginTop: 4,
-              fontSize: famousName.length > 22 ? 15 : 18,
+              marginTop: 6,
+              fontSize: famousName.length > 22 ? 22 : 26,
               lineHeight: 1.02,
               letterSpacing: "-.02em",
             }}
@@ -470,10 +428,10 @@ function BirthdaySlotComposition({
             style={{
               position: "absolute",
               zIndex: 20,
-              top: -205,
-              left: 205,
-              width: 230,
-              height: 485,
+              top: -370,
+              left: 151,
+              width: 338,
+              height: 711,
               opacity: interpolate(frame, [90, 94, 128, 136], [0, 1, 1, 0], {
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
@@ -556,10 +514,10 @@ function BirthdaySlotComposition({
             style={{
               position: "absolute",
               zIndex: 22,
-              top: -310,
-              left: -300,
-              width: 1240,
-              height: 1240,
+              top: -380,
+              left: -580,
+              width: 1800,
+              height: 1800,
               borderRadius: "50%",
               background:
                 "conic-gradient(from 15deg,#ef4b47,#f5c84b,#c9ff2f,#20d9df,#7c3aed,#ff7b70,#ef4b47)",
@@ -787,7 +745,7 @@ export function BirthdayCountdownScreen({
           }}
           durationInFrames={165}
           compositionWidth={640}
-          compositionHeight={1080}
+          compositionHeight={1355}
           fps={30}
           autoPlay={false}
           acknowledgeRemotionLicense
@@ -834,7 +792,11 @@ export function BirthdayCountdownScreen({
         <span className="slot-lever-stem" aria-hidden="true" />
         <span className="slot-lever-knob" aria-hidden="true" />
         {phase === "ready" ? (
-          <span className="slot-lever-cue" aria-hidden="true">
+          <span
+            className="slot-lever-cue"
+            style={{ right: "105%" }}
+            aria-hidden="true"
+          >
             <b>Pull down</b>
             <i>↓</i>
           </span>
