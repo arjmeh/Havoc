@@ -1,0 +1,121 @@
+# Unicode Emoji 17.0 — fully qualified entries in Smileys & Emotion subgroups beginning with face-
+# subgroup	codepoints	glyph	CLDR short name
+face-smiling	1F600	😀	grinning face
+face-smiling	1F603	😃	grinning face with big eyes
+face-smiling	1F604	😄	grinning face with smiling eyes
+face-smiling	1F601	😁	beaming face with smiling eyes
+face-smiling	1F606	😆	grinning squinting face
+face-smiling	1F605	😅	grinning face with sweat
+face-smiling	1F923	🤣	rolling on the floor laughing
+face-smiling	1F602	😂	face with tears of joy
+face-smiling	1F642	🙂	slightly smiling face
+face-smiling	1F643	🙃	upside-down face
+face-smiling	1FAE0	🫠	melting face
+face-smiling	1F609	😉	winking face
+face-smiling	1F60A	😊	smiling face with smiling eyes
+face-smiling	1F607	😇	smiling face with halo
+face-affection	1F970	🥰	smiling face with hearts
+face-affection	1F60D	😍	smiling face with heart-eyes
+face-affection	1F929	🤩	star-struck
+face-affection	1F618	😘	face blowing a kiss
+face-affection	1F617	😗	kissing face
+face-affection	263A FE0F	☺️	smiling face
+face-affection	1F61A	😚	kissing face with closed eyes
+face-affection	1F619	😙	kissing face with smiling eyes
+face-affection	1F972	🥲	smiling face with tear
+face-tongue	1F60B	😋	face savoring food
+face-tongue	1F61B	😛	face with tongue
+face-tongue	1F61C	😜	winking face with tongue
+face-tongue	1F92A	🤪	zany face
+face-tongue	1F61D	😝	squinting face with tongue
+face-tongue	1F911	🤑	money-mouth face
+face-hand	1F917	🤗	smiling face with open hands
+face-hand	1F92D	🤭	face with hand over mouth
+face-hand	1FAE2	🫢	face with open eyes and hand over mouth
+face-hand	1FAE3	🫣	face with peeking eye
+face-hand	1F92B	🤫	shushing face
+face-hand	1F914	🤔	thinking face
+face-hand	1FAE1	🫡	saluting face
+face-neutral-skeptical	1F910	🤐	zipper-mouth face
+face-neutral-skeptical	1F928	🤨	face with raised eyebrow
+face-neutral-skeptical	1F610	😐	neutral face
+face-neutral-skeptical	1F611	😑	expressionless face
+face-neutral-skeptical	1F636	😶	face without mouth
+face-neutral-skeptical	1FAE5	🫥	dotted line face
+face-neutral-skeptical	1F636 200D 1F32B FE0F	😶‍🌫️	face in clouds
+face-neutral-skeptical	1F60F	😏	smirking face
+face-neutral-skeptical	1F612	😒	unamused face
+face-neutral-skeptical	1F644	🙄	face with rolling eyes
+face-neutral-skeptical	1F62C	😬	grimacing face
+face-neutral-skeptical	1F62E 200D 1F4A8	😮‍💨	face exhaling
+face-neutral-skeptical	1F925	🤥	lying face
+face-neutral-skeptical	1FAE8	🫨	shaking face
+face-neutral-skeptical	1F642 200D 2194 FE0F	🙂‍↔️	head shaking horizontally
+face-neutral-skeptical	1F642 200D 2195 FE0F	🙂‍↕️	head shaking vertically
+face-sleepy	1F60C	😌	relieved face
+face-sleepy	1F614	😔	pensive face
+face-sleepy	1F62A	😪	sleepy face
+face-sleepy	1F924	🤤	drooling face
+face-sleepy	1F634	😴	sleeping face
+face-sleepy	1FAE9	🫩	face with bags under eyes
+face-unwell	1F637	😷	face with medical mask
+face-unwell	1F912	🤒	face with thermometer
+face-unwell	1F915	🤕	face with head-bandage
+face-unwell	1F922	🤢	nauseated face
+face-unwell	1F92E	🤮	face vomiting
+face-unwell	1F927	🤧	sneezing face
+face-unwell	1F975	🥵	hot face
+face-unwell	1F976	🥶	cold face
+face-unwell	1F974	🥴	woozy face
+face-unwell	1F635	😵	face with crossed-out eyes
+face-unwell	1F635 200D 1F4AB	😵‍💫	face with spiral eyes
+face-unwell	1F92F	🤯	exploding head
+face-hat	1F920	🤠	cowboy hat face
+face-hat	1F973	🥳	partying face
+face-hat	1F978	🥸	disguised face
+face-glasses	1F60E	😎	smiling face with sunglasses
+face-glasses	1F913	🤓	nerd face
+face-glasses	1F9D0	🧐	face with monocle
+face-concerned	1F615	😕	confused face
+face-concerned	1FAE4	🫤	face with diagonal mouth
+face-concerned	1F61F	😟	worried face
+face-concerned	1F641	🙁	slightly frowning face
+face-concerned	2639 FE0F	☹️	frowning face
+face-concerned	1F62E	😮	face with open mouth
+face-concerned	1F62F	😯	hushed face
+face-concerned	1F632	😲	astonished face
+face-concerned	1F633	😳	flushed face
+face-concerned	1FAEA	🫪	distorted face
+face-concerned	1F97A	🥺	pleading face
+face-concerned	1F979	🥹	face holding back tears
+face-concerned	1F626	😦	frowning face with open mouth
+face-concerned	1F627	😧	anguished face
+face-concerned	1F628	😨	fearful face
+face-concerned	1F630	😰	anxious face with sweat
+face-concerned	1F625	😥	sad but relieved face
+face-concerned	1F622	😢	crying face
+face-concerned	1F62D	😭	loudly crying face
+face-concerned	1F631	😱	face screaming in fear
+face-concerned	1F616	😖	confounded face
+face-concerned	1F623	😣	persevering face
+face-concerned	1F61E	😞	disappointed face
+face-concerned	1F613	😓	downcast face with sweat
+face-concerned	1F629	😩	weary face
+face-concerned	1F62B	😫	tired face
+face-concerned	1F971	🥱	yawning face
+face-negative	1F624	😤	face with steam from nose
+face-negative	1F621	😡	enraged face
+face-negative	1F620	😠	angry face
+face-negative	1F92C	🤬	face with symbols on mouth
+face-negative	1F608	😈	smiling face with horns
+face-negative	1F47F	👿	angry face with horns
+face-negative	1F480	💀	skull
+face-negative	2620 FE0F	☠️	skull and crossbones
+face-costume	1F4A9	💩	pile of poo
+face-costume	1F921	🤡	clown face
+face-costume	1F479	👹	ogre
+face-costume	1F47A	👺	goblin
+face-costume	1F47B	👻	ghost
+face-costume	1F47D	👽	alien
+face-costume	1F47E	👾	alien monster
+face-costume	1F916	🤖	robot
