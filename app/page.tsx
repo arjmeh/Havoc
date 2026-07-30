@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { KeyboardEvent as ReactKeyboardEvent } from "react";
+import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent } from "react";
 
 import { getAgeLine } from "./age-copy";
 
@@ -190,13 +190,61 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
 
 const AGE_VALUES = Array.from({ length: 99 }, (_, index) => index + 1);
 
+type CandleStyle = CSSProperties & {
+  "--candle-delay": string;
+  "--candle-rotate": string;
+  "--candle-scale": string;
+  "--candle-width": string;
+  "--candle-x": string;
+  "--candle-y": string;
+};
+
+function getCandleLayout(age: number): CandleStyle[] {
+  const showerDuration = Math.min(780, 300 + age * 5);
+  const width = age <= 10 ? 25 : age <= 25 ? 18 : age <= 50 ? 14 : age <= 75 ? 11.5 : 9.5;
+
+  return Array.from({ length: age }, (_, index) => {
+    const radius = Math.sqrt((index + .5) / age);
+    const angle = index * 2.399963;
+    const x = 50 + Math.cos(angle) * radius * 44;
+    const y = 52 + Math.sin(angle) * radius * 31;
+    const delay = age === 1 ? 0 : index * showerDuration / (age - 1);
+    const scale = .8 + y / 100 * .34;
+
+    return {
+      "--candle-delay": `${delay.toFixed(1)}ms`,
+      "--candle-rotate": `${((index % 7) - 3) * 3.5}deg`,
+      "--candle-scale": scale.toFixed(3),
+      "--candle-width": `${width}px`,
+      "--candle-x": `${x.toFixed(2)}%`,
+      "--candle-y": `${y.toFixed(2)}%`,
+      zIndex: Math.round(y * 2),
+    };
+  });
+}
+
 function AgeScreen({ next }: { next: () => void }) {
   const [age, setAge] = useState(18);
   const [poppingAge, setPoppingAge] = useState<number | null>(null);
+  const [celebration, setCelebration] = useState<"idle" | "dropping" | "exiting">("idle");
   const carouselRef = useRef<HTMLDivElement>(null);
   const readyRef = useRef(false);
   const settleTimerRef = useRef<number | null>(null);
+  const celebrationTimersRef = useRef<number[]>([]);
   const settledAgeRef = useRef(18);
+  const candleLayout = celebration === "idle" ? [] : getCandleLayout(age);
+
+  useEffect(() => {
+    const cake = new Image();
+    cake.src = "/havoc-birthday-cake.png";
+    const candle = new Image();
+    candle.src = "/havoc-candle-flame-loop.png";
+
+    return () => {
+      celebrationTimersRef.current.forEach(window.clearTimeout);
+      celebrationTimersRef.current = [];
+    };
+  }, []);
 
   const scrollToAge = (nextAge: number, behavior: ScrollBehavior = "smooth") => {
     const safeAge = Math.max(1, Math.min(99, nextAge));
@@ -286,7 +334,20 @@ function AgeScreen({ next }: { next: () => void }) {
     scrollToAge(commands[event.key], event.key === "Home" || event.key === "End" ? "auto" : "smooth");
   };
 
-  return <div className="screen age-screen">
+  const confirmAge = () => {
+    if (celebration !== "idle") return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const showerDuration = reduceMotion ? 260 : Math.min(780, 300 + age * 5) + 360;
+
+    setCelebration("dropping");
+    celebrationTimersRef.current = [
+      window.setTimeout(() => setCelebration("exiting"), showerDuration + 180),
+      window.setTimeout(next, showerDuration + (reduceMotion ? 420 : 520)),
+    ];
+  };
+
+  return <div className={`screen age-screen is-${celebration}`} aria-busy={celebration !== "idle"}>
     <Status />
     <div className="age-heading">
       <h2>How old are you?</h2>
@@ -322,10 +383,34 @@ function AgeScreen({ next }: { next: () => void }) {
       <strong key={age}>{getAgeLine(age)}</strong>
     </div>
     <div className="age-confirm">
-      <button className="cta" onClick={next} aria-label={`Confirm age ${age}`}>
+      <button
+        className="cta"
+        onClick={confirmAge}
+        disabled={celebration !== "idle"}
+        aria-label={`Confirm age ${age}`}
+      >
         Confirm
       </button>
     </div>
+    <div className="birthday-cake-stage" aria-hidden="true">
+      <img
+        className="birthday-cake"
+        src="/havoc-birthday-cake.png"
+        alt=""
+        width={780}
+        height={675}
+      />
+      <div className="birthday-candle-field">
+        {candleLayout.map((style, index) => <i
+          className="birthday-candle"
+          key={index}
+          style={style}
+        />)}
+      </div>
+    </div>
+    <span className="sr-only" aria-live="polite">
+      {celebration === "dropping" ? `Adding ${age} candles to your cake.` : ""}
+    </span>
   </div>;
 }
 
