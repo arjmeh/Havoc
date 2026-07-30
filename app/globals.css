@@ -1453,8 +1453,6 @@
   display: flex;
   min-height: 43px;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
 }
 
 .calendar-month-row h3 {
@@ -1463,17 +1461,6 @@
   font-weight: 950;
   line-height: 1;
   letter-spacing: -.055em;
-}
-
-.calendar-month-row > span {
-  padding: 5px 8px;
-  border: 2px solid var(--ink);
-  border-radius: 99px;
-  background: var(--lime);
-  font-size: 9px;
-  font-weight: 950;
-  letter-spacing: .08em;
-  text-transform: uppercase;
 }
 
 .calendar-weekdays,
