@@ -16,7 +16,6 @@ import {
 import type {
   CSSProperties,
   KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
 } from "react";
 
@@ -405,8 +404,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   } | null>(null);
   const [dragDistance, setDragDistance] = useState(0);
   const pointerStartRef = useRef<number | null>(null);
-  const suppressCalendarClickRef = useRef(false);
-  const suppressCalendarClickTimerRef = useRef<number | null>(null);
+  const birthdayScreenRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<HTMLElement>(null);
   const flipIdRef = useRef(0);
   const flipActiveRef = useRef(false);
@@ -460,7 +458,12 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   };
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if ((event.target as HTMLElement).closest("button")) {
+      pointerStartRef.current = null;
+      return;
+    }
     pointerStartRef.current = event.clientY;
+    event.currentTarget.setPointerCapture(event.pointerId);
   };
 
   const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -486,26 +489,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
 
     event.preventDefault();
     event.stopPropagation();
-    suppressCalendarClickRef.current = true;
-    if (suppressCalendarClickTimerRef.current !== null) {
-      window.clearTimeout(suppressCalendarClickTimerRef.current);
-    }
-    suppressCalendarClickTimerRef.current = window.setTimeout(() => {
-      suppressCalendarClickRef.current = false;
-      suppressCalendarClickTimerRef.current = null;
-    }, 80);
     changeMonth(distance < 0 ? 1 : -1);
-  };
-
-  const onCalendarClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
-    if (!suppressCalendarClickRef.current) return;
-    event.preventDefault();
-    event.stopPropagation();
-    suppressCalendarClickRef.current = false;
-    if (suppressCalendarClickTimerRef.current !== null) {
-      window.clearTimeout(suppressCalendarClickTimerRef.current);
-      suppressCalendarClickTimerRef.current = null;
-    }
   };
 
   const onCalendarKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -521,46 +505,20 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
 
   useEffect(() => {
     if (confirmedBirthday) return;
-
-    const handleWindowCalendarKeys = (event: KeyboardEvent) => {
-      if (event.defaultPrevented) return;
-      const target = event.target as HTMLElement | null;
-      if (
-        target?.isContentEditable ||
-        target?.tagName === "INPUT" ||
-        target?.tagName === "TEXTAREA" ||
-        target?.tagName === "SELECT"
-      ) {
-        return;
-      }
-
-      if (event.key === "ArrowUp" || event.key === "PageUp") {
-        event.preventDefault();
-        event.stopPropagation();
-        changeMonth(-1);
-      }
-      if (event.key === "ArrowDown" || event.key === "PageDown") {
-        event.preventDefault();
-        event.stopPropagation();
-        changeMonth(1);
-      }
-    };
-
-    window.addEventListener("keydown", handleWindowCalendarKeys, true);
-    return () =>
-      window.removeEventListener("keydown", handleWindowCalendarKeys, true);
-  }, [confirmedBirthday, reducedMotion]);
-
-  useEffect(() => {
-    if (confirmedBirthday) return;
+    const birthdayScreen = birthdayScreenRef.current;
     const calendar = calendarRef.current;
-    if (!calendar) return;
+    if (!birthdayScreen || !calendar) return;
 
     const handleCalendarWheel = (event: WheelEvent) => {
-      // Keep every wheel/trackpad gesture over the calendar inside the phone
-      // preview, including small or diagonal movement that does not flip a page.
+      // The prototype phone is a fixed app canvas: wheel and trackpad input over
+      // it must never leak into the surrounding page.
       event.preventDefault();
       event.stopPropagation();
+
+      const target = event.target;
+      if (!(target instanceof Node) || !calendar.contains(target)) {
+        return;
+      }
 
       const deltaFactor =
         event.deltaMode === WheelEvent.DOM_DELTA_LINE
@@ -635,12 +593,12 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
       changeMonth(flipDirection);
     };
 
-    calendar.addEventListener("wheel", handleCalendarWheel, {
+    birthdayScreen.addEventListener("wheel", handleCalendarWheel, {
       capture: true,
       passive: false,
     });
     return () => {
-      calendar.removeEventListener("wheel", handleCalendarWheel, true);
+      birthdayScreen.removeEventListener("wheel", handleCalendarWheel, true);
       if (wheelGestureResetTimerRef.current !== null) {
         window.clearTimeout(wheelGestureResetTimerRef.current);
       }
@@ -656,19 +614,11 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
     };
   }, [confirmedBirthday, reducedMotion]);
 
-  useEffect(
-    () => () => {
-      if (suppressCalendarClickTimerRef.current !== null) {
-        window.clearTimeout(suppressCalendarClickTimerRef.current);
-      }
-    },
-    [],
-  );
-
   return (
     <>
       <div
         className={`screen birthday-screen season-${season}`}
+        ref={birthdayScreenRef}
         inert={confirmedBirthday ? true : undefined}
       >
         <SeasonalScene season={season} />
@@ -707,7 +657,6 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
                 pointerStartRef.current = null;
                 setDragDistance(0);
               }}
-              onClickCapture={onCalendarClickCapture}
               onKeyDown={onCalendarKeyDown}
               role="group"
               tabIndex={0}
@@ -729,7 +678,15 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
                       type="button"
                       className={selectedDay === day ? "is-selected" : ""}
                       key={`${day}-${index}`}
-                      onClick={() => setSelectedDay(day)}
+                      onPointerDown={(event) => {
+                        // Keep pointer selection from asking the outer prototype
+                        // page to scroll the focused date into view.
+                        event.preventDefault();
+                      }}
+                      onClick={(event) => {
+                        event.currentTarget.focus({ preventScroll: true });
+                        setSelectedDay(day);
+                      }}
                       aria-label={`${MONTHS[month]} ${day}`}
                       aria-pressed={selectedDay === day}
                     >

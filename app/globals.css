@@ -1287,6 +1287,7 @@
 .birthday-screen {
   isolation: isolate;
   overflow: hidden;
+  overscroll-behavior: none;
   padding: max(52px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
   background: #f7f2ff;
   color: var(--ink);
@@ -1359,6 +1360,8 @@
 .tear-calendar {
   position: relative;
   width: 100%;
+  overscroll-behavior: none;
+  touch-action: none;
   border: 3px solid var(--ink);
   border-radius: 23px 23px 31px 31px;
   background: #ef4b47;
@@ -1432,7 +1435,7 @@
     linear-gradient(90deg,transparent 50%,#e6ddea52 50% 51%,transparent 51%) 0 0 / 28px 28px,
     #fffef8;
   cursor: grab;
-  touch-action: pan-x;
+  touch-action: none;
   translate: 0 var(--calendar-drag);
   user-select: none;
   transition: translate 90ms ease-out;
@@ -1632,7 +1635,14 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
+  visibility: hidden;
   pointer-events: none;
+  transition: visibility 0s linear 780ms;
+}
+
+.season-layer.is-active {
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .season-sky {
