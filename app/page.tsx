@@ -226,7 +226,9 @@ function getCandleLayout(age: number): CandleStyle[] {
 function AgeScreen({ next }: { next: () => void }) {
   const [age, setAge] = useState(18);
   const [poppingAge, setPoppingAge] = useState<number | null>(null);
-  const [celebration, setCelebration] = useState<"idle" | "dropping" | "exiting">("idle");
+  const [celebration, setCelebration] = useState<
+    "idle" | "dropping" | "holding" | "sweeping" | "falling"
+  >("idle");
   const carouselRef = useRef<HTMLDivElement>(null);
   const readyRef = useRef(false);
   const settleTimerRef = useRef<number | null>(null);
@@ -236,7 +238,7 @@ function AgeScreen({ next }: { next: () => void }) {
 
   useEffect(() => {
     const cake = new Image();
-    cake.src = "/havoc-birthday-cake.png";
+    cake.src = "/havoc-birthday-cake-tall.png";
     const candle = new Image();
     candle.src = "/havoc-candle-flame-loop.png";
 
@@ -338,12 +340,19 @@ function AgeScreen({ next }: { next: () => void }) {
     if (celebration !== "idle") return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const showerDuration = reduceMotion ? 260 : Math.min(780, 300 + age * 5) + 360;
+    const showerDuration = reduceMotion ? 160 : Math.min(780, 300 + age * 5) + 360;
+    const holdDuration = reduceMotion ? 160 : 900;
+    const sweepDuration = reduceMotion ? 140 : 400;
+    const fallDuration = reduceMotion ? 200 : 540;
+    const sweepAt = showerDuration + holdDuration;
+    const fallAt = sweepAt + sweepDuration;
 
     setCelebration("dropping");
     celebrationTimersRef.current = [
-      window.setTimeout(() => setCelebration("exiting"), showerDuration + 180),
-      window.setTimeout(next, showerDuration + (reduceMotion ? 420 : 520)),
+      window.setTimeout(() => setCelebration("holding"), showerDuration),
+      window.setTimeout(() => setCelebration("sweeping"), sweepAt),
+      window.setTimeout(() => setCelebration("falling"), fallAt),
+      window.setTimeout(next, fallAt + fallDuration),
     ];
   };
 
@@ -395,10 +404,10 @@ function AgeScreen({ next }: { next: () => void }) {
     <div className="birthday-cake-stage" aria-hidden="true">
       <img
         className="birthday-cake"
-        src="/havoc-birthday-cake.png"
+        src="/havoc-birthday-cake-tall.png"
         alt=""
-        width={780}
-        height={675}
+        width={1024}
+        height={1536}
       />
       <div className="birthday-candle-field">
         {candleLayout.map((style, index) => <i
@@ -409,7 +418,11 @@ function AgeScreen({ next }: { next: () => void }) {
       </div>
     </div>
     <span className="sr-only" aria-live="polite">
-      {celebration === "dropping" ? `Adding ${age} candles to your cake.` : ""}
+      {celebration === "dropping"
+        ? `Adding ${age} candles to your cake.`
+        : celebration === "falling"
+          ? "Age confirmed."
+          : ""}
     </span>
   </div>;
 }

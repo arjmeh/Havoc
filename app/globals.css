@@ -1036,32 +1036,37 @@
 
 .age-screen .age-carousel,
 .age-screen .age-fact,
-.age-screen .age-confirm {
-  transition: opacity 170ms ease, translate 170ms ease;
+.age-screen .age-confirm,
+.age-screen .status,
+.age-screen .age-heading {
+  transition: opacity 90ms ease;
 }
 
-.age-screen.is-dropping .age-carousel,
-.age-screen.is-dropping .age-fact,
-.age-screen.is-dropping .age-confirm,
-.age-screen.is-exiting .age-carousel,
-.age-screen.is-exiting .age-fact,
-.age-screen.is-exiting .age-confirm {
+.age-screen.is-falling .age-carousel,
+.age-screen.is-falling .age-fact,
+.age-screen.is-falling .age-confirm,
+.age-screen.is-falling .status,
+.age-screen.is-falling .age-heading {
   opacity: 0;
-  translate: 0 -8px;
   pointer-events: none;
+  transition: none;
+}
+
+.age-screen.is-falling::before {
+  opacity: 0;
 }
 
 .birthday-cake-stage {
   position: absolute;
   z-index: 4;
-  bottom: -112px;
+  top: 68.5%;
   left: 50%;
-  width: calc(100% + 36px);
-  aspect-ratio: 780 / 675;
-  translate: -50% 0;
+  width: calc(100% + 220px);
+  aspect-ratio: 2 / 3;
   pointer-events: none;
-  transition: bottom 340ms cubic-bezier(.16,1,.3,1), opacity 280ms ease, translate 280ms ease;
-  animation: birthday-cake-in 520ms 180ms cubic-bezier(.16,1,.3,1) both;
+  transform: translate3d(-50%,0,0);
+  will-change: transform;
+  animation: birthday-cake-in 480ms 160ms cubic-bezier(.16,1,.3,1) backwards;
 }
 
 .birthday-cake {
@@ -1074,10 +1079,10 @@
 .birthday-candle-field {
   position: absolute;
   z-index: 2;
-  top: 5%;
-  right: 10%;
-  left: 10%;
-  height: 35%;
+  top: 1.5%;
+  right: 20%;
+  left: 20%;
+  height: 18%;
 }
 
 .birthday-candle {
@@ -1093,25 +1098,21 @@
   transform-origin: 50% 100%;
 }
 
-.age-screen.is-dropping .birthday-cake-stage {
-  bottom: -54px;
-}
-
 .age-screen.is-dropping .birthday-candle,
-.age-screen.is-exiting .birthday-candle {
+.age-screen.is-holding .birthday-candle,
+.age-screen.is-sweeping .birthday-candle,
+.age-screen.is-falling .birthday-candle {
   animation: birthday-candle-drop 360ms cubic-bezier(.16,1,.3,1) var(--candle-delay) both;
 }
 
-.age-screen.is-exiting .status,
-.age-screen.is-exiting .age-heading {
-  opacity: 0;
-  translate: 0 -12px;
-  transition: opacity 220ms ease, translate 220ms ease;
+.age-screen.is-sweeping .birthday-cake-stage {
+  transform: translate3d(-50%,-78%,0);
+  transition: transform 400ms cubic-bezier(.2,.8,.2,1);
 }
 
-.age-screen.is-exiting .birthday-cake-stage {
-  opacity: 0;
-  translate: -50% 22px;
+.age-screen.is-falling .birthday-cake-stage {
+  transform: translate3d(-50%,110%,0);
+  transition: transform 500ms cubic-bezier(.45,0,.9,.5);
 }
 
 @keyframes age-screen-in {
@@ -1129,12 +1130,12 @@
 @keyframes birthday-cake-in {
   from {
     opacity: 0;
-    translate: -50% 72px;
+    transform: translate3d(-50%,80px,0);
   }
 
   to {
     opacity: 1;
-    translate: -50% 0;
+    transform: translate3d(-50%,0,0);
   }
 }
 
@@ -1195,22 +1196,33 @@
 
   .birthday-cake-stage {
     animation: none;
-    transition: none;
   }
 
   .age-screen .age-carousel,
   .age-screen .age-fact,
   .age-screen .age-confirm,
-  .age-screen.is-exiting .status,
-  .age-screen.is-exiting .age-heading {
+  .age-screen .status,
+  .age-screen .age-heading {
     transition: none;
   }
 
   .age-screen.is-dropping .birthday-candle,
-  .age-screen.is-exiting .birthday-candle {
+  .age-screen.is-holding .birthday-candle,
+  .age-screen.is-sweeping .birthday-candle,
+  .age-screen.is-falling .birthday-candle {
     background-image: url("/havoc-candle-still.png");
     opacity: 1;
     transform: translate3d(-50%,-100%,0) rotate(0deg) scale(var(--candle-scale));
     animation: none;
+  }
+
+  .age-screen.is-sweeping .birthday-cake-stage {
+    transform: translate3d(-50%,0,0);
+    transition: none;
+  }
+
+  .age-screen.is-falling .birthday-cake-stage {
+    transform: translate3d(-50%,110%,0);
+    transition: none;
   }
 }
