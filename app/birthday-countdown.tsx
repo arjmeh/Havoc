@@ -248,12 +248,14 @@ function BirthdaySlotComposition({
   );
   const famousNameFontSize =
     famousName.length >= 22
-      ? 18
+      ? 22
       : famousName.length >= 19
-        ? 20
+        ? 24
         : famousName.length >= 16
-          ? 22
-          : 24;
+          ? 27
+          : famousName.length >= 13
+            ? 30
+            : 34;
 
   return (
     <AbsoluteFill
@@ -384,7 +386,7 @@ function BirthdaySlotComposition({
             alignItems: "center",
             flexDirection: "column",
             justifyContent: "center",
-            padding: "9px 20px 10px",
+            padding: "12px 20px",
             color: "#17131f",
             fontFamily:
               "var(--font-fredoka), 'Arial Rounded MT Bold', Arial, sans-serif",
@@ -410,27 +412,27 @@ function BirthdaySlotComposition({
             style={{
               display: "block",
               width: "100%",
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: ".11em",
+              fontSize: 16,
+              fontWeight: 800,
+              letterSpacing: ".075em",
               lineHeight: 1,
               textAlign: "center",
               textTransform: "uppercase",
             }}
           >
-            Birthday twin
+            Your birthday twin
           </span>
           <strong
             style={{
               display: "block",
               width: "100%",
-              maxHeight: 48,
-              marginTop: 5,
-              overflow: "hidden",
+              maxHeight: 70,
+              marginTop: 8,
+              overflow: "visible",
               fontSize: famousNameFontSize,
-              fontWeight: 700,
+              fontWeight: 800,
               letterSpacing: "-.035em",
-              lineHeight: 1,
+              lineHeight: 1.08,
               overflowWrap: "break-word",
               textAlign: "center",
               textWrap: "balance",
@@ -438,21 +440,6 @@ function BirthdaySlotComposition({
           >
             {famousName}
           </strong>
-          <span
-            style={{
-              display: "block",
-              width: "100%",
-              marginTop: 5,
-              fontSize: 11,
-              fontWeight: 600,
-              letterSpacing: ".035em",
-              lineHeight: 1,
-              textAlign: "center",
-              textTransform: "uppercase",
-            }}
-          >
-            Shares your birthday
-          </span>
         </Interactive.Div>
       </Interactive.Div>
 
