@@ -46,6 +46,7 @@ Before finishing:
 - [`03-onboarding-motion-brief.md`](./03-onboarding-motion-brief.md)
 - [`04-screen-ownership-template.md`](./04-screen-ownership-template.md)
 - [`05-prompt-history.md`](./05-prompt-history.md)
+- [`06-successful-prompting-playbook.md`](./06-successful-prompting-playbook.md)
 
 Use only the prompt relevant to the current task. The GitHub Issue and PR remain
 the authoritative live coordination record.
