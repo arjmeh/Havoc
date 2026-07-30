@@ -203,8 +203,6 @@ function AgeScreen({ next }: { next: () => void }) {
     const carousel = carouselRef.current;
     const card = carousel?.querySelector<HTMLElement>(`[data-age="${safeAge}"]`);
 
-    setAge(safeAge);
-
     if (carousel && card) {
       const left = card.offsetLeft - (carousel.clientWidth - card.offsetWidth) / 2;
       if (behavior === "auto") {
@@ -259,20 +257,16 @@ function AgeScreen({ next }: { next: () => void }) {
     });
     const nextAge = Number(closest.dataset.age);
 
-    if (nextAge !== age) setAge(nextAge);
-
     if (settleTimerRef.current !== null) {
       window.clearTimeout(settleTimerRef.current);
     }
     settleTimerRef.current = window.setTimeout(() => {
-      const left = closest.offsetLeft - (carousel.clientWidth - closest.offsetWidth) / 2;
-      carousel.scrollTo({ left, behavior: "smooth" });
-
       if (nextAge !== settledAgeRef.current) {
         settledAgeRef.current = nextAge;
+        setAge(nextAge);
         setPoppingAge(nextAge);
       }
-    }, 90);
+    }, 110);
   };
 
   const handleAgeKeys = (event: ReactKeyboardEvent<HTMLDivElement>) => {
