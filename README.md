@@ -47,3 +47,15 @@ For Git-connected deployment instructions, see
 This edition uses standard `next dev`, `next build`, and `next start` commands.
 It contains no OpenAI Sites, vinext, Wrangler, Cloudflare Worker, D1, or R2
 runtime dependencies.
+
+## Collaboration handoff
+
+- [`AGENTS.md`](./AGENTS.md) — required GitHub issue, branch, worktree, and PR workflow
+- [`docs/agent-prompts/`](./docs/agent-prompts/) — reusable prompts for Evan’s and Arjun’s agents
+- [`source-assets/`](./source-assets/) — original PRD, visual references, GIFs, and MP4 files
+- [`EDITING.md`](./EDITING.md) — project editing guide
+- [`DEPLOY_TO_VERCEL.md`](./DEPLOY_TO_VERCEL.md) — deployment instructions
+
+Runtime-ready optimized assets stay in [`public/`](./public/). Preserve the
+original files in `source-assets/` so future agents can regenerate or revise
+the optimized versions without downloading files from chat history.
