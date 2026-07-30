@@ -54,7 +54,7 @@ const ENTRY_END_FRAME = 18;
 const SPIN_START_FRAME = 19;
 const RESULT_FRAME = 88;
 const CELEBRATION_START_FRAME = 90;
-const FINAL_FRAME = 190;
+const FINAL_FRAME = 262;
 
 type SlotPhase =
   | "entering"
@@ -239,7 +239,7 @@ function BirthdaySlotComposition({
   );
   const machineOpacity = interpolate(
     frame,
-    [124, 140],
+    [164, 180],
     [1, 0],
     {
       extrapolateLeft: "clamp",
@@ -300,7 +300,7 @@ function BirthdaySlotComposition({
             left: 15,
             width: 610,
             height: 1285,
-            clipPath: "polygon(0 0,87% 0,87% 90%,0 90%)",
+            clipPath: "polygon(0 0,87% 0,87% 90.35%,0 90.35%)",
           }}
         />
 
@@ -378,12 +378,13 @@ function BirthdaySlotComposition({
             zIndex: 5,
             top: 1153,
             left: 176,
-            display: "grid",
+            display: "flex",
             width: 288,
             height: 128,
-            alignContent: "center",
-            justifyItems: "center",
-            padding: "10px 15px 11px",
+            alignItems: "center",
+            flexDirection: "column",
+            justifyContent: "center",
+            padding: "9px 20px 10px",
             color: "#17131f",
             fontFamily:
               "var(--font-fredoka), 'Arial Rounded MT Bold', Arial, sans-serif",
@@ -408,10 +409,12 @@ function BirthdaySlotComposition({
           <span
             style={{
               display: "block",
+              width: "100%",
               fontSize: 12,
               fontWeight: 700,
               letterSpacing: ".11em",
               lineHeight: 1,
+              textAlign: "center",
               textTransform: "uppercase",
             }}
           >
@@ -419,18 +422,18 @@ function BirthdaySlotComposition({
           </span>
           <strong
             style={{
-              display: "-webkit-box",
-              maxWidth: "100%",
+              display: "block",
+              width: "100%",
+              maxHeight: 48,
               marginTop: 5,
               overflow: "hidden",
               fontSize: famousNameFontSize,
               fontWeight: 700,
               letterSpacing: "-.035em",
               lineHeight: 1,
-              overflowWrap: "anywhere",
+              overflowWrap: "break-word",
+              textAlign: "center",
               textWrap: "balance",
-              WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 2,
             }}
           >
             {famousName}
@@ -438,11 +441,13 @@ function BirthdaySlotComposition({
           <span
             style={{
               display: "block",
+              width: "100%",
               marginTop: 5,
               fontSize: 11,
               fontWeight: 600,
               letterSpacing: ".035em",
               lineHeight: 1,
+              textAlign: "center",
               textTransform: "uppercase",
             }}
           >
@@ -465,7 +470,7 @@ function BirthdaySlotComposition({
               left: 170,
               width: 300,
               height: 632,
-              opacity: interpolate(frame, [90, 94, 140, 148], [0, 1, 1, 0], {
+              opacity: interpolate(frame, [90, 94, 190, 199], [0, 1, 1, 0], {
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
               }),
@@ -480,20 +485,24 @@ function BirthdaySlotComposition({
                 ? "0px 0px"
                 : interpolate(
                     frame,
-                    [90, 100, 106, 112, 118, 124, 130, 138, 148],
+                    [90, 100, 118, 136, 148, 160, 168, 176, 181, 186, 191, 197, 204],
                     [
                       "0px -190px",
                       "0px 0px",
-                      "-130px 0px",
-                      "130px 0px",
-                      "-115px 0px",
-                      "115px 0px",
+                      "-320px 0px",
+                      "320px 0px",
+                      "-320px 0px",
+                      "320px 0px",
+                      "-320px 0px",
+                      "320px 0px",
+                      "-320px 0px",
+                      "320px 0px",
+                      "-320px 0px",
                       "0px 0px",
-                      "0px 0px",
-                      "0px -220px",
+                      "0px -240px",
                     ],
                     {
-                      easing: Easing.bezier(0.16, 1, 0.3, 1),
+                      easing: Easing.inOut(Easing.quad),
                       extrapolateLeft: "clamp",
                       extrapolateRight: "clamp",
                     },
@@ -501,20 +510,34 @@ function BirthdaySlotComposition({
             }}
           />
 
-          {Array.from({ length: 220 }, (_, index) => {
-            const startFrame = 100 + (index % 48) * 0.5;
+          {Array.from({ length: 840 }, (_, index) => {
+            // The square-root distribution deliberately increases the emission
+            // rate: a trickle at first, then a near-solid burst at full speed.
+            const startFrame = 103 + 87 * Math.sqrt(index / 839);
             const sourceX = interpolate(
               startFrame,
-              [100, 106, 112, 118, 124, 130, 136],
-              [320, 190, 450, 205, 435, 320, 320],
+              [100, 118, 136, 148, 160, 168, 176, 181, 186, 191, 197],
+              [320, 0, 640, 0, 640, 0, 640, 0, 640, 0, 320],
               {
+                easing: Easing.inOut(Easing.quad),
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
               },
             );
-            const progress = interpolate(
+            const settleFrame = Math.min(205, startFrame + 38);
+            const flightProgress = interpolate(
               frame,
-              [startFrame, startFrame + 50 + (index % 9)],
+              [startFrame, settleFrame],
+              [0, 1],
+              {
+                easing: Easing.out(Easing.cubic),
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              },
+            );
+            const fallProgress = interpolate(
+              frame,
+              [220, 256],
               [0, 1],
               {
                 easing: Easing.in(Easing.quad),
@@ -522,18 +545,54 @@ function BirthdaySlotComposition({
                 extrapolateRight: "clamp",
               },
             );
-            const horizontal = ((index * 47) % 140) - 70;
-            const drift = ((index * 31) % 96) - 48;
-            const y = 140 + (1380 + (index % 8) * 38) * progress;
-            const opacity = interpolate(
-              progress,
-              [0, 0.02, 0.86, 1],
-              [0, 1, 1, 0],
+            const column = index % 30;
+            const row = Math.floor(index / 30);
+            const targetX =
+              (column / 29) * 640 + ((index * 17) % 19) - 9;
+            const targetY =
+              (row / 27) * 1355 + ((index * 29) % 25) - 12;
+            const arc =
+              Math.sin(flightProgress * Math.PI) *
+              (110 + (index % 7) * 18);
+            const flightX =
+              sourceX + (targetX - sourceX) * flightProgress;
+            const flightY =
+              118 + (targetY - 118) * flightProgress - arc;
+            const fallDrift = ((index * 31) % 130) - 65;
+            const entranceOpacity = interpolate(
+              frame,
+              [startFrame, startFrame + 2],
+              [0, 1],
               {
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
               },
             );
+            const exitOpacity = interpolate(
+              fallProgress,
+              [0, 0.82, 1],
+              [1, 1, 0],
+              {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              },
+            );
+            const pieceWidth =
+              index % 5 === 0
+                ? 48
+                : index % 3 === 0
+                  ? 38
+                  : index % 2 === 0
+                    ? 30
+                    : 24;
+            const pieceHeight =
+              index % 7 === 0
+                ? 64
+                : index % 4 === 0
+                  ? 54
+                  : index % 3 === 0
+                    ? 42
+                    : 48;
 
             return (
               <span
@@ -542,16 +601,34 @@ function BirthdaySlotComposition({
                   position: "absolute",
                   zIndex: 30 + (index % 3),
                   top: 0,
-                  left: sourceX,
-                  width: index % 4 === 0 ? 28 : index % 3 === 0 ? 20 : 14,
-                  height: index % 4 === 0 ? 13 : index % 3 === 0 ? 36 : 22,
+                  left: 0,
+                  width: pieceWidth,
+                  height: pieceHeight,
                   border: "2px solid rgba(23,19,31,.38)",
-                  borderRadius: index % 5 === 0 ? 999 : 3,
+                  borderRadius:
+                    index % 5 === 0
+                      ? 999
+                      : index % 4 === 0
+                        ? 8
+                        : 3,
                   background:
                     CONFETTI_COLORS[index % CONFETTI_COLORS.length],
-                  opacity,
-                  rotate: `${(index % 2 === 0 ? 1 : -1) * (180 + index * 31) * progress}deg`,
-                  translate: `${horizontal * progress + drift * progress * progress}px ${y}px`,
+                  opacity: entranceOpacity * exitOpacity,
+                  rotate: `${
+                    (index % 2 === 0 ? 1 : -1) *
+                      (360 + index * 17) *
+                      flightProgress +
+                    720 * fallProgress
+                  }deg`,
+                  translate: reducedMotion
+                    ? `${targetX}px ${targetY}px`
+                    : `${
+                        flightX + fallDrift * fallProgress
+                      }px ${
+                        flightY +
+                        (1450 + row * 12) * fallProgress
+                      }px`,
+                  willChange: "translate, rotate, opacity",
                 }}
               />
             );
@@ -567,7 +644,7 @@ function BirthdaySlotComposition({
           background: "#fffef8",
           opacity: interpolate(
             celebrationProgress,
-            [0.34, 0.52],
+            [0.52, 0.64],
             [0, 1],
             {
               extrapolateLeft: "clamp",
@@ -682,7 +759,7 @@ export function BirthdayCountdownScreen({
     playFrames(
       CELEBRATION_START_FRAME,
       FINAL_FRAME,
-      reducedMotion ? 900 : 3000,
+      reducedMotion ? 1300 : 4800,
       next,
     );
   }, [next, phase, playFrames, reducedMotion]);
@@ -754,7 +831,7 @@ export function BirthdayCountdownScreen({
             monthIndex,
             reducedMotion,
           }}
-          durationInFrames={191}
+          durationInFrames={263}
           compositionWidth={640}
           compositionHeight={1355}
           fps={30}
