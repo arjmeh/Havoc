@@ -428,6 +428,10 @@
   }
 }
 
+.identity-screen {
+  background: #000;
+}
+
 /* Black-frame handoff into the first-launch welcome screen */
 .welcome-screen {
   --welcome-divider-top: min(71%, 427px);

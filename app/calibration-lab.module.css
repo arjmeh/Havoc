@@ -1,0 +1,1140 @@
+.lab {
+  position: absolute;
+  isolation: isolate;
+  inset: 0;
+  overflow: hidden;
+  padding: 0;
+  background:
+    radial-gradient(circle at 14% 16%, #e9ddff 0 11%, transparent 11.5%),
+    radial-gradient(circle at 91% 33%, #d8fff8 0 9%, transparent 9.5%),
+    linear-gradient(166deg, #fffdf8 0 58%, #f4eeff 100%);
+  color: #0b0911;
+  touch-action: pan-x pan-y;
+}
+
+.lab[data-phase="shake"] {
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.backdrop::before,
+.backdrop::after,
+.backdrop i {
+  position: absolute;
+  display: block;
+  content: "";
+  border: 2px solid #0b0911;
+  opacity: 0.12;
+  transform: rotate(17deg);
+}
+
+.backdrop::before {
+  top: 174px;
+  left: -22px;
+  width: 62px;
+  height: 62px;
+  border-radius: 19px;
+  background: #ffd338;
+}
+
+.backdrop::after {
+  right: -25px;
+  bottom: 160px;
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  background: #ff5d6c;
+}
+
+.backdrop i:nth-child(1) {
+  top: 112px;
+  right: 33px;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background: #c7ff32;
+}
+
+.backdrop i:nth-child(2) {
+  bottom: 78px;
+  left: 27px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #2ee7d1;
+}
+
+.backdrop i:nth-child(3) {
+  right: 59px;
+  bottom: 292px;
+  width: 13px;
+  height: 13px;
+  border-radius: 4px;
+  background: #7c3aed;
+}
+
+.header {
+  position: absolute;
+  z-index: 10;
+  top: 55px;
+  right: 19px;
+  left: 19px;
+  display: grid;
+  grid-template-columns: 82px 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.header h2 {
+  margin: 5px 0 0;
+  font-family: var(--font-fredoka), var(--font-geist-sans), sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+}
+
+.eyebrow {
+  display: inline-flex;
+  min-height: 23px;
+  align-items: center;
+  padding: 3px 8px;
+  border: 2px solid #0b0911;
+  border-radius: 999px;
+  background: #c7ff32;
+  box-shadow: 2px 2px 0 #0b0911;
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.flaskBadge {
+  position: relative;
+  z-index: 12;
+  width: 82px;
+  height: 101px;
+  transform-origin: 50% 82%;
+  transition: opacity 120ms ease;
+}
+
+.flaskBadge img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 0 #0b09112c);
+  pointer-events: none;
+}
+
+.flaskFull {
+  opacity: 1;
+}
+
+.flaskEmpty {
+  opacity: 0;
+}
+
+.flaskBadge[data-mode="idle"],
+.flaskBadge[data-mode="searching"] {
+  animation: flaskSway 2.25s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.flaskBadge[data-mode="searching"] {
+  animation-duration: 1.35s;
+}
+
+.flaskBadge[data-mode="pouring"] {
+  animation: flaskPour 500ms cubic-bezier(0.18, 0.8, 0.25, 1) both;
+}
+
+.flaskBadge[data-mode="pouring"] .flaskFull {
+  animation: fullFlaskOut 500ms linear both;
+}
+
+.flaskBadge[data-mode="pouring"] .flaskEmpty {
+  animation: emptyFlaskIn 500ms linear both;
+}
+
+.flaskBadge[data-mode="gone"] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.liquidStream {
+  position: absolute;
+  z-index: -1;
+  top: 12px;
+  left: 58px;
+  width: 13px;
+  height: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7c3aed, #d83bff 52%, #7c3aed);
+  box-shadow:
+    inset 3px 0 2px #f2a4ff88,
+    0 0 0 2px #4b167d;
+  opacity: 0;
+  transform: rotate(-28deg);
+  transform-origin: top;
+}
+
+.flaskBadge[data-mode="pouring"] .liquidStream {
+  animation: liquidPour 520ms 80ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.cameraAura {
+  position: absolute;
+  z-index: 8;
+  top: 198px;
+  left: 50%;
+  width: min(64%, 244px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  transition:
+    opacity 180ms ease,
+    transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cameraAura::before,
+.cameraAura::after {
+  position: absolute;
+  content: "";
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.cameraAura::before {
+  z-index: -2;
+  inset: -11px;
+  background: conic-gradient(
+    from 0deg,
+    #ff5d6c,
+    #ffb33c,
+    #ff5d6c,
+    #d92f57,
+    #ff5d6c
+  );
+  box-shadow: 0 0 26px #ff5d6c8c;
+  animation: auraTurn 4s linear infinite;
+}
+
+.cameraAura::after {
+  z-index: -1;
+  inset: -5px;
+  border: 3px solid #0b0911;
+  background: #fffdf8;
+}
+
+.cameraAura[data-aura="idle"]::before {
+  background: conic-gradient(from 45deg, #7c3aed, #2ee7d1, #c7ff32, #7c3aed);
+  box-shadow: 0 0 28px #7c3aed75;
+  animation-duration: 8s;
+}
+
+.cameraAura[data-aura="ready"]::before,
+.cameraAura[data-aura="voice"]::before {
+  background: conic-gradient(
+    from 0deg,
+    #c7ff32,
+    #2ee7d1,
+    #c7ff32,
+    #75e641,
+    #c7ff32
+  );
+  box-shadow: 0 0 30px #8be63da8;
+  animation-duration: 2.7s;
+}
+
+.cameraAura[data-aura="voice"] {
+  box-shadow:
+    0 0 0 10px #2563eb,
+    0 0 0 15px #0b0911,
+    0 0 34px 17px #2563eb73;
+  animation: voiceAura 900ms ease-in-out infinite alternate;
+}
+
+.cameraAura[data-frozen="true"] {
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px) scale(0.91);
+}
+
+.cameraViewport {
+  position: absolute;
+  z-index: 2;
+  inset: 3px;
+  overflow: hidden;
+  border: 4px solid #0b0911;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 40%, #35205c, #160f25 70%),
+    #160f25;
+  box-shadow:
+    inset 0 0 0 3px #ffffff82,
+    0 10px 22px #2113342b;
+}
+
+.cameraVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.startButton {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  min-width: 44px;
+  min-height: 44px;
+  place-content: center;
+  justify-items: center;
+  border: 0;
+  background:
+    radial-gradient(circle at 50% 45%, #7c3aed 0 8%, transparent 8.5%),
+    radial-gradient(circle at 50% 48%, #332056 0 31%, #181020 72%);
+  color: #fff;
+  cursor: pointer;
+}
+
+.startButton::before,
+.startButton::after {
+  position: absolute;
+  content: "";
+  border: 2px solid #ffffff45;
+  border-radius: 50%;
+  animation: startRipple 2.4s ease-out infinite;
+}
+
+.startButton::before {
+  inset: 35px;
+}
+
+.startButton::after {
+  inset: 52px;
+  animation-delay: 800ms;
+}
+
+.startButton > span {
+  display: grid;
+  width: 48px;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 2px solid #0b0911;
+  border-radius: 17px;
+  background: #c7ff32;
+  box-shadow: 3px 4px 0 #0b0911;
+  color: #0b0911;
+  font-size: 24px;
+  animation: starterWobble 1.8s ease-in-out infinite;
+}
+
+.startButton b,
+.startButton small {
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+
+.startButton b {
+  margin-top: 14px;
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing: -0.03em;
+}
+
+.startButton small {
+  margin-top: 2px;
+  color: #cfc4df;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.startButton:focus-visible {
+  outline: 4px solid #2563eb;
+  outline-offset: 6px;
+}
+
+.scanLine {
+  position: absolute;
+  z-index: 4;
+  right: 12%;
+  left: 12%;
+  height: 2px;
+  border-radius: 99px;
+  background: #ff5d6c;
+  box-shadow:
+    0 0 12px 3px #ff5d6c,
+    0 0 30px 8px #ff5d6c4a;
+  animation: faceScan 1.1s ease-in-out infinite alternate;
+}
+
+.auraStatus {
+  position: absolute;
+  z-index: 6;
+  bottom: -38px;
+  left: 50%;
+  min-width: 94px;
+  padding: 6px 10px;
+  border: 2px solid #0b0911;
+  border-radius: 99px;
+  background: #fff;
+  box-shadow: 3px 3px 0 #0b0911;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: 0.09em;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.instructionCard {
+  position: absolute;
+  z-index: 9;
+  top: 485px;
+  right: 21px;
+  left: 21px;
+  display: grid;
+  grid-template-columns: 43px 1fr;
+  align-items: center;
+  gap: 11px;
+  min-height: 70px;
+  padding: 10px 13px;
+  border: 3px solid #0b0911;
+  border-radius: 21px 16px 23px 17px;
+  background: #fff;
+  box-shadow: 5px 6px 0 #0b0911;
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.instructionCard[data-tone="voice"] {
+  background: #e8f0ff;
+  box-shadow:
+    5px 6px 0 #0b0911,
+    0 0 0 5px #2563eb,
+    0 0 28px #2563eb63;
+}
+
+.stepIcon {
+  display: grid;
+  width: 42px;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 2px solid #0b0911;
+  border-radius: 14px 10px 15px 11px;
+  background: #c7ff32;
+  box-shadow: 2px 2px 0 #0b0911;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.instructionCard small,
+.instructionCard b {
+  display: block;
+}
+
+.instructionCard small {
+  margin-bottom: 2px;
+  color: #6a6173;
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.instructionCard b {
+  font-size: 16px;
+  font-weight: 950;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+}
+
+.typedPhrase {
+  position: absolute;
+  z-index: 11;
+  top: 570px;
+  right: 24px;
+  left: 24px;
+  min-height: 55px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 3px solid #0b0911;
+  border-radius: 16px;
+  background: #17131f;
+  box-shadow: 4px 5px 0 #7c3aed;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.typedPhrase i {
+  display: inline-block;
+  width: 2px;
+  height: 15px;
+  margin-left: 2px;
+  background: #c7ff32;
+  vertical-align: -2px;
+  animation: cursorBlink 600ms steps(1) infinite;
+}
+
+.freezeRig {
+  position: absolute;
+  z-index: 24;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.waterGun {
+  position: absolute;
+  z-index: 3;
+  top: 290px;
+  right: -10px;
+  width: 160px;
+  height: auto;
+  filter: drop-shadow(4px 6px 0 #0b0911);
+  transform: translateX(190px) rotate(-2deg);
+  animation: gunStrike 720ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.iceBeam {
+  position: absolute;
+  z-index: 2;
+  top: 342px;
+  right: 126px;
+  width: 126px;
+  height: 16px;
+  border: 3px solid #0b0911;
+  border-radius: 999px 12px 12px 999px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #fff 0 8px,
+      #8df8ff 8px 16px,
+      #2ee7d1 16px 25px
+    );
+  box-shadow:
+    0 0 14px 5px #2ee7d1,
+    -10px 0 25px #b8fbff;
+  transform: scaleX(0);
+  transform-origin: right;
+  animation: iceBeamFire 540ms 110ms cubic-bezier(0.22, 0.9, 0.2, 1) both;
+}
+
+.physicsLayer {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.physicsLayer > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.liquidDrop {
+  display: block;
+  border: 1.5px solid #3d126a;
+  border-radius: 50%;
+  background: radial-gradient(circle at 31% 28%, #f8c4ff 0 12%, #d83bff 24%, #7c3aed 74%);
+  box-shadow: 0 0 8px #aa32ef80;
+}
+
+.physicsFlask img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(3px 5px 0 #0b09112e);
+}
+
+.successLetter,
+.promptLetter {
+  display: grid;
+  place-items: center;
+  border: 2px solid #0b0911;
+  border-radius: 7px;
+  background: var(--letter-color);
+  box-shadow: 2px 3px 0 #0b0911;
+  font-family: var(--font-fredoka), var(--font-geist-sans), sans-serif;
+  font-size: 15px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.promptLetter {
+  border-radius: 6px;
+  background: var(--letter-color);
+  color: #0b0911;
+  font-size: 12px;
+}
+
+.iceActor {
+  overflow: hidden;
+  padding: 15px;
+  border: 4px solid #0b0911;
+  border-radius: 50px 39px 53px 42px;
+  background:
+    linear-gradient(145deg, #eaffffba 0 12%, transparent 13% 68%, #75eaff75 69%),
+    linear-gradient(150deg, #bdf8ff 0 24%, #63ddea 55%, #2563eb 100%);
+  box-shadow:
+    inset 8px 8px 12px #ffffffa8,
+    inset -12px -15px 18px #1745a36e,
+    6px 8px 0 #0b0911,
+    0 0 25px #2ee7d17d;
+}
+
+.iceActor::before,
+.iceActor::after {
+  position: absolute;
+  z-index: 4;
+  content: "";
+  pointer-events: none;
+}
+
+.iceActor::before {
+  top: 12px;
+  left: 17px;
+  width: 46%;
+  height: 18%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #fff9, #fff0);
+  transform: rotate(-18deg);
+}
+
+.iceActor::after {
+  right: 12px;
+  bottom: 19px;
+  width: 37%;
+  height: 14%;
+  border-radius: 999px;
+  background: #174ea44a;
+  filter: blur(5px);
+  transform: rotate(-24deg);
+}
+
+.iceActor > img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border: 3px solid #0b0911;
+  border-radius: 38px;
+  object-fit: cover;
+  object-position: center center;
+  filter: saturate(0.87) contrast(1.05) brightness(1.04);
+}
+
+.iceGlaze {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(122deg, #ffffff8a 0 9%, transparent 10% 62%, #b5f7ff4a 63%),
+    radial-gradient(circle at 74% 19%, #fff 0 2%, transparent 2.5%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.iceCracks {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  pointer-events: none;
+  stroke: #eaffff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+  filter: drop-shadow(1px 2px 0 #20549a);
+}
+
+.iceCracks path {
+  opacity: 0;
+  transition: opacity 80ms ease;
+}
+
+.iceActor[data-crack="1"],
+.iceActor[data-crack="2"] {
+  box-shadow:
+    inset 8px 8px 12px #ffffffa8,
+    inset -12px -15px 18px #1745a36e,
+    6px 8px 0 #0b0911,
+    0 0 32px #2ee7d1a3;
+}
+
+.iceActor[data-crack="3"],
+.iceActor[data-crack="4"],
+.iceActor[data-crack="5"] {
+  filter: brightness(1.09) contrast(1.05);
+  box-shadow:
+    inset 8px 8px 12px #ffffffc4,
+    inset -12px -15px 18px #1745a36e,
+    6px 8px 0 #0b0911,
+    0 0 42px #2ee7d1c2;
+}
+
+.iceShard {
+  display: block;
+  border: 2px solid #0b0911;
+  background:
+    linear-gradient(var(--shard-turn), #eaffff, #50dce8 48%, #2563eb);
+  box-shadow:
+    inset 3px 3px 4px #ffffffb5,
+    2px 2px 0 #0b0911;
+  clip-path: polygon(50% 0, 100% 37%, 77% 100%, 9% 79%, 0 24%);
+}
+
+.shakeCoach {
+  position: absolute;
+  z-index: 28;
+  right: 27px;
+  bottom: 38px;
+  left: 27px;
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  min-height: 64px;
+  padding: 8px 12px;
+  border: 3px solid #0b0911;
+  border-radius: 19px;
+  background: #c7ff32;
+  box-shadow: 5px 6px 0 #0b0911;
+  text-align: left;
+  cursor: ns-resize;
+  animation: coachIn 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.shakeCoach > span {
+  grid-row: 1 / 3;
+  display: grid;
+  width: 38px;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 2px solid #0b0911;
+  border-radius: 13px;
+  background: #fff;
+  font-size: 24px;
+  font-weight: 950;
+  animation: scrollCue 650ms ease-in-out infinite alternate;
+}
+
+.shakeCoach b,
+.shakeCoach small {
+  display: block;
+  margin-left: 8px;
+}
+
+.shakeCoach b {
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.shakeCoach small {
+  color: #395400;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.shakeCoach:focus-visible,
+.retryButton:focus-visible {
+  outline: 4px solid #2563eb;
+  outline-offset: 4px;
+}
+
+.retryButton {
+  position: absolute;
+  z-index: 35;
+  right: 48px;
+  bottom: 124px;
+  left: 48px;
+  min-height: 48px;
+  border: 3px solid #0b0911;
+  border-radius: 16px;
+  background: #ff5d6c;
+  box-shadow: 4px 5px 0 #0b0911;
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.reducedIce {
+  position: absolute;
+  z-index: 22;
+  top: 305px;
+  left: 50%;
+  width: 210px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  padding: 14px;
+  border: 4px solid #0b0911;
+  border-radius: 48px;
+  background: linear-gradient(145deg, #dffcff, #4fd6e5 55%, #2563eb);
+  box-shadow: 6px 8px 0 #0b0911;
+  transform: translateX(-50%);
+}
+
+.reducedIce img {
+  width: 100%;
+  height: 100%;
+  border: 3px solid #0b0911;
+  border-radius: 35px;
+  object-fit: cover;
+}
+
+.reducedIce[data-crack="1"],
+.reducedIce[data-crack="2"] {
+  filter: contrast(1.06);
+}
+
+.reducedIce[data-crack="3"],
+.reducedIce[data-crack="4"],
+.reducedIce[data-crack="5"] {
+  filter: contrast(1.12) brightness(1.08);
+}
+
+.demoLabel {
+  position: absolute;
+  z-index: 29;
+  right: 0;
+  bottom: 9px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #6a6173;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.demoLabel i {
+  width: 6px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #ff5d6c;
+  box-shadow: 0 0 0 1px #0b0911;
+}
+
+.liveRegion {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.blackBurst,
+.blackCover {
+  position: absolute;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.blackBurst {
+  bottom: 68px;
+  left: 50%;
+  width: 54px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #000;
+  opacity: 0;
+  transform: translate(-50%, 50%) scale(0);
+}
+
+.blackCover {
+  z-index: 110;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+}
+
+.lab[data-phase="burst"] .instructionCard,
+.lab[data-phase="burst"] .typedPhrase,
+.lab[data-phase="burst"] .shakeCoach,
+.lab[data-phase="burst"] .demoLabel,
+.lab[data-phase="black"] > :not(.blackBurst):not(.blackCover) {
+  opacity: 0;
+}
+
+.lab[data-phase="burst"] .blackBurst {
+  animation: blackDetonation 620ms 40ms cubic-bezier(0.16, 0.84, 0.22, 1) both;
+}
+
+.lab[data-phase="black"] {
+  background: #000;
+}
+
+.lab[data-phase="black"] .blackCover {
+  opacity: 1;
+}
+
+@keyframes flaskSway {
+  0%,
+  100% {
+    transform: rotate(-7deg) translateY(0);
+  }
+  50% {
+    transform: rotate(7deg) translateY(-2px);
+  }
+}
+
+@keyframes flaskPour {
+  0% {
+    transform: translate(0, 0) rotate(0);
+  }
+  60%,
+  100% {
+    transform: translate(28px, 24px) rotate(102deg);
+  }
+}
+
+@keyframes fullFlaskOut {
+  0%,
+  35% {
+    opacity: 1;
+  }
+  72%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes emptyFlaskIn {
+  0%,
+  42% {
+    opacity: 0;
+  }
+  78%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes liquidPour {
+  0% {
+    height: 0;
+    opacity: 0;
+    transform: rotate(-28deg) scaleY(0);
+  }
+  20% {
+    height: 74px;
+    opacity: 1;
+    transform: rotate(-28deg) scaleY(1);
+  }
+  78% {
+    height: 84px;
+    opacity: 1;
+    transform: rotate(-28deg) scaleY(1);
+  }
+  100% {
+    height: 18px;
+    opacity: 0;
+    transform: rotate(-28deg) scaleY(0.2);
+  }
+}
+
+@keyframes auraTurn {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes voiceAura {
+  from {
+    box-shadow:
+      0 0 0 9px #2563eb,
+      0 0 0 14px #0b0911,
+      0 0 28px 15px #2563eb66;
+  }
+  to {
+    box-shadow:
+      0 0 0 13px #2563eb,
+      0 0 0 18px #0b0911,
+      0 0 42px 20px #2563eb91;
+  }
+}
+
+@keyframes startRipple {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  28% {
+    opacity: 0.65;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes starterWobble {
+  0%,
+  100% {
+    transform: rotate(-4deg) translateY(0);
+  }
+  50% {
+    transform: rotate(4deg) translateY(-4px);
+  }
+}
+
+@keyframes faceScan {
+  from {
+    top: 24%;
+  }
+  to {
+    top: 76%;
+  }
+}
+
+@keyframes cursorBlink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes gunStrike {
+  0% {
+    transform: translateX(190px) rotate(-2deg);
+  }
+  23%,
+  68% {
+    transform: translateX(0) rotate(-2deg);
+  }
+  74% {
+    transform: translateX(-5px) rotate(-4deg);
+  }
+  100% {
+    transform: translateX(200px) rotate(1deg);
+  }
+}
+
+@keyframes iceBeamFire {
+  0%,
+  8% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  35%,
+  70% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(0.82);
+  }
+}
+
+@keyframes coachIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes scrollCue {
+  from {
+    transform: translateY(-3px);
+  }
+  to {
+    transform: translateY(3px);
+  }
+}
+
+@keyframes blackDetonation {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 50%) scale(0);
+  }
+  9% {
+    opacity: 1;
+    transform: translate(-50%, 50%) scale(0.5);
+  }
+  72%,
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 50%) scale(34);
+  }
+}
+
+@media (max-width: 620px) {
+  .header {
+    top: 47px;
+  }
+
+  .cameraAura {
+    top: 184px;
+  }
+
+  .instructionCard {
+    top: 462px;
+  }
+
+  .typedPhrase {
+    top: 547px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flaskBadge,
+  .cameraAura,
+  .cameraAura::before,
+  .cameraAura::after,
+  .startButton::before,
+  .startButton::after,
+  .startButton > span,
+  .scanLine,
+  .shakeCoach > span {
+    animation: none !important;
+  }
+
+  .cameraAura,
+  .instructionCard,
+  .iceCracks path {
+    transition: none;
+  }
+
+  .lab[data-phase="burst"] .blackBurst {
+    animation: none;
+    opacity: 1;
+    transform: translate(-50%, 50%) scale(34);
+  }
+}
