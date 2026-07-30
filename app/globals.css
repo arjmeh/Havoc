@@ -1382,15 +1382,6 @@
   color: #fff;
 }
 
-.calendar-binding-label {
-  font-size: 12px;
-  font-weight: 950;
-  letter-spacing: .11em;
-  text-align: center;
-  text-shadow: 0 2px 0 #8a1422;
-  text-transform: uppercase;
-}
-
 .calendar-ring {
   position: absolute;
   z-index: 3;

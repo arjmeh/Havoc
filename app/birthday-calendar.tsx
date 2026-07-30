@@ -658,7 +658,6 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
             <div className="calendar-binding">
               <span className="calendar-ring ring-left" aria-hidden="true" />
               <span className="calendar-ring ring-right" aria-hidden="true" />
-              <span className="calendar-binding-label">Havoc birthdays</span>
             </div>
 
             <div
