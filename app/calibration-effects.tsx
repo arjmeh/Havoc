@@ -1,0 +1,1509 @@
+"use client";
+
+import {
+  Bodies,
+  Body,
+  Composite,
+  Engine,
+  type Body as MatterBody,
+} from "matter-js";
+import {
+  Application,
+  Assets,
+  BlurFilter,
+  Container,
+  DisplacementFilter,
+  defaultFilterVert,
+  Filter,
+  Graphics,
+  Particle,
+  ParticleContainer,
+  Rectangle,
+  Sprite,
+  Text,
+  Texture,
+  UPDATE_PRIORITY,
+} from "pixi.js";
+import { useEffect, useRef } from "react";
+
+export type CalibrationPhase =
+  | "idle"
+  | "scan"
+  | "face-hold"
+  | "voice-prompt"
+  | "voice"
+  | "voice-hold"
+  | "voice-success"
+  | "expression-prompt"
+  | "expression"
+  | "expression-success"
+  | "charge"
+  | "freeze"
+  | "drop"
+  | "break"
+  | "shatter"
+  | "blackout";
+
+export type ShakeImpulse = {
+  direction: number;
+  progress: number;
+  sequence: number;
+};
+
+export type CalibrationEffectsProps = {
+  freezeFrame: string | null;
+  impulse: ShakeImpulse;
+  onFallback: () => void;
+  onTick: (deltaMs: number) => void;
+  onVisibilityChange: (hidden: boolean) => void;
+  phase: CalibrationPhase;
+  reducedMotion: boolean;
+};
+
+type LiquidParticle = {
+  active: boolean;
+  body: MatterBody;
+  particle: Particle;
+};
+
+type OrbitGlyph = {
+  angle: number;
+  body: MatterBody | null;
+  bottom: boolean;
+  glyph: Text;
+  radius: number;
+};
+
+type ShardActor = {
+  body: MatterBody | null;
+  graphic: Graphics;
+  height: number;
+  width: number;
+};
+
+type SceneRuntime = {
+  app: Application;
+  faceSprite: Sprite;
+  faceTexture: Texture | null;
+  impulseApplied: number;
+  phaseElapsed: number;
+  phaseSeen: CalibrationPhase;
+};
+
+const ICE_SHELL_URL = "/havoc-calibration-ice-shell-v2.png";
+const LIQUID_POOL_SIZE = 34;
+const SHARD_COUNT = 18;
+const FIXED_STEP = 1000 / 60;
+const clamp = (value: number, minimum: number, maximum: number) =>
+  Math.min(Math.max(value, minimum), maximum);
+
+const easeOutCubic = (value: number) => 1 - Math.pow(1 - value, 3);
+
+const makeLiquidTexture = () => {
+  const canvas = document.createElement("canvas");
+  canvas.width = 64;
+  canvas.height = 64;
+  const context = canvas.getContext("2d");
+  if (!context) return Texture.WHITE;
+  const gradient = context.createRadialGradient(32, 26, 3, 32, 32, 31);
+  gradient.addColorStop(0, "rgba(255,255,255,1)");
+  gradient.addColorStop(0.55, "rgba(255,255,255,.96)");
+  gradient.addColorStop(1, "rgba(255,255,255,0)");
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, 64, 64);
+  return Texture.from(canvas);
+};
+
+const makeDisplacementTexture = () => {
+  const canvas = document.createElement("canvas");
+  canvas.width = 96;
+  canvas.height = 96;
+  const context = canvas.getContext("2d");
+  if (!context) return Texture.WHITE;
+  const image = context.createImageData(96, 96);
+  for (let index = 0; index < image.data.length; index += 4) {
+    const pixel = index / 4;
+    const x = pixel % 96;
+    const y = Math.floor(pixel / 96);
+    const wave =
+      128 +
+      Math.sin(x * 0.23 + y * 0.08) * 42 +
+      Math.sin(y * 0.31) * 25;
+    image.data[index] = wave;
+    image.data[index + 1] = 255 - wave;
+    image.data[index + 2] = 160;
+    image.data[index + 3] = 255;
+  }
+  context.putImageData(image, 0, 0);
+  return Texture.from(canvas);
+};
+
+const loadImageTexture = async (source: string) => {
+  const image = new Image();
+  image.decoding = "async";
+  image.src = source;
+  await image.decode();
+  return Texture.from(image);
+};
+
+const drawCrystal = (
+  graphic: Graphics,
+  x: number,
+  y: number,
+  size: number,
+  rotation: number,
+) => {
+  const dx = Math.cos(rotation) * size;
+  const dy = Math.sin(rotation) * size;
+  graphic
+    .moveTo(x - dx, y - dy)
+    .lineTo(x + dx, y + dy)
+    .stroke({ color: 0xffffff, width: 1.5, alpha: 0.74, cap: "round" });
+  for (const sign of [-1, 1]) {
+    const branchX = x + dx * 0.36 * sign;
+    const branchY = y + dy * 0.36 * sign;
+    graphic
+      .moveTo(branchX, branchY)
+      .lineTo(
+        branchX + Math.cos(rotation + 1.05 * sign) * size * 0.38,
+        branchY + Math.sin(rotation + 1.05 * sign) * size * 0.38,
+      )
+      .stroke({
+        color: 0xdafaff,
+        width: 1,
+        alpha: 0.68,
+        cap: "round",
+      });
+  }
+};
+
+const buildCrack = (
+  centerX: number,
+  centerY: number,
+  direction: number,
+  level: number,
+) => {
+  const graphic = new Graphics();
+  const length = 58 + level * 10;
+  const startX = centerX + Math.cos(direction) * 42;
+  const startY = centerY + Math.sin(direction) * 42;
+  graphic.moveTo(startX, startY);
+  for (let step = 1; step <= 5; step += 1) {
+    const distance = (length * step) / 5;
+    const wobble = Math.sin(step * 4.7 + level) * (5 + level);
+    const x =
+      startX +
+      Math.cos(direction) * distance +
+      Math.cos(direction + Math.PI / 2) * wobble;
+    const y =
+      startY +
+      Math.sin(direction) * distance +
+      Math.sin(direction + Math.PI / 2) * wobble;
+    graphic.lineTo(x, y);
+  }
+  graphic.stroke({
+    color: 0xffffff,
+    width: 1.7 + level * 0.22,
+    alpha: 0.92,
+    cap: "round",
+    join: "round",
+  });
+  graphic.visible = false;
+  return graphic;
+};
+
+export function CalibrationEffects({
+  freezeFrame,
+  impulse,
+  onFallback,
+  onTick,
+  onVisibilityChange,
+  phase,
+  reducedMotion,
+}: CalibrationEffectsProps) {
+  const hostRef = useRef<HTMLDivElement | null>(null);
+  const runtimeRef = useRef<SceneRuntime | null>(null);
+  const phaseRef = useRef(phase);
+  const impulseRef = useRef(impulse);
+  const tickRef = useRef(onTick);
+  const fallbackRef = useRef(onFallback);
+  const visibilityRef = useRef(onVisibilityChange);
+  const reducedMotionRef = useRef(reducedMotion);
+
+  phaseRef.current = phase;
+  impulseRef.current = impulse;
+  tickRef.current = onTick;
+  fallbackRef.current = onFallback;
+  visibilityRef.current = onVisibilityChange;
+  reducedMotionRef.current = reducedMotion;
+
+  useEffect(() => {
+    const runtime = runtimeRef.current;
+    if (!runtime || !freezeFrame) return;
+    let cancelled = false;
+    void loadImageTexture(freezeFrame)
+      .then((texture) => {
+        if (cancelled || !runtimeRef.current) {
+          texture.destroy(true);
+          return;
+        }
+        runtime.faceTexture?.destroy(true);
+        runtime.faceTexture = texture;
+        runtime.faceSprite.texture = texture;
+      })
+      .catch(() => fallbackRef.current());
+    return () => {
+      cancelled = true;
+    };
+  }, [freezeFrame]);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+    let cancelled = false;
+    let resizeObserver: ResizeObserver | null = null;
+    let visibilityHandler: (() => void) | null = null;
+
+    const start = async () => {
+      const width = Math.max(host.clientWidth, 1);
+      const height = Math.max(host.clientHeight, 1);
+      const app = new Application();
+
+      try {
+        await app.init({
+          width,
+          height,
+          backgroundAlpha: 0,
+          antialias: true,
+          autoDensity: true,
+          autoStart: false,
+          sharedTicker: false,
+          preference: "webgl",
+          powerPreference: "high-performance",
+          resolution: Math.min(window.devicePixelRatio || 1, 2),
+          gcActive: true,
+          gcFrequency: 30_000,
+          gcMaxUnusedTime: 60_000,
+        });
+      } catch {
+        if (!cancelled) fallbackRef.current();
+        return;
+      }
+
+      if (cancelled) {
+        app.destroy(
+          { removeView: true, releaseGlobalResources: true },
+          { children: true, texture: false, textureSource: false },
+        );
+        return;
+      }
+
+      app.canvas.className = "calibration-pixi-canvas";
+      app.canvas.setAttribute("aria-hidden", "true");
+      host.appendChild(app.canvas);
+
+      let shellTexture: Texture;
+      try {
+        shellTexture = await Assets.load<Texture>(ICE_SHELL_URL);
+      } catch {
+        app.destroy(
+          { removeView: true, releaseGlobalResources: true },
+          { children: true, texture: false, textureSource: false },
+        );
+        if (!cancelled) fallbackRef.current();
+        return;
+      }
+
+      if (cancelled) {
+        app.destroy(
+          { removeView: true, releaseGlobalResources: true },
+          { children: true, texture: false, textureSource: false },
+        );
+        return;
+      }
+
+      const engine = Engine.create({
+        gravity: { x: 0, y: 1, scale: 0.00125 },
+      });
+      const ambientLayer = new Container({ label: "ambient-layer" });
+      const liquidLayer = new Container({ label: "liquid-layer" });
+      const actorLayer = new Container({
+        label: "actor-layer",
+        sortableChildren: true,
+      });
+      const fxLayer = new Container({ label: "fx-layer" });
+      app.stage.addChild(ambientLayer, liquidLayer, actorLayer, fxLayer);
+
+      const chamberMask = new Graphics();
+      const causticGroup = new Container();
+      causticGroup.mask = chamberMask;
+      const caustics = Array.from({ length: 7 }, (_, index) => {
+        const graphic = new Graphics()
+          .ellipse(0, 0, 82 + index * 13, 24 + (index % 3) * 8)
+          .fill({
+            color: index % 2 ? 0x62e9ff : 0x8d63ff,
+            alpha: 0.18 + (index % 3) * 0.05,
+          });
+        graphic.blendMode = "screen";
+        causticGroup.addChild(graphic);
+        return graphic;
+      });
+      const auraRed = new Graphics();
+      const auraGreen = new Graphics();
+      const auraBlue = new Graphics();
+      const chamberGlass = new Graphics();
+      ambientLayer.addChild(
+        chamberGlass,
+        chamberMask,
+        causticGroup,
+        auraRed,
+        auraGreen,
+        auraBlue,
+      );
+
+      const liquidTexture = makeLiquidTexture();
+      const particles = Array.from(
+        { length: LIQUID_POOL_SIZE },
+        () =>
+          new Particle({
+            texture: liquidTexture,
+            anchorX: 0.5,
+            anchorY: 0.5,
+            alpha: 0,
+            scaleX: 0.44,
+            scaleY: 0.62,
+            tint: 0x6d4cff,
+          }),
+      );
+      const particleContainer = new ParticleContainer({
+        texture: liquidTexture,
+        particles,
+        dynamicProperties: {
+          color: true,
+          position: true,
+          rotation: false,
+          vertex: true,
+        },
+        boundsArea: new Rectangle(0, 0, width, height),
+      });
+      const metaballContainer = new Container();
+      metaballContainer.addChild(particleContainer);
+      const liquidBlur = new BlurFilter({
+        strength: 8,
+        quality: 3,
+        resolution: 0.5,
+        padding: 22,
+      });
+      const liquidThreshold = Filter.from({
+        gl: {
+          vertex: defaultFilterVert,
+          fragment: `
+            in vec2 vTextureCoord;
+            out vec4 finalColor;
+            uniform sampler2D uTexture;
+            void main(void) {
+              vec4 sampleColor = texture(uTexture, vTextureCoord);
+              float alpha = smoothstep(0.035, 0.16, sampleColor.a);
+              vec3 topColor = vec3(0.39, 0.21, 1.0);
+              vec3 bottomColor = vec3(0.06, 0.83, 0.95);
+              vec3 color = mix(topColor, bottomColor, clamp(vTextureCoord.y, 0.0, 1.0));
+              finalColor = vec4(color * alpha, alpha);
+            }
+          `,
+        },
+      });
+      metaballContainer.filters = [liquidBlur, liquidThreshold];
+      const liquidRibbon = new Graphics({ label: "liquid-ribbon" });
+      liquidRibbon.blendMode = "screen";
+      liquidLayer.addChild(metaballContainer, liquidRibbon);
+
+      const liquidParticles: LiquidParticle[] = particles.map((particle) => ({
+        active: false,
+        body: Bodies.circle(-100, -100, 10, {
+          collisionFilter: { group: -7 },
+          friction: 0.01,
+          frictionAir: 0.005,
+          label: "calibration-liquid",
+          restitution: 0.05,
+        }),
+        particle,
+      }));
+      let nextLiquidIndex = 0;
+      let liquidEmissionElapsed = 0;
+
+      const orbitLayer = new Container({
+        label: "orbit-copy",
+        sortableChildren: true,
+      });
+      actorLayer.addChild(orbitLayer);
+      const orbitGlyphs: OrbitGlyph[] = [];
+      const addOrbitCopy = (
+        copy: string,
+        bottom: boolean,
+        start: number,
+        end: number,
+      ) => {
+        const visibleCharacters = [...copy];
+        visibleCharacters.forEach((character, index) => {
+          const progress =
+            visibleCharacters.length <= 1
+              ? 0
+              : index / (visibleCharacters.length - 1);
+          const angle = start + (end - start) * progress;
+          const glyph = new Text({
+            text: character === " " ? "·" : character,
+            style: {
+              fill: character === " " ? 0x8f8798 : 0x0b0911,
+              fontFamily: "Geist, Helvetica Neue, Arial, sans-serif",
+              fontSize: character === " " ? 8 : 13,
+              fontWeight: "800",
+              letterSpacing: 1.2,
+            },
+          });
+          glyph.anchor.set(0.5);
+          orbitLayer.addChild(glyph);
+          orbitGlyphs.push({
+            angle,
+            body: null,
+            bottom,
+            glyph,
+            radius: bottom ? 171 : 168,
+          });
+        });
+      };
+      addOrbitCopy("CALIBRATION LAB", false, -2.66, -0.48);
+      addOrbitCopy("TAP TO START", true, 2.52, 0.61);
+
+      const beamGroup = new Container({ label: "ice-beam" });
+      const beamHalo = new Graphics();
+      const beamCore = new Graphics();
+      const beamHot = new Graphics();
+      const impactFlash = new Graphics();
+      beamHalo.filters = [
+        new BlurFilter({
+          strength: 14,
+          quality: 3,
+          resolution: 0.5,
+          padding: 30,
+        }),
+      ];
+      beamGroup.addChild(beamHalo, beamCore, beamHot, impactFlash);
+      beamGroup.visible = false;
+      fxLayer.addChild(beamGroup);
+
+      const frostTexture = makeLiquidTexture();
+      const frostParticles = Array.from({ length: 20 }, (_, index) => {
+        const sprite = new Sprite({
+          texture: frostTexture,
+          anchor: 0.5,
+          tint: index % 3 === 0 ? 0x8beeff : 0xffffff,
+        });
+        sprite.alpha = 0;
+        sprite.scale.set(0.07 + (index % 4) * 0.025);
+        fxLayer.addChild(sprite);
+        return sprite;
+      });
+
+      const iceGroup = new Container({
+        label: "frozen-portrait",
+        sortableChildren: true,
+      });
+      iceGroup.visible = false;
+      actorLayer.addChild(iceGroup);
+      const iceGlow = new Graphics();
+      const faceMask = new Graphics();
+      const faceSprite = new Sprite({
+        texture: Texture.WHITE,
+        anchor: 0.5,
+      });
+      faceSprite.mask = faceMask;
+      const displacementTexture = makeDisplacementTexture();
+      const displacementSprite = new Sprite({
+        texture: displacementTexture,
+        anchor: 0.5,
+      });
+      displacementSprite.alpha = 0.001;
+      displacementSprite.scale.set(2.9);
+      const displacement = new DisplacementFilter({
+        sprite: displacementSprite,
+        scale: { x: 0, y: 0 },
+      });
+      faceSprite.filters = [displacement];
+      const shellSprite = new Sprite({
+        texture: shellTexture,
+        anchor: 0.5,
+      });
+      const frostGraphic = new Graphics();
+      const bubbleGraphic = new Graphics();
+      const specularGraphic = new Graphics();
+      iceGroup.addChild(
+        iceGlow,
+        faceSprite,
+        faceMask,
+        displacementSprite,
+        shellSprite,
+        bubbleGraphic,
+        frostGraphic,
+        specularGraphic,
+      );
+
+      const cracks = Array.from({ length: 5 }, (_, index) => {
+        const crack = buildCrack(
+          0,
+          0,
+          -2.25 + index * 1.08,
+          index,
+        );
+        iceGroup.addChild(crack);
+        return crack;
+      });
+
+      const shards: ShardActor[] = Array.from(
+        { length: SHARD_COUNT },
+        (_, index) => {
+          const widthValue = 24 + (index % 5) * 8;
+          const heightValue = 28 + ((index * 3) % 5) * 9;
+          const graphic = new Graphics()
+            .poly([
+              -widthValue / 2,
+              -heightValue / 2,
+              widthValue / 2,
+              -heightValue * 0.24,
+              widthValue * 0.28,
+              heightValue / 2,
+              -widthValue * 0.42,
+              heightValue * 0.32,
+            ])
+            .fill({
+              color: index % 3 === 0 ? 0xc8fbff : 0x82dfff,
+              alpha: 0.58 + (index % 4) * 0.08,
+            })
+            .stroke({
+              color: 0xffffff,
+              width: 1.2,
+              alpha: 0.82,
+            });
+          graphic.visible = false;
+          fxLayer.addChild(graphic);
+          return {
+            body: null,
+            graphic,
+            height: heightValue,
+            width: widthValue,
+          };
+        },
+      );
+      const blackCore = new Graphics().circle(0, 0, 52).fill(0x000000);
+      blackCore.visible = false;
+      fxLayer.addChild(blackCore);
+
+      let sceneWidth = width;
+      let sceneHeight = height;
+      let centerX = width / 2;
+      let centerY = Math.min(height * 0.42, 340);
+      let chamberRadius = clamp(width * 0.355, 126, 141);
+      let orbBody: MatterBody | null = null;
+      let iceBody: MatterBody | null = null;
+      let boundaries: MatterBody[] = [];
+      let orbitDropped = false;
+      let shattered = false;
+      let pendingSize = { height, width };
+      let resizePending = true;
+      let accumulator = 0;
+
+      const clearBoundaries = () => {
+        boundaries.forEach((body) => Composite.remove(engine.world, body));
+        boundaries = [];
+      };
+
+      const rebuildStaticScene = () => {
+        sceneWidth = Math.max(pendingSize.width, 1);
+        sceneHeight = Math.max(pendingSize.height, 1);
+        centerX = sceneWidth / 2;
+        centerY = Math.min(sceneHeight * 0.42, 340);
+        chamberRadius = clamp(sceneWidth * 0.355, 126, 141);
+        app.renderer.resize(sceneWidth, sceneHeight);
+
+        chamberMask
+          .clear()
+          .circle(centerX, centerY, chamberRadius - 7)
+          .fill(0xffffff);
+        chamberGlass
+          .clear()
+          .circle(centerX, centerY, chamberRadius)
+          .fill({ color: 0xffffff, alpha: 0.045 })
+          .stroke({ color: 0xd8d3df, width: 1.2, alpha: 0.7 });
+        auraRed
+          .clear()
+          .circle(centerX, centerY, chamberRadius + 9)
+          .stroke({ color: 0xff385d, width: 4, alpha: 0.92 });
+        auraGreen
+          .clear()
+          .circle(centerX, centerY, chamberRadius + 9)
+          .stroke({ color: 0x34df91, width: 4, alpha: 0.96 });
+        auraBlue
+          .clear()
+          .circle(centerX, centerY, chamberRadius + 17)
+          .stroke({ color: 0x32c9ff, width: 3, alpha: 0.74 });
+        metaballContainer.filterArea = new Rectangle(
+          centerX - chamberRadius - 70,
+          centerY - chamberRadius - 190,
+          chamberRadius * 2 + 140,
+          chamberRadius * 2 + 300,
+        );
+        particleContainer.boundsArea = new Rectangle(
+          0,
+          0,
+          sceneWidth,
+          sceneHeight,
+        );
+
+        if (orbBody) Composite.remove(engine.world, orbBody);
+        orbBody = Bodies.circle(centerX, centerY, chamberRadius + 2, {
+          isStatic: true,
+          label: "calibration-chamber",
+          friction: 0.02,
+          restitution: 0.04,
+        });
+        Composite.add(engine.world, orbBody);
+
+        clearBoundaries();
+        boundaries = [
+          Bodies.rectangle(-18, sceneHeight / 2, 36, sceneHeight * 2, {
+            isStatic: true,
+            label: "calibration-boundary-left",
+          }),
+          Bodies.rectangle(
+            sceneWidth + 18,
+            sceneHeight / 2,
+            36,
+            sceneHeight * 2,
+            {
+              isStatic: true,
+              label: "calibration-boundary-right",
+            },
+          ),
+          Bodies.rectangle(sceneWidth / 2, -18, sceneWidth * 2, 36, {
+            isStatic: true,
+            label: "calibration-boundary-top",
+          }),
+          Bodies.rectangle(
+            sceneWidth / 2,
+            sceneHeight - 48,
+            sceneWidth * 2,
+            48,
+            {
+              isStatic: true,
+              label: "calibration-boundary-floor",
+              restitution: 0.38,
+              friction: 0.08,
+            },
+          ),
+        ];
+        Composite.add(engine.world, boundaries);
+
+        const beamStartY = sceneHeight - 148;
+        const beamEndY = centerY + chamberRadius * 0.74;
+        const beamLength = Math.max(60, beamStartY - beamEndY);
+        beamHalo
+          .clear()
+          .poly([
+            centerX - 28,
+            beamStartY,
+            centerX - 8,
+            beamEndY,
+            centerX + 8,
+            beamEndY,
+            centerX + 28,
+            beamStartY,
+          ])
+          .fill({ color: 0x4ddfff, alpha: 0.72 });
+        beamCore
+          .clear()
+          .poly([
+            centerX - 12,
+            beamStartY,
+            centerX - 4,
+            beamEndY,
+            centerX + 4,
+            beamEndY,
+            centerX + 12,
+            beamStartY,
+          ])
+          .fill({ color: 0x7eeeff, alpha: 0.9 });
+        beamHot
+          .clear()
+          .roundRect(
+            centerX - 2.5,
+            beamEndY,
+            5,
+            beamLength,
+            3,
+          )
+          .fill({ color: 0xffffff, alpha: 0.96 });
+        impactFlash
+          .clear()
+          .circle(centerX, beamEndY, 26)
+          .fill({ color: 0xffffff, alpha: 0.9 })
+          .circle(centerX, beamEndY, 47)
+          .stroke({ color: 0x62ebff, width: 4, alpha: 0.74 });
+
+        const portraitSize = clamp(sceneWidth * 0.61, 228, 254);
+        faceMask
+          .clear()
+          .circle(0, 0, portraitSize * 0.47)
+          .fill(0xffffff);
+        faceSprite.width = portraitSize;
+        faceSprite.height = portraitSize;
+        shellSprite.width = portraitSize * 1.18;
+        shellSprite.height = portraitSize * 1.18;
+        iceGlow
+          .clear()
+          .roundRect(
+            -portraitSize * 0.57,
+            -portraitSize * 0.57,
+            portraitSize * 1.14,
+            portraitSize * 1.14,
+            42,
+          )
+          .fill({ color: 0x56dcff, alpha: 0.16 })
+          .stroke({ color: 0xffffff, width: 2.2, alpha: 0.82 });
+        frostGraphic.clear();
+        for (let index = 0; index < 18; index += 1) {
+          const angle = (Math.PI * 2 * index) / 18;
+          const radius = portraitSize * (0.43 + (index % 3) * 0.025);
+          drawCrystal(
+            frostGraphic,
+            Math.cos(angle) * radius,
+            Math.sin(angle) * radius,
+            9 + (index % 4) * 3,
+            angle + Math.PI / 2,
+          );
+        }
+        bubbleGraphic.clear();
+        for (let index = 0; index < 12; index += 1) {
+          const angle = index * 1.87;
+          const radius = 58 + (index % 4) * 20;
+          bubbleGraphic
+            .circle(
+              Math.cos(angle) * radius,
+              Math.sin(angle) * radius,
+              2.4 + (index % 3),
+            )
+            .stroke({ color: 0xffffff, width: 1, alpha: 0.5 });
+        }
+        specularGraphic
+          .clear()
+          .moveTo(-portraitSize * 0.35, -portraitSize * 0.43)
+          .bezierCurveTo(
+            -portraitSize * 0.08,
+            -portraitSize * 0.56,
+            portraitSize * 0.18,
+            -portraitSize * 0.53,
+            portraitSize * 0.35,
+            -portraitSize * 0.39,
+          )
+          .stroke({
+            color: 0xffffff,
+            width: 7,
+            alpha: 0.58,
+            cap: "round",
+          });
+        iceGroup.position.set(centerX, centerY);
+        displacementSprite.position.set(0, 0);
+        resizePending = false;
+      };
+
+      const positionOrbit = (time: number) => {
+        if (orbitDropped) return;
+        const offset =
+          reducedMotionRef.current || phaseRef.current !== "idle"
+            ? 0
+            : Math.sin(time * 0.00042) * 0.055;
+        orbitGlyphs.forEach((entry) => {
+          const angle = entry.angle + offset;
+          entry.glyph.position.set(
+            centerX + Math.cos(angle) * entry.radius,
+            centerY + Math.sin(angle) * entry.radius,
+          );
+          entry.glyph.rotation =
+            angle + (entry.bottom ? -Math.PI / 2 : Math.PI / 2);
+        });
+      };
+
+      const emitLiquid = () => {
+        const item = liquidParticles[nextLiquidIndex % LIQUID_POOL_SIZE];
+        nextLiquidIndex += 1;
+        if (item.active) Composite.remove(engine.world, item.body);
+        const cycle = nextLiquidIndex % 5;
+        Body.setPosition(item.body, {
+          x: centerX + chamberRadius * 0.53 + cycle * 1.8,
+          y: centerY - chamberRadius - 78 - (cycle % 2) * 6,
+        });
+        Body.setVelocity(item.body, {
+          x: -1.28 - cycle * 0.1,
+          y: 2.7 + (cycle % 3) * 0.2,
+        });
+        Body.setAngularVelocity(item.body, 0);
+        item.particle.scaleX = 0.8 + (cycle % 3) * 0.06;
+        item.particle.scaleY = 0.98 + (cycle % 2) * 0.08;
+        item.particle.alpha = 0;
+        item.particle.tint = cycle % 2 ? 0x704cff : 0x4d8fff;
+        item.active = true;
+        Composite.add(engine.world, item.body);
+      };
+
+      const clearLiquid = () => {
+        liquidParticles.forEach((item) => {
+          if (item.active) Composite.remove(engine.world, item.body);
+          item.active = false;
+          item.particle.alpha = 0;
+        });
+      };
+
+      const updateLiquid = (deltaMs: number, time: number) => {
+        if (
+          phaseRef.current === "face-hold" &&
+          !reducedMotionRef.current
+        ) {
+          liquidEmissionElapsed += deltaMs;
+          while (liquidEmissionElapsed >= 18) {
+            liquidEmissionElapsed -= 18;
+            emitLiquid();
+          }
+        }
+        liquidParticles.forEach((item) => {
+          if (!item.active) return;
+          item.particle.x = item.body.position.x;
+          item.particle.y = item.body.position.y;
+          if (item.body.position.y > sceneHeight + 80) {
+            Composite.remove(engine.world, item.body);
+            item.active = false;
+            item.particle.alpha = 0;
+          }
+        });
+
+        liquidRibbon.clear();
+        if (
+          phaseRef.current !== "face-hold" ||
+          reducedMotionRef.current
+        ) {
+          return;
+        }
+
+        const pourProgress = easeOutCubic(
+          clamp(runtime.phaseElapsed / 560, 0, 1),
+        );
+        const fadeProgress = clamp(
+          (runtime.phaseElapsed - 1540) / 650,
+          0,
+          1,
+        );
+        const liquidAlpha = 1 - fadeProgress;
+        const sway = Math.sin(time * 0.012) * 3.5;
+        const pourX = centerX + chamberRadius * 0.86;
+        const pourY = centerY - chamberRadius * 0.43;
+        const contactX = centerX + chamberRadius * 0.96;
+        const contactY = centerY - chamberRadius * 0.14;
+
+        liquidRibbon
+          .moveTo(pourX + sway, pourY)
+          .bezierCurveTo(
+            pourX + 14 - sway,
+            pourY + 12,
+            contactX + 3 + sway,
+            contactY - 18,
+            contactX,
+            contactY,
+          )
+          .stroke({
+            alpha: 0.9 * liquidAlpha * pourProgress,
+            cap: "round",
+            color: 0x5edcff,
+            width: 24,
+          })
+          .moveTo(pourX + sway, pourY)
+          .bezierCurveTo(
+            pourX + 9 - sway,
+            pourY + 15,
+            contactX + 2,
+            contactY - 12,
+            contactX,
+            contactY,
+          )
+          .stroke({
+            alpha: 0.78 * liquidAlpha * pourProgress,
+            cap: "round",
+            color: 0x704cff,
+            width: 14,
+          })
+          .moveTo(pourX + sway - 1, pourY + 1)
+          .bezierCurveTo(
+            pourX + 8 - sway,
+            pourY + 14,
+            contactX,
+            contactY - 11,
+            contactX - 1,
+            contactY - 1,
+          )
+          .stroke({
+            alpha: 0.46 * liquidAlpha * pourProgress,
+            cap: "round",
+            color: 0xffffff,
+            width: 4,
+          });
+
+        const sideProgress = clamp(
+          (runtime.phaseElapsed - 260) / 980,
+          0,
+          1,
+        );
+        const sideDrop = chamberRadius * 1.56 * sideProgress;
+        const rightEdge = centerX + chamberRadius - 8;
+        const leftEdge = centerX - chamberRadius + 8;
+        liquidRibbon
+          .moveTo(contactX, contactY)
+          .bezierCurveTo(
+            rightEdge + 8,
+            centerY + sideDrop * 0.16,
+            rightEdge + 2,
+            centerY + sideDrop * 0.6,
+            rightEdge - 4,
+            centerY + sideDrop,
+          )
+          .stroke({
+            alpha: 0.86 * liquidAlpha,
+            cap: "round",
+            color: 0x35d8ee,
+            width: 19,
+          })
+          .moveTo(contactX - 1, contactY + 2)
+          .bezierCurveTo(
+            rightEdge + 4,
+            centerY + sideDrop * 0.18,
+            rightEdge - 2,
+            centerY + sideDrop * 0.6,
+            rightEdge - 7,
+            centerY + sideDrop,
+          )
+          .stroke({
+            alpha: 0.38 * liquidAlpha,
+            cap: "round",
+            color: 0xffffff,
+            width: 4,
+          })
+          .moveTo(contactX - 4, contactY - 2)
+          .bezierCurveTo(
+            centerX + chamberRadius * 0.35,
+            centerY - chamberRadius + 1,
+            leftEdge - 8,
+            centerY - chamberRadius * 0.5,
+            leftEdge + 4,
+            centerY + sideDrop * 0.76,
+          )
+          .stroke({
+            alpha: 0.82 * liquidAlpha * sideProgress,
+            cap: "round",
+            color: 0x704cff,
+            width: 18,
+          })
+          .moveTo(contactX - 8, contactY - 4)
+          .bezierCurveTo(
+            centerX + chamberRadius * 0.3,
+            centerY - chamberRadius + 6,
+            leftEdge - 2,
+            centerY - chamberRadius * 0.46,
+            leftEdge + 7,
+            centerY + sideDrop * 0.76,
+          )
+          .stroke({
+            alpha: 0.3 * liquidAlpha * sideProgress,
+            cap: "round",
+            color: 0xf7fdff,
+            width: 3,
+          });
+      };
+
+      const resetIce = () => {
+        if (iceBody) {
+          Composite.remove(engine.world, iceBody);
+          iceBody = null;
+        }
+        iceGroup.visible = false;
+        iceGroup.alpha = 0;
+        shellSprite.alpha = 0;
+        frostGraphic.alpha = 0;
+        bubbleGraphic.alpha = 0;
+        specularGraphic.alpha = 0;
+        cracks.forEach((crack) => {
+          crack.visible = false;
+        });
+      };
+
+      const createIceBody = () => {
+        if (iceBody) Composite.remove(engine.world, iceBody);
+        if (orbBody) {
+          Composite.remove(engine.world, orbBody);
+          orbBody = null;
+        }
+        const size = clamp(sceneWidth * 0.67, 250, 282);
+        iceBody = Bodies.rectangle(centerX, centerY, size, size, {
+          chamfer: { radius: 38 },
+          friction: 0.06,
+          frictionAir: 0.018,
+          label: "calibration-ice",
+          restitution: 0.4,
+        });
+        Composite.add(engine.world, iceBody);
+      };
+
+      const dropOrbitCopy = () => {
+        if (orbitDropped || reducedMotionRef.current) return;
+        orbitDropped = true;
+        orbitGlyphs.forEach((entry, index) => {
+          const body = Bodies.rectangle(
+            entry.glyph.x,
+            entry.glyph.y,
+            Math.max(entry.glyph.width, 7),
+            Math.max(entry.glyph.height, 13),
+            {
+              friction: 0.08,
+              frictionAir: 0.006,
+              label: "calibration-orbit-letter",
+              restitution: 0.42,
+            },
+          );
+          Body.setAngle(body, entry.glyph.rotation);
+          Body.setVelocity(body, {
+            x: ((index % 5) - 2) * 0.38,
+            y: 1.4 + (index % 4) * 0.3,
+          });
+          Body.setAngularVelocity(
+            body,
+            ((index % 2) * 2 - 1) * (0.025 + (index % 4) * 0.006),
+          );
+          entry.body = body;
+          Composite.add(engine.world, body);
+        });
+      };
+
+      const createShards = () => {
+        if (shattered) return;
+        shattered = true;
+        const origin = iceBody?.position ?? {
+          x: centerX,
+          y: sceneHeight - 190,
+        };
+        if (iceBody) {
+          Composite.remove(engine.world, iceBody);
+          iceBody = null;
+        }
+        iceGroup.visible = false;
+        shards.forEach((shard, index) => {
+          const angle =
+            (Math.PI * 2 * index) / shards.length + (index % 3) * 0.09;
+          const body = Bodies.rectangle(
+            origin.x,
+            origin.y,
+            shard.width,
+            shard.height,
+            {
+              frictionAir: 0.003,
+              label: "calibration-shard",
+              restitution: 0.18,
+            },
+          );
+          Body.setVelocity(body, {
+            x: Math.cos(angle) * (6.8 + (index % 5) * 1.05),
+            y:
+              Math.sin(angle) * (7 + (index % 4) * 0.9) -
+              2.2,
+          });
+          Body.setAngularVelocity(
+            body,
+            ((index % 2) * 2 - 1) * (0.12 + (index % 4) * 0.035),
+          );
+          shard.body = body;
+          shard.graphic.position.copyFrom(origin);
+          shard.graphic.visible = true;
+          Composite.add(engine.world, body);
+        });
+        blackCore.position.copyFrom(origin);
+        blackCore.scale.set(0.05);
+        blackCore.visible = true;
+      };
+
+      const syncPhase = (deltaMs: number) => {
+        const currentPhase = phaseRef.current;
+        if (currentPhase !== runtime.phaseSeen) {
+          runtime.phaseSeen = currentPhase;
+          runtime.phaseElapsed = 0;
+
+          if (currentPhase === "idle") {
+            clearLiquid();
+            resetIce();
+            orbitDropped = false;
+            shattered = false;
+            orbitGlyphs.forEach((entry) => {
+              if (entry.body) {
+                Composite.remove(engine.world, entry.body);
+                entry.body = null;
+              }
+              entry.glyph.visible = true;
+              entry.glyph.alpha = 1;
+            });
+            shards.forEach((shard) => {
+              if (shard.body) {
+                Composite.remove(engine.world, shard.body);
+                shard.body = null;
+              }
+              shard.graphic.visible = false;
+            });
+            blackCore.visible = false;
+          }
+          if (currentPhase === "freeze") {
+            clearLiquid();
+            if (iceBody) {
+              Composite.remove(engine.world, iceBody);
+              iceBody = null;
+            }
+            iceGroup.visible = true;
+            iceGroup.alpha = 1;
+          }
+          if (currentPhase === "drop") {
+            dropOrbitCopy();
+            createIceBody();
+            if (iceBody) {
+              Body.setPosition(iceBody, { x: centerX, y: centerY });
+              Body.setVelocity(iceBody, { x: 0.25, y: 5.2 });
+              Body.setAngularVelocity(iceBody, -0.025);
+            }
+          }
+          if (
+            currentPhase === "break" &&
+            (!iceBody ||
+              !Number.isFinite(iceBody.position.x) ||
+              !Number.isFinite(iceBody.position.y))
+          ) {
+            createIceBody();
+          }
+          if (currentPhase === "break" && iceBody) {
+            Body.setPosition(iceBody, {
+              x: centerX,
+              y: sceneHeight - 192,
+            });
+            Body.setVelocity(iceBody, { x: 0, y: 0 });
+            Body.setAngularVelocity(iceBody, 0);
+          }
+          if (currentPhase === "shatter") createShards();
+        } else {
+          runtime.phaseElapsed += deltaMs;
+        }
+      };
+
+      const updateAmbient = (time: number) => {
+        const currentPhase = phaseRef.current;
+        const idle = currentPhase === "idle";
+        chamberGlass.alpha = [
+          "drop",
+          "break",
+          "shatter",
+          "blackout",
+        ].includes(currentPhase)
+          ? 0
+          : 1;
+        causticGroup.visible = idle;
+        caustics.forEach((graphic, index) => {
+          graphic.position.set(
+            centerX +
+              Math.sin(time * (0.00032 + index * 0.000015) + index) *
+                chamberRadius *
+                0.58,
+            centerY +
+              Math.cos(time * (0.00027 + index * 0.000012) + index * 1.7) *
+                chamberRadius *
+                0.48,
+          );
+          graphic.rotation =
+            time * (index % 2 ? -0.00008 : 0.0001) + index * 0.4;
+        });
+
+        auraRed.alpha = currentPhase === "scan" ? 1 : 0;
+        auraGreen.alpha =
+          currentPhase !== "idle" &&
+          currentPhase !== "scan" &&
+          !["drop", "break", "shatter", "blackout"].includes(
+            currentPhase,
+          )
+            ? 1
+            : 0;
+        auraBlue.alpha =
+          ["voice-prompt", "voice"].includes(currentPhase) ? 1 : 0;
+        const pulse = 1 + Math.sin(time * 0.006) * 0.012;
+        auraRed.scale.set(pulse);
+        auraGreen.scale.set(pulse);
+        auraBlue.rotation = time * 0.00042;
+        orbitLayer.alpha =
+          currentPhase === "idle"
+            ? 1
+            : ["drop", "break", "shatter"].includes(currentPhase)
+              ? 0.86
+              : 0.24;
+      };
+
+      const updateBeamAndIce = (time: number) => {
+        const currentPhase = phaseRef.current;
+        const freezing = currentPhase === "freeze";
+        beamGroup.visible = freezing;
+        if (freezing) {
+          const progress = clamp(runtime.phaseElapsed / 3000, 0, 1);
+          const flicker =
+            0.82 +
+            Math.sin(time * 0.075) * 0.1 +
+            Math.sin(time * 0.031) * 0.08;
+          beamGroup.alpha = clamp(flicker, 0.5, 1);
+          beamHalo.alpha = 0.72 + Math.sin(time * 0.045) * 0.13;
+          beamCore.alpha = 0.88 + Math.sin(time * 0.072) * 0.08;
+          impactFlash.alpha = 0.74 + Math.sin(time * 0.052) * 0.2;
+
+          iceGroup.visible = true;
+          iceGroup.alpha = 1;
+          const shakeStrength = reducedMotionRef.current
+            ? 0
+            : 1.5 + progress * 6.5;
+          iceGroup.position.set(
+            centerX +
+              Math.sin(time * (0.028 + progress * 0.04)) * shakeStrength,
+            centerY +
+              Math.cos(time * (0.034 + progress * 0.045)) *
+                shakeStrength *
+                0.7,
+          );
+          iceGroup.rotation =
+            Math.sin(time * (0.019 + progress * 0.028)) *
+            (0.004 + progress * 0.018);
+          shellSprite.alpha = easeOutCubic(progress);
+          frostGraphic.alpha = clamp(progress * 1.34, 0, 0.94);
+          bubbleGraphic.alpha = clamp((progress - 0.16) * 1.6, 0, 0.72);
+          specularGraphic.alpha = clamp((progress - 0.32) * 1.8, 0, 0.78);
+          iceGlow.alpha = 0.22 + progress * 0.48;
+          displacement.scale.x = progress * 5.5;
+          displacement.scale.y = progress * 4.2;
+        } else if (
+          ["drop", "break"].includes(currentPhase) &&
+          iceBody
+        ) {
+          iceGroup.visible = true;
+          iceGroup.alpha = 1;
+          iceGroup.position.copyFrom(iceBody.position);
+          iceGroup.rotation = iceBody.angle;
+          shellSprite.alpha = 1;
+          frostGraphic.alpha = 0.92;
+          bubbleGraphic.alpha = 0.7;
+          specularGraphic.alpha = 0.78;
+          iceGlow.alpha = 0.58;
+          displacement.scale.x = 4.8;
+          displacement.scale.y = 3.8;
+        } else if (!["shatter", "blackout"].includes(currentPhase)) {
+          beamGroup.visible = false;
+        }
+
+        frostParticles.forEach((sprite, index) => {
+          if (!freezing) {
+            sprite.alpha = 0;
+            return;
+          }
+          const progress = clamp(runtime.phaseElapsed / 3000, 0, 1);
+          const angle = index * 2.14 + time * 0.0015;
+          const distance =
+            chamberRadius * (1.18 - progress * 0.72) +
+            (index % 4) * 7;
+          sprite.position.set(
+            centerX + Math.cos(angle) * distance,
+            centerY + Math.sin(angle) * distance,
+          );
+          sprite.alpha = clamp(progress * 1.3, 0, 0.74);
+        });
+      };
+
+      const updateImpulse = () => {
+        const nextImpulse = impulseRef.current;
+        if (
+          nextImpulse.sequence === runtime.impulseApplied ||
+          !iceBody
+        ) {
+          return;
+        }
+        runtime.impulseApplied = nextImpulse.sequence;
+        if (reducedMotionRef.current) return;
+        const strength = 0.048 + nextImpulse.progress * 0.095;
+        Body.applyForce(iceBody, iceBody.position, {
+          x: nextImpulse.direction * strength,
+          y: -0.06 - nextImpulse.progress * 0.045,
+        });
+        Body.setAngularVelocity(
+          iceBody,
+          nextImpulse.direction * (0.11 + nextImpulse.progress * 0.15),
+        );
+      };
+
+      const updateCracks = () => {
+        const count = Math.round(
+          impulseRef.current.progress * 14,
+        );
+        const thresholds = [3, 6, 9, 12, 14];
+        cracks.forEach((crack, index) => {
+          crack.visible =
+            ["break", "drop"].includes(phaseRef.current) &&
+            count >= thresholds[index];
+        });
+      };
+
+      const updateOrbitBodies = () => {
+        if (!orbitDropped) return;
+        orbitGlyphs.forEach((entry) => {
+          if (!entry.body) return;
+          entry.glyph.position.copyFrom(entry.body.position);
+          entry.glyph.rotation = entry.body.angle;
+          if (entry.body.position.y > sceneHeight + 80) {
+            entry.glyph.visible = false;
+          }
+        });
+      };
+
+      const updateShards = () => {
+        if (phaseRef.current !== "shatter") return;
+        shards.forEach((shard) => {
+          if (!shard.body) return;
+          shard.graphic.position.copyFrom(shard.body.position);
+          shard.graphic.rotation = shard.body.angle;
+        });
+        if (runtime.phaseElapsed >= 100) {
+          const coreProgress = clamp(
+            (runtime.phaseElapsed - 100) / 700,
+            0,
+            1,
+          );
+          blackCore.scale.set(
+            0.05 + easeOutCubic(coreProgress) * 14,
+          );
+        }
+      };
+
+      const runtime: SceneRuntime = {
+        app,
+        faceSprite,
+        faceTexture: null,
+        impulseApplied: 0,
+        phaseElapsed: 0,
+        phaseSeen: phaseRef.current,
+      };
+      runtimeRef.current = runtime;
+
+      resizeObserver = new ResizeObserver((entries) => {
+        const rectangle = entries[0]?.contentRect;
+        if (!rectangle) return;
+        pendingSize = {
+          height: Math.max(rectangle.height, 1),
+          width: Math.max(rectangle.width, 1),
+        };
+        resizePending = true;
+      });
+      resizeObserver.observe(host);
+
+      const tick = (ticker: import("pixi.js").Ticker) => {
+          const deltaMs = Math.min(ticker.elapsedMS, 50);
+          if (resizePending) rebuildStaticScene();
+          syncPhase(deltaMs);
+          tickRef.current(deltaMs);
+
+          if (!reducedMotionRef.current) {
+            accumulator += deltaMs;
+            let steps = 0;
+            while (accumulator >= FIXED_STEP && steps < 3) {
+              Engine.update(engine, FIXED_STEP);
+              accumulator -= FIXED_STEP;
+              steps += 1;
+            }
+          }
+
+          const now = performance.now();
+          positionOrbit(now);
+          updateAmbient(now);
+          updateLiquid(deltaMs, now);
+          updateBeamAndIce(now);
+          updateImpulse();
+          updateCracks();
+          updateOrbitBodies();
+          updateShards();
+      };
+      app.ticker.add(tick, undefined, UPDATE_PRIORITY.HIGH);
+      app.ticker.maxFPS = 60;
+      app.ticker.minFPS = 20;
+      app.start();
+
+      visibilityHandler = () => {
+        const hidden = document.hidden;
+        accumulator = 0;
+        if (hidden) app.stop();
+        else app.start();
+        visibilityRef.current(hidden);
+      };
+      document.addEventListener("visibilitychange", visibilityHandler);
+
+      return () => {
+        app.stop();
+        app.ticker.remove(tick);
+        resizeObserver?.disconnect();
+        if (visibilityHandler) {
+          document.removeEventListener(
+            "visibilitychange",
+            visibilityHandler,
+          );
+        }
+        clearLiquid();
+        Composite.clear(engine.world, false, true);
+        Engine.clear(engine);
+        metaballContainer.filters = null;
+        faceSprite.filters = null;
+        liquidBlur.destroy();
+        liquidThreshold.destroy();
+        displacement.destroy();
+        runtime.faceTexture?.destroy(true);
+        liquidTexture.destroy(true);
+        displacementTexture.destroy(true);
+        frostTexture.destroy(true);
+        runtimeRef.current = null;
+        void Assets.unload(ICE_SHELL_URL).catch(() => undefined);
+        app.destroy(
+          { removeView: true, releaseGlobalResources: true },
+          { children: true, texture: false, textureSource: false },
+        );
+      };
+    };
+
+    let dispose: (() => void) | undefined;
+    void start()
+      .then((cleanup) => {
+        if (cancelled) cleanup?.();
+        else dispose = cleanup;
+      })
+      .catch(() => {
+        if (!cancelled) fallbackRef.current();
+      });
+
+    return () => {
+      cancelled = true;
+      resizeObserver?.disconnect();
+      if (visibilityHandler) {
+        document.removeEventListener(
+          "visibilitychange",
+          visibilityHandler,
+        );
+      }
+      dispose?.();
+    };
+  }, []);
+
+  return <div ref={hostRef} className="calibration-pixi-host" />;
+}
