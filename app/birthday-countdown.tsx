@@ -246,6 +246,14 @@ function BirthdaySlotComposition({
       extrapolateRight: "clamp",
     },
   );
+  const famousNameFontSize =
+    famousName.length >= 22
+      ? 18
+      : famousName.length >= 19
+        ? 20
+        : famousName.length >= 16
+          ? 22
+          : 24;
 
   return (
     <AbsoluteFill
@@ -372,10 +380,13 @@ function BirthdaySlotComposition({
             left: 176,
             display: "grid",
             width: 288,
-            minHeight: 128,
+            height: 128,
             alignContent: "center",
-            padding: "11px 14px",
+            justifyItems: "center",
+            padding: "10px 15px 11px",
             color: "#17131f",
+            fontFamily:
+              "var(--font-fredoka), 'Arial Rounded MT Bold', Arial, sans-serif",
             opacity: resultVisible
               ? interpolate(frame, [76, 84], [0, 1], {
                   extrapolateLeft: "clamp",
@@ -390,31 +401,53 @@ function BirthdaySlotComposition({
                   output: "perceptual-scale",
                 })
               : 1.17,
+            overflow: "hidden",
             textAlign: "center",
           }}
         >
           <span
             style={{
               display: "block",
-              fontSize: 13,
-              fontWeight: 950,
-              letterSpacing: ".08em",
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: ".11em",
+              lineHeight: 1,
               textTransform: "uppercase",
             }}
           >
-            Birthday twin unlocked
+            Birthday twin
           </span>
           <strong
             style={{
-              display: "block",
-              marginTop: 6,
-              fontSize: famousName.length > 22 ? 20 : 23,
-              lineHeight: 1.02,
-              letterSpacing: "-.02em",
+              display: "-webkit-box",
+              maxWidth: "100%",
+              marginTop: 5,
+              overflow: "hidden",
+              fontSize: famousNameFontSize,
+              fontWeight: 700,
+              letterSpacing: "-.035em",
+              lineHeight: 1,
+              overflowWrap: "anywhere",
+              textWrap: "balance",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 2,
             }}
           >
-            You share your big day with {famousName}.
+            {famousName}
           </strong>
+          <span
+            style={{
+              display: "block",
+              marginTop: 5,
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: ".035em",
+              lineHeight: 1,
+              textTransform: "uppercase",
+            }}
+          >
+            Shares your birthday
+          </span>
         </Interactive.Div>
       </Interactive.Div>
 
