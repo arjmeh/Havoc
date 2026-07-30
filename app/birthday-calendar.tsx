@@ -87,18 +87,18 @@ function CalendarPageLift({ direction, monthIndex }: CalendarFlipProps) {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const progress = interpolate(frame, [0, durationInFrames - 1], [0, 1], {
-    easing: Easing.bezier(0.22, 0.78, 0.22, 1),
+    easing: Easing.bezier(0.2, 0.72, 0.22, 1),
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const opacity = interpolate(progress, [0, 0.72, 1], [1, 0.92, 0], {
+  const opacity = interpolate(progress, [0, 0.94, 1], [1, 1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
   const rotateX = interpolate(
     progress,
-    [0, 0.58, 1],
-    [0, direction === 1 ? -52 : 48, direction === 1 ? -88 : 82],
+    [0, 0.5, 1],
+    [0, direction === 1 ? 38 : -38, direction === 1 ? 132 : -132],
     {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
@@ -106,72 +106,200 @@ function CalendarPageLift({ direction, monthIndex }: CalendarFlipProps) {
   );
   const translateY = interpolate(
     progress,
-    [0, 1],
-    [0, direction === 1 ? -62 : 48],
+    [0, 0.48, 1],
+    [0, -4, -46],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    },
+  );
+  const scaleY = interpolate(progress, [0, 0.55, 1], [1, 0.99, 0.965], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const foldShadow = interpolate(
+    progress,
+    [0, 0.45, 0.82, 1],
+    [0, 0.44, 0.24, 0],
     {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
     },
   );
   const cells = getMonthCells(monthIndex);
+  const season = getSeason(monthIndex);
 
   return (
     <AbsoluteFill
       style={{
         background: "transparent",
-        perspective: 900,
+        perspective: 1160,
+        overflow: "visible",
       }}
     >
       <div
         style={{
           position: "absolute",
           inset: 0,
-          padding: "28px 30px 24px",
-          borderRadius: "0 0 30px 30px",
-          background: "#fffef8",
-          boxShadow: "0 15px 24px rgba(37, 20, 47, 0.16)",
-          color: "#17131f",
           opacity,
-          transform: `translateY(${translateY}px) rotateX(${rotateX}deg)`,
-          transformOrigin: direction === 1 ? "50% 0%" : "50% 100%",
-          backfaceVisibility: "hidden",
+          transform: `translateY(${translateY}px) rotateX(${rotateX}deg) scaleY(${scaleY})`,
+          transformOrigin: "50% 0%",
+          transformStyle: "preserve-3d",
         }}
       >
         <div
           style={{
-            marginBottom: 20,
-            fontFamily: "Arial, Helvetica, sans-serif",
-            fontSize: 52,
-            fontWeight: 900,
-            lineHeight: 1,
-            letterSpacing: "-0.05em",
+            position: "absolute",
+            inset: 0,
+            overflow: "hidden",
+            padding: "28px 30px 24px",
+            borderRadius: "0 0 30px 30px",
+            background:
+              "linear-gradient(90deg, transparent 50%, rgba(230,221,234,.32) 50% 51%, transparent 51%) 0 0 / 52px 52px, #fffef8",
+            boxShadow: `0 ${18 + foldShadow * 42}px ${28 + foldShadow * 44}px rgba(37,20,47,${0.14 + foldShadow})`,
+            color: "#17131f",
+            backfaceVisibility: "hidden",
           }}
         >
-          {MONTHS[monthIndex]}
-        </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(7, 1fr)",
-            gap: 8,
-          }}
-        >
-          {cells.map((day, index) => (
+          <div
+            style={{
+              display: "flex",
+              minHeight: 62,
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 16,
+            }}
+          >
             <span
-              key={`${day ?? "blank"}-${index}`}
               style={{
-                display: "grid",
-                height: 52,
-                placeItems: "center",
-                borderRadius: 16,
-                color: day ? "#17131f" : "transparent",
                 fontFamily: "Arial, Helvetica, sans-serif",
-                fontSize: 24,
-                fontWeight: 800,
+                fontSize: 52,
+                fontWeight: 900,
+                lineHeight: 1,
+                letterSpacing: "-0.05em",
               }}
             >
-              {day ?? "•"}
+              {MONTHS[monthIndex]}
             </span>
+            <span
+              style={{
+                padding: "8px 13px",
+                border: "3px solid #17131f",
+                borderRadius: 999,
+                background: "#c9ff2f",
+                fontFamily: "Arial, Helvetica, sans-serif",
+                fontSize: 15,
+                fontWeight: 900,
+                letterSpacing: ".08em",
+                textTransform: "uppercase",
+              }}
+            >
+              {season}
+            </span>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(7, 1fr)",
+              gap: 8,
+              marginTop: 12,
+              color: "#756b77",
+              fontFamily: "Arial, Helvetica, sans-serif",
+              fontSize: 16,
+              fontWeight: 900,
+              textAlign: "center",
+            }}
+          >
+            {WEEKDAYS.map(([short, full]) => (
+              <span key={full}>{short}</span>
+            ))}
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              right: 0,
+              top: 0,
+              left: 0,
+              height: 56,
+              background: `linear-gradient(180deg, rgba(46,25,55,${foldShadow}), transparent)`,
+              pointerEvents: "none",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              right: 0,
+              top: 0,
+              left: 0,
+              height: 3,
+              background: `rgba(72,43,80,${foldShadow + 0.08})`,
+              pointerEvents: "none",
+            }}
+          />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(7, 1fr)",
+              gap: 8,
+              marginTop: 9,
+            }}
+          >
+            {cells.map((day, index) => (
+              <span
+                key={`${day ?? "blank"}-${index}`}
+                style={{
+                  display: "grid",
+                  height: 48,
+                  placeItems: "center",
+                  borderRadius: 16,
+                  color: day ? "#17131f" : "transparent",
+                  fontFamily: "Arial, Helvetica, sans-serif",
+                  fontSize: 22,
+                  fontWeight: 800,
+                }}
+              >
+                {day ?? "•"}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "grid",
+            placeItems: "center",
+            overflow: "hidden",
+            borderRadius: "0 0 30px 30px",
+            background:
+              "linear-gradient(180deg,#fffdf7 0%,#f3ebf4 100%)",
+            boxShadow: "inset 0 0 54px rgba(89,61,94,.13)",
+            transform: "rotateX(180deg) translateZ(1px)",
+            backfaceVisibility: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: "5% 6%",
+              border: "3px solid rgba(92,69,97,.12)",
+              borderRadius: "0 0 24px 24px",
+            }}
+          />
+          {Array.from({ length: 7 }, (_, index) => (
+            <span
+              key={index}
+              style={{
+                position: "absolute",
+                top: `${18 + index * 10}%`,
+                right: "10%",
+                left: "10%",
+                height: 2,
+                borderRadius: 999,
+                background: "rgba(92,69,97,.09)",
+              }}
+            />
           ))}
         </div>
       </div>
@@ -179,89 +307,18 @@ function CalendarPageLift({ direction, monthIndex }: CalendarFlipProps) {
   );
 }
 
-function Chevron({ direction }: { direction: "up" | "down" }) {
+function SeasonalScene({ season }: { season: Season }) {
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
+    <div
+      className={`birthday-seasonal-scene ${season}-scene`}
       aria-hidden="true"
     >
-      <path
-        d={direction === "up" ? "M4 12.5 10 6.5l6 6" : "M4 7.5l6 6 6-6"}
-        stroke="currentColor"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function SeasonalScene({ season }: { season: Season }) {
-  if (season === "winter") {
-    return (
-      <div className="birthday-seasonal-scene winter-scene" aria-hidden="true">
-        {Array.from({ length: 7 }, (_, index) => (
-          <img
-            key={index}
-            className="winter-flake"
-            src="/havoc-season-winter.png"
-            alt=""
-            width={1254}
-            height={1254}
-            style={{ "--season-index": index } as CSSProperties}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (season === "summer") {
-    return (
-      <div className="birthday-seasonal-scene summer-scene" aria-hidden="true">
-        <span className="summer-glow" />
-        <img
-          className="summer-sun"
-          src="/havoc-season-summer.png"
-          alt=""
-          width={1254}
-          height={1254}
-        />
-      </div>
-    );
-  }
-
-  if (season === "autumn") {
-    return (
-      <div className="birthday-seasonal-scene autumn-scene" aria-hidden="true">
-        {Array.from({ length: 6 }, (_, index) => (
-          <img
-            key={index}
-            className="autumn-leaf"
-            src="/havoc-season-autumn.png"
-            alt=""
-            width={1254}
-            height={1254}
-            style={{ "--season-index": index } as CSSProperties}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <div className="birthday-seasonal-scene spring-scene" aria-hidden="true">
-      <span className="spring-rain rain-one" />
-      <span className="spring-rain rain-two" />
-      <span className="spring-rain rain-three" />
       <img
-        className="spring-sprout"
-        src="/havoc-season-spring.png"
+        className={`season-ground season-ground-${season}`}
+        src={`/havoc-season-${season}.png`}
         alt=""
-        width={1183}
-        height={1329}
+        width={1200}
+        height={400}
       />
     </div>
   );
@@ -367,23 +424,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
           <div className="calendar-binding">
             <span className="calendar-ring ring-left" aria-hidden="true" />
             <span className="calendar-ring ring-right" aria-hidden="true" />
-            <button
-              type="button"
-              className="calendar-month-button"
-              onClick={() => changeMonth(-1)}
-              aria-label={`Previous month, ${MONTHS[(month + 11) % 12]}`}
-            >
-              <Chevron direction="up" />
-            </button>
             <span className="calendar-binding-label">Havoc birthdays</span>
-            <button
-              type="button"
-              className="calendar-month-button"
-              onClick={() => changeMonth(1)}
-              aria-label={`Next month, ${MONTHS[(month + 1) % 12]}`}
-            >
-              <Chevron direction="down" />
-            </button>
           </div>
 
           <div
@@ -440,7 +481,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
                   }}
                   durationInFrames={11}
                   compositionWidth={640}
-                  compositionHeight={520}
+                  compositionHeight={610}
                   fps={30}
                   autoPlay
                   acknowledgeRemotionLicense
@@ -458,9 +499,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
         </section>
 
         <div className="calendar-swipe-hint" aria-hidden="true">
-          <Chevron direction="up" />
           <span>Swipe to flip months</span>
-          <Chevron direction="down" />
         </div>
       </div>
 
@@ -468,7 +507,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
         <p aria-live="polite">
           {selectedDay
             ? `${MONTHS[month]} ${selectedDay} selected`
-            : "Choose your day"}
+            : "\u00a0"}
         </p>
         <button
           type="button"
