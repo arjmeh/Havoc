@@ -239,7 +239,7 @@ function BirthdaySlotComposition({
   );
   const machineOpacity = interpolate(
     frame,
-    [164, 180],
+    [232, 239],
     [1, 0],
     {
       extrapolateLeft: "clamp",
@@ -459,22 +459,48 @@ function BirthdaySlotComposition({
               left: 170,
               width: 300,
               height: 632,
-              opacity: interpolate(frame, [90, 94, 220, 232], [0, 1, 1, 0], {
+              opacity: interpolate(frame, [90, 94, 225, 234], [0, 1, 1, 0], {
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
               }),
-              rotate: "0deg",
+              rotate: reducedMotion
+                ? "0deg"
+                : interpolate(
+                    frame,
+                    [90, 100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224, 234],
+                    [
+                      "0deg",
+                      "-6deg",
+                      "9deg",
+                      "-11deg",
+                      "12deg",
+                      "-13deg",
+                      "14deg",
+                      "-15deg",
+                      "15deg",
+                      "-14deg",
+                      "11deg",
+                      "0deg",
+                      "0deg",
+                    ],
+                    {
+                      easing: Easing.inOut(Easing.quad),
+                      extrapolateLeft: "clamp",
+                      extrapolateRight: "clamp",
+                    },
+                  ),
               scale: interpolate(frame, [90, 100, 103], [0.88, 1.02, 1], {
                 easing: Easing.spring({ damping: 170 }),
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
                 output: "perceptual-scale",
               }),
+              transformOrigin: "50% 15.4%",
               translate: reducedMotion
                 ? "0px 0px"
                 : interpolate(
                     frame,
-                    [90, 100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224, 232],
+                    [90, 100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224, 234],
                     [
                       "-340px -190px",
                       "-340px 0px",
@@ -507,30 +533,117 @@ function BirthdaySlotComposition({
             const particleRows = particleCount / particleColumns;
             const startFrame =
               102 + 112 * Math.sqrt(index / (particleCount - 1));
-            const sourceX = interpolate(
-              startFrame,
-              [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
-              [-20, 660, -20, 660, -20, 660, -20, 660, -20, 660, 320],
-              {
-                easing: Easing.inOut(Easing.quad),
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-              },
+            const birthCannonX = reducedMotion
+              ? 0
+              : interpolate(
+                  startFrame,
+                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
+                  [-340, 340, -340, 340, -340, 340, -340, 340, -340, 340, 0],
+                  {
+                    easing: Easing.inOut(Easing.quad),
+                    extrapolateLeft: "clamp",
+                    extrapolateRight: "clamp",
+                  },
+                );
+            const previousCannonX = reducedMotion
+              ? 0
+              : interpolate(
+                  startFrame - 1,
+                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
+                  [-340, 340, -340, 340, -340, 340, -340, 340, -340, 340, 0],
+                  {
+                    easing: Easing.inOut(Easing.quad),
+                    extrapolateLeft: "clamp",
+                    extrapolateRight: "clamp",
+                  },
+                );
+            const nextCannonX = reducedMotion
+              ? 0
+              : interpolate(
+                  startFrame + 1,
+                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
+                  [-340, 340, -340, 340, -340, 340, -340, 340, -340, 340, 0],
+                  {
+                    easing: Easing.inOut(Easing.quad),
+                    extrapolateLeft: "clamp",
+                    extrapolateRight: "clamp",
+                  },
+                );
+            const birthSwayDegrees = reducedMotion
+              ? 0
+              : interpolate(
+                  startFrame,
+                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
+                  [-6, 9, -11, 12, -13, 14, -15, 15, -14, 11, 0],
+                  {
+                    easing: Easing.inOut(Easing.quad),
+                    extrapolateLeft: "clamp",
+                    extrapolateRight: "clamp",
+                  },
+                );
+            const birthSwayRadians = (birthSwayDegrees * Math.PI) / 180;
+            const mouthOffset = ((index * 47) % 33) - 16;
+            const sourceX =
+              320 +
+              birthCannonX -
+              Math.sin(birthSwayRadians) * 400 +
+              Math.cos(birthSwayRadians) * mouthOffset;
+            const sourceY =
+              -293 +
+              Math.cos(birthSwayRadians) * 400 +
+              Math.sin(birthSwayRadians) * mouthOffset;
+            const inheritedVelocity = Math.max(
+              -150,
+              Math.min(150, (nextCannonX - previousCannonX) * 2.2),
             );
-            const settleFrame = Math.min(231, startFrame + 34);
+            const spreadRadians =
+              ((((index * 37) % 101) / 100) - 0.5) * 0.9;
+            const launchRadians = birthSwayRadians + spreadRadians;
+            const launchDistance = 185 + (index % 11) * 11;
+            const controlX =
+              sourceX -
+              Math.sin(launchRadians) * launchDistance +
+              inheritedVelocity;
+            const controlY =
+              sourceY + Math.cos(launchRadians) * launchDistance;
+            const cellIndex = (index * 487) % particleCount;
+            const column = cellIndex % particleColumns;
+            const row = Math.floor(cellIndex / particleColumns);
+            const jitterX =
+              ((((index * 83) % 103) / 102) - 0.5) * 36;
+            const jitterY =
+              ((((index * 149) % 107) / 106) - 0.5) * 78;
+            const targetX = Math.max(
+              -30,
+              Math.min(
+                670,
+                (column / (particleColumns - 1)) * 640 + jitterX,
+              ),
+            );
+            const targetY = Math.max(
+              -38,
+              Math.min(
+                1393,
+                (row / (particleRows - 1)) * 1355 + jitterY,
+              ),
+            );
+            const settleFrame = Math.min(
+              231,
+              startFrame + 28 + (index % 12),
+            );
             const flightProgress = interpolate(
               frame,
               [startFrame, settleFrame],
               [0, 1],
               {
-                easing: Easing.out(Easing.cubic),
+                easing: Easing.bezier(0.12, 0.72, 0.2, 1),
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
               },
             );
             const fallProgress = interpolate(
               frame,
-              [236, 260],
+              [242, 262],
               [0, 1],
               {
                 easing: Easing.in(Easing.quad),
@@ -538,24 +651,33 @@ function BirthdaySlotComposition({
                 extrapolateRight: "clamp",
               },
             );
-            const column = index % particleColumns;
-            const row = Math.floor(index / particleColumns);
-            const targetX =
-              (column / (particleColumns - 1)) * 640 +
-              ((index * 17) % 17) -
-              8;
-            const targetY =
-              (row / (particleRows - 1)) * 1355 +
-              ((index * 29) % 21) -
-              10;
-            const arc =
-              Math.sin(flightProgress * Math.PI) *
-              (110 + (index % 7) * 18);
+            const inverseFlightProgress = 1 - flightProgress;
+            const flutter =
+              Math.sin((frame - startFrame) * 0.58 + index * 1.73) *
+              (1 - flightProgress) *
+              (12 + (index % 5) * 3);
             const flightX =
-              sourceX + (targetX - sourceX) * flightProgress;
+              inverseFlightProgress *
+                inverseFlightProgress *
+                sourceX +
+              2 *
+                inverseFlightProgress *
+                flightProgress *
+                controlX +
+              flightProgress * flightProgress * targetX +
+              flutter;
             const flightY =
-              118 + (targetY - 118) * flightProgress - arc;
-            const fallDrift = ((index * 31) % 130) - 65;
+              inverseFlightProgress *
+                inverseFlightProgress *
+                sourceY +
+              2 *
+                inverseFlightProgress *
+                flightProgress *
+                controlY +
+              flightProgress * flightProgress * targetY +
+              Math.sin(flightProgress * Math.PI) *
+                (90 + (index % 9) * 12);
+            const fallDrift = ((index * 31) % 180) - 90;
             const entranceOpacity = interpolate(
               frame,
               [startFrame, startFrame + 2],
@@ -615,6 +737,9 @@ function BirthdaySlotComposition({
                     (index % 2 === 0 ? 1 : -1) *
                       (360 + index * 17) *
                       flightProgress +
+                    Math.sin((frame - startFrame) * 0.42 + index) *
+                      28 *
+                      (1 - flightProgress) +
                     720 * fallProgress
                   }deg`,
                   translate: reducedMotion
@@ -623,7 +748,7 @@ function BirthdaySlotComposition({
                         flightX + fallDrift * fallProgress
                       }px ${
                         flightY +
-                        (1450 + row * 12) * fallProgress
+                        (1450 + ((index * 53) % 420)) * fallProgress
                       }px`,
                   willChange: "translate, rotate, opacity",
                 }}
@@ -641,7 +766,7 @@ function BirthdaySlotComposition({
           background: "#fffef8",
           opacity: interpolate(
             celebrationProgress,
-            [0.52, 0.64],
+            [0.83, 0.87],
             [0, 1],
             {
               extrapolateLeft: "clamp",
