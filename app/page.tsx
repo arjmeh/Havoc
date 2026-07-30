@@ -873,7 +873,16 @@ function AppScreen({ index, setIndex }: { index: number; setIndex: (value: numbe
     onComplete={() => setIndex(screenIndex("age"))}
   />;
   if (id === "age") return <AgeScreen next={next} />;
-  if (id === "birthday") return <BirthdayCalendarScreen next={next} />;
+  if (id === "birthday") return (
+    <BirthdayCalendarScreen
+      next={next}
+      transitionBackdrop={
+        <PermissionsScreen
+          next={() => setIndex(screenIndex("calibration"))}
+        />
+      }
+    />
+  );
   if (id === "permissions") return <PermissionsScreen next={next} />;
   if (id === "calibration") return <CalibrationScreen next={next} />;
   if (id === "home") return <HomeScreen next={() => setIndex(screenIndex("create"))} />;
