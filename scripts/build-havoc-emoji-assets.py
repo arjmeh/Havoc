@@ -605,9 +605,8 @@ def build_rocket_launch_video() -> None:
     source = SOURCE_DIR / "rocket-launch-source.mp4"
     with tempfile.TemporaryDirectory(prefix="havoc-rocket-") as temporary:
         output_pattern = Path(temporary) / "frame-%03d.png"
-        # The generated model sits 20 px right of center after scaling. Crop
-        # that empty left margin, then pad the right side to preserve the
-        # 383 px animation canvas while centering the visible rocket body.
+        # Crop the source to the full rocket and flame, key out the true-black
+        # background, then center the artwork on the existing animation canvas.
         subprocess.run(
             [
                 "ffmpeg",
@@ -621,11 +620,10 @@ def build_rocket_launch_video() -> None:
                 "-vf",
                 (
                     "format=rgba,"
-                    "colorkey=0x000000:0.14:0.06,"
-                    "crop=980:1380:180:60,"
-                    "scale=383:539:flags=lanczos,"
-                    "crop=363:539:20:0,"
-                    "pad=383:665:0:63:color=0x00000000"
+                    "colorkey=0x000000:0.08:0.05,"
+                    "crop=880:1810:100:60,"
+                    "scale=302:620:flags=lanczos,"
+                    "pad=383:665:40:20:color=0x00000000"
                 ),
                 "-an",
                 "-vsync",
@@ -651,6 +649,7 @@ def build_rocket_launch_video() -> None:
         quality=84,
         method=4,
     )
+    frames[0].save(PUBLIC_DIR / "havoc-rocket-cutout.png", optimize=True)
 
 
 def build_rocket() -> None:

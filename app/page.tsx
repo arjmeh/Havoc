@@ -172,8 +172,8 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
           className="welcome-rocket-mark"
           src="/havoc-rocket-cutout.png"
           alt=""
-          width={343}
-          height={552}
+          width={383}
+          height={665}
           aria-hidden="true"
         />
       </button>
