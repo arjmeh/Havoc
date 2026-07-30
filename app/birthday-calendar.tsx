@@ -52,6 +52,14 @@ type CalendarFlipProps = {
   monthIndex: number;
 };
 
+type SeasonParticleStyle = CSSProperties & {
+  "--particle-delay": string;
+  "--particle-drift": string;
+  "--particle-duration": string;
+  "--particle-scale": string;
+  "--particle-x": string;
+};
+
 function getSeason(month: number): Season {
   if (month === 11 || month <= 1) return "winter";
   if (month <= 4) return "spring";
@@ -308,11 +316,31 @@ function CalendarPageLift({ direction, monthIndex }: CalendarFlipProps) {
 }
 
 function SeasonalScene({ season }: { season: Season }) {
+  const particleCount = season === "winter" ? 11 : season === "autumn" ? 9 : 8;
+  const particlePositions = [5, 15, 27, 39, 51, 63, 75, 87, 95, 21, 69];
+
   return (
     <div
       className={`birthday-seasonal-scene ${season}-scene`}
       aria-hidden="true"
     >
+      <div className="season-particles">
+        {Array.from({ length: particleCount }, (_, index) => (
+          <span
+            className="season-particle"
+            key={`${season}-${index}`}
+            style={
+              {
+                "--particle-delay": `${-(index * 0.83 + (index % 3) * 0.41)}s`,
+                "--particle-drift": `${((index % 5) - 2) * 13}px`,
+                "--particle-duration": `${5.4 + (index % 4) * 0.78}s`,
+                "--particle-scale": `${0.72 + (index % 4) * 0.13}`,
+                "--particle-x": `${particlePositions[index]}%`,
+              } as SeasonParticleStyle
+            }
+          />
+        ))}
+      </div>
       <img
         className={`season-ground season-ground-${season}`}
         src={`/havoc-season-${season}.png`}
@@ -335,6 +363,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   const [dragDistance, setDragDistance] = useState(0);
   const pointerStartRef = useRef<number | null>(null);
   const flipIdRef = useRef(0);
+  const monthRef = useRef(0);
   const reducedMotion = useReducedMotion();
   const season = getSeason(month);
   const cells = getMonthCells(month);
@@ -349,8 +378,9 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   }, [flip]);
 
   const changeMonth = (direction: FlipDirection) => {
-    const previousMonth = month;
-    const nextMonth = (month + direction + 12) % 12;
+    const previousMonth = monthRef.current;
+    const nextMonth = (previousMonth + direction + 12) % 12;
+    monthRef.current = nextMonth;
     setSelectedDay(null);
 
     if (!reducedMotion) {
@@ -398,6 +428,36 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
       changeMonth(1);
     }
   };
+
+  useEffect(() => {
+    const handleWindowCalendarKeys = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+      const target = event.target as HTMLElement | null;
+      if (
+        target?.isContentEditable ||
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA" ||
+        target?.tagName === "SELECT"
+      ) {
+        return;
+      }
+
+      if (event.key === "ArrowUp" || event.key === "PageUp") {
+        event.preventDefault();
+        event.stopPropagation();
+        changeMonth(-1);
+      }
+      if (event.key === "ArrowDown" || event.key === "PageDown") {
+        event.preventDefault();
+        event.stopPropagation();
+        changeMonth(1);
+      }
+    };
+
+    window.addEventListener("keydown", handleWindowCalendarKeys);
+    return () =>
+      window.removeEventListener("keydown", handleWindowCalendarKeys);
+  }, [reducedMotion]);
 
   return (
     <div className={`screen birthday-screen season-${season}`}>

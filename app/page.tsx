@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent } from "react";
+import type { CSSProperties } from "react";
 
 import { getAgeLine } from "./age-copy";
 import { BirthdayCalendarScreen } from "./birthday-calendar";
@@ -245,6 +245,7 @@ function AgeScreen({ next }: { next: () => void }) {
   const settleTimerRef = useRef<number | null>(null);
   const celebrationTimersRef = useRef<number[]>([]);
   const settledAgeRef = useRef(18);
+  const keyboardAgeRef = useRef(18);
   const candleLayout = celebration === "idle" ? [] : getCandleLayout(age);
 
   useEffect(() => {
@@ -263,6 +264,7 @@ function AgeScreen({ next }: { next: () => void }) {
     const safeAge = Math.max(1, Math.min(99, nextAge));
     const carousel = carouselRef.current;
     const card = carousel?.querySelector<HTMLElement>(`[data-age="${safeAge}"]`);
+    keyboardAgeRef.current = safeAge;
 
     if (carousel && card) {
       const left = card.offsetLeft - (carousel.clientWidth - card.offsetWidth) / 2;
@@ -322,6 +324,7 @@ function AgeScreen({ next }: { next: () => void }) {
       window.clearTimeout(settleTimerRef.current);
     }
     settleTimerRef.current = window.setTimeout(() => {
+      keyboardAgeRef.current = nextAge;
       if (nextAge !== settledAgeRef.current) {
         settledAgeRef.current = nextAge;
         setAge(nextAge);
@@ -330,14 +333,13 @@ function AgeScreen({ next }: { next: () => void }) {
     }, 110);
   };
 
-  const handleAgeKeys = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+  const handleAgeKeys = (event: Pick<KeyboardEvent, "key" | "preventDefault">) => {
+    const keyboardAge = keyboardAgeRef.current;
     const commands: Record<string, number> = {
-      ArrowLeft: age - 1,
-      ArrowDown: age - 1,
-      ArrowRight: age + 1,
-      ArrowUp: age + 1,
-      PageDown: age - 10,
-      PageUp: age + 10,
+      ArrowLeft: keyboardAge - 1,
+      ArrowRight: keyboardAge + 1,
+      PageDown: keyboardAge - 10,
+      PageUp: keyboardAge + 10,
       Home: 1,
       End: 99,
     };
@@ -346,6 +348,39 @@ function AgeScreen({ next }: { next: () => void }) {
     event.preventDefault();
     scrollToAge(commands[event.key], event.key === "Home" || event.key === "End" ? "auto" : "smooth");
   };
+
+  useEffect(() => {
+    if (celebration !== "idle") return;
+
+    const handleWindowAgeKeys = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+      const target = event.target as HTMLElement | null;
+      if (
+        target?.isContentEditable ||
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA" ||
+        target?.tagName === "SELECT"
+      ) {
+        return;
+      }
+
+      const ageKeys = [
+        "ArrowLeft",
+        "ArrowRight",
+        "PageDown",
+        "PageUp",
+        "Home",
+        "End",
+      ];
+      if (!ageKeys.includes(event.key)) return;
+
+      event.stopPropagation();
+      handleAgeKeys(event);
+    };
+
+    window.addEventListener("keydown", handleWindowAgeKeys);
+    return () => window.removeEventListener("keydown", handleWindowAgeKeys);
+  }, [celebration]);
 
   const confirmAge = () => {
     if (celebration !== "idle") return;
@@ -601,12 +636,25 @@ export default function Home() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (
+        target?.isContentEditable ||
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA" ||
+        target?.tagName === "SELECT"
+      ) {
+        return;
+      }
+
+      const activeScreen = screens[step].id;
+      if (activeScreen === "age" || activeScreen === "birthday") return;
+
       if (event.key === "ArrowRight") next();
       if (event.key === "ArrowLeft") previous();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [step]);
 
   return <main>
     <header className="site-header">
