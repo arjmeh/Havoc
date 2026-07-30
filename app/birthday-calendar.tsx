@@ -664,7 +664,6 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
             >
               <div className="calendar-month-row">
                 <h3>{MONTHS[month]}</h3>
-                <span>{season}</span>
               </div>
               <div className="calendar-weekdays" aria-hidden="true">
                 {WEEKDAYS.map(([short, full]) => (
