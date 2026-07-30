@@ -599,6 +599,111 @@
   outline-offset: 2px;
 }
 
+.welcome-primary:disabled,
+.welcome-secondary:disabled {
+  cursor: wait;
+}
+
+.rocket-transition {
+  position: absolute;
+  z-index: 40;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.is-launching .rocket-transition {
+  visibility: visible;
+}
+
+.rocket-wipe {
+  position: absolute;
+  right: -15%;
+  bottom: -15%;
+  left: -15%;
+  height: 135%;
+  clip-path: polygon(0 18%,50% 0,100% 18%,100% 100%,0 100%);
+  translate: 0 110%;
+  will-change: transform;
+}
+
+.rocket-wipe-edge {
+  z-index: 1;
+  background: #ff5d57;
+}
+
+.rocket-wipe-surface {
+  z-index: 2;
+  background: #f6f1e8;
+}
+
+.rocket-launch {
+  position: absolute;
+  z-index: 3;
+  bottom: -84%;
+  left: 50%;
+  display: block;
+  width: min(112%, 430px);
+  height: auto;
+  object-fit: contain;
+  translate: -50% 0;
+  will-change: transform;
+}
+
+.welcome-screen.is-launching {
+  animation: welcome-ignition-shake .25s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.is-launching .welcome-joystick-stage,
+.is-launching .welcome-copy,
+.is-launching .welcome-actions {
+  animation: welcome-launch-clear .24s .08s ease-in both;
+}
+
+.is-launching .rocket-wipe-edge {
+  animation: rocket-wipe-rise .6s .18s cubic-bezier(.5,.02,.22,1) both;
+}
+
+.is-launching .rocket-wipe-surface {
+  animation: rocket-wipe-rise .6s .22s cubic-bezier(.5,.02,.22,1) both;
+}
+
+.is-launching .rocket-launch {
+  animation: rocket-takeoff .74s .11s cubic-bezier(.42,0,.6,1) both;
+}
+
+@keyframes welcome-ignition-shake {
+  0%,100% { transform: translate3d(0,0,0) rotate(0); }
+  10% { transform: translate3d(-2px,1px,0) rotate(-.2deg); }
+  20% { transform: translate3d(3px,-2px,0) rotate(.25deg); }
+  30% { transform: translate3d(-4px,2px,0) rotate(-.3deg); }
+  40% { transform: translate3d(4px,-3px,0) rotate(.35deg); }
+  50% { transform: translate3d(-5px,3px,0) rotate(-.4deg); }
+  60% { transform: translate3d(5px,-3px,0) rotate(.4deg); }
+  70% { transform: translate3d(-4px,2px,0) rotate(-.3deg); }
+  80% { transform: translate3d(3px,-2px,0) rotate(.25deg); }
+  90% { transform: translate3d(-2px,1px,0) rotate(-.15deg); }
+}
+
+@keyframes welcome-launch-clear {
+  to {
+    opacity: 0;
+    transform: scale(.97);
+    filter: blur(2px);
+  }
+}
+
+@keyframes rocket-wipe-rise {
+  from { transform: translate3d(0,0,0); }
+  to { transform: translate3d(0,-116%,0); }
+}
+
+@keyframes rocket-takeoff {
+  from { transform: translate3d(0,0,0); }
+  to { transform: translate3d(0,-190%,0); }
+}
+
 @keyframes welcome-joystick-in {
   to {
     opacity: 1;
@@ -649,4 +754,35 @@
   .welcome-joystick-still {
     display: block;
   }
+
+  .welcome-screen.is-launching {
+    animation: none !important;
+  }
+
+  .is-launching .rocket-wipe-edge,
+  .is-launching .rocket-launch {
+    display: none;
+    animation: none !important;
+  }
+
+  .rocket-wipe-surface {
+    inset: 0;
+    height: auto;
+    clip-path: none;
+    opacity: 0;
+    translate: 0;
+  }
+
+  .is-launching .rocket-wipe-surface {
+    display: block;
+    animation: rocket-reduced-cover .2s ease-out both !important;
+  }
+
+  .rocket-launch-motion {
+    display: none;
+  }
+}
+
+@keyframes rocket-reduced-cover {
+  to { opacity: 1; }
 }

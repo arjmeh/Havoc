@@ -116,7 +116,25 @@ function LoadingScreen({ next }: { next: () => void }) {
 }
 
 function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => void }) {
-  return <div className="screen welcome-screen">
+  const [launching, setLaunching] = useState(false);
+
+  useEffect(() => {
+    const rocket = new Image();
+    rocket.src = "/havoc-rocket-launch.webp";
+  }, []);
+
+  useEffect(() => {
+    if (!launching) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timer = window.setTimeout(next, reduceMotion ? 240 : 860);
+    return () => window.clearTimeout(timer);
+  }, [launching, next]);
+
+  return <div
+    className={`screen welcome-screen${launching ? " is-launching" : ""}`}
+    aria-busy={launching}
+  >
     <div className="welcome-joystick-stage" aria-hidden="true">
       <img
         className="welcome-joystick welcome-joystick-motion"
@@ -138,10 +156,27 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
       <p>You&apos;ll need an account to continue—and to keep your progress, highlights, and wins.</p>
     </div>
     <div className="welcome-actions">
-      <button className="welcome-primary" onClick={next}>
+      <button
+        className="welcome-primary"
+        onClick={() => setLaunching(true)}
+        disabled={launching}
+      >
         Get started <span aria-hidden="true">🚀</span>
       </button>
-      <button className="welcome-secondary" onClick={onLogin}>I already have an account</button>
+      <button className="welcome-secondary" onClick={onLogin} disabled={launching}>
+        I already have an account
+      </button>
+    </div>
+    <div className="rocket-transition" aria-hidden="true">
+      <span className="rocket-wipe rocket-wipe-edge" />
+      <span className="rocket-wipe rocket-wipe-surface" />
+      <img
+        className="rocket-launch rocket-launch-motion"
+        src="/havoc-rocket-launch.webp"
+        alt=""
+        width={383}
+        height={665}
+      />
     </div>
   </div>;
 }
