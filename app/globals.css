@@ -1451,6 +1451,10 @@
   cursor: grabbing;
 }
 
+.calendar-paper.is-dragging {
+  transition: none;
+}
+
 .calendar-month-row {
   display: flex;
   min-height: 43px;

@@ -16,6 +16,7 @@ import {
 import type {
   CSSProperties,
   KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
 } from "react";
 
@@ -48,6 +49,14 @@ const WEEKDAYS = [
 
 type Season = "winter" | "spring" | "summer" | "autumn";
 type FlipDirection = -1 | 1;
+
+type WheelGestureState = {
+  direction: FlipDirection | null;
+  flippedAt: number;
+  lastEventAt: number;
+  lastMagnitude: number;
+  locked: boolean;
+};
 
 type CalendarFlipProps = {
   direction: FlipDirection;
@@ -368,11 +377,19 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   } | null>(null);
   const [dragDistance, setDragDistance] = useState(0);
   const pointerStartRef = useRef<number | null>(null);
+  const suppressCalendarClickRef = useRef(false);
+  const suppressCalendarClickTimerRef = useRef<number | null>(null);
   const calendarRef = useRef<HTMLElement>(null);
   const flipIdRef = useRef(0);
   const monthRef = useRef(0);
   const wheelDistanceRef = useRef(0);
-  const wheelGestureLockedRef = useRef(false);
+  const wheelGestureStateRef = useRef<WheelGestureState>({
+    direction: null,
+    flippedAt: 0,
+    lastEventAt: 0,
+    lastMagnitude: 0,
+    locked: false,
+  });
   const wheelGestureResetTimerRef = useRef<number | null>(null);
   const reducedMotion = useReducedMotion();
   const season = getSeason(month);
@@ -408,11 +425,6 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   };
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if ((event.target as HTMLElement).closest("button")) {
-      pointerStartRef.current = null;
-      return;
-    }
-
     pointerStartRef.current = event.clientY;
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -420,7 +432,10 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (pointerStartRef.current === null) return;
     const distance = event.clientY - pointerStartRef.current;
-    setDragDistance(Math.max(-18, Math.min(18, distance * 0.22)));
+    if (Math.abs(distance) >= 8) {
+      event.preventDefault();
+    }
+    setDragDistance(Math.max(-24, Math.min(24, distance * 0.28)));
   };
 
   const onPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -428,9 +443,32 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
     const distance = event.clientY - pointerStartRef.current;
     pointerStartRef.current = null;
     setDragDistance(0);
-    if (Math.abs(distance) < 42) return;
+    if (Math.abs(distance) < 42) {
+      return;
+    }
+
     event.preventDefault();
+    event.stopPropagation();
+    suppressCalendarClickRef.current = true;
+    if (suppressCalendarClickTimerRef.current !== null) {
+      window.clearTimeout(suppressCalendarClickTimerRef.current);
+    }
+    suppressCalendarClickTimerRef.current = window.setTimeout(() => {
+      suppressCalendarClickRef.current = false;
+      suppressCalendarClickTimerRef.current = null;
+    }, 80);
     changeMonth(distance < 0 ? 1 : -1);
+  };
+
+  const onCalendarClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!suppressCalendarClickRef.current) return;
+    event.preventDefault();
+    event.stopPropagation();
+    suppressCalendarClickRef.current = false;
+    if (suppressCalendarClickTimerRef.current !== null) {
+      window.clearTimeout(suppressCalendarClickTimerRef.current);
+      suppressCalendarClickTimerRef.current = null;
+    }
   };
 
   const onCalendarKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -487,34 +525,77 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
       event.preventDefault();
       event.stopPropagation();
 
+      const deltaFactor =
+        event.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? 16
+          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+            ? calendar.clientHeight
+            : 1;
+      const deltaY = event.deltaY * deltaFactor;
+      const deltaX = event.deltaX * deltaFactor;
+      const verticalDistance = Math.abs(deltaY);
+      const horizontalDistance = Math.abs(deltaX);
+      if (verticalDistance < 1 || verticalDistance < horizontalDistance) {
+        return;
+      }
+
+      const now = performance.now();
+      const direction: FlipDirection = deltaY > 0 ? 1 : -1;
+      const gesture = wheelGestureStateRef.current;
+      const startedAfterPause =
+        gesture.lastEventAt === 0 || now - gesture.lastEventAt > 110;
+      const reversedDirection =
+        gesture.locked &&
+        gesture.direction !== null &&
+        direction !== gesture.direction &&
+        verticalDistance >= 6;
+      const freshImpulse =
+        gesture.locked &&
+        gesture.direction === direction &&
+        now - gesture.flippedAt > 160 &&
+        verticalDistance >= 14 &&
+        verticalDistance > gesture.lastMagnitude * 1.8;
+
+      if (startedAfterPause || reversedDirection || freshImpulse) {
+        wheelDistanceRef.current = 0;
+        gesture.locked = false;
+        gesture.direction = null;
+      }
+
+      gesture.lastEventAt = now;
+      gesture.lastMagnitude = verticalDistance;
+
       if (wheelGestureResetTimerRef.current !== null) {
         window.clearTimeout(wheelGestureResetTimerRef.current);
       }
       wheelGestureResetTimerRef.current = window.setTimeout(() => {
         wheelDistanceRef.current = 0;
-        wheelGestureLockedRef.current = false;
+        wheelGestureStateRef.current = {
+          direction: null,
+          flippedAt: 0,
+          lastEventAt: 0,
+          lastMagnitude: 0,
+          locked: false,
+        };
         wheelGestureResetTimerRef.current = null;
-      }, 180);
+      }, 110);
 
-      const verticalDistance = Math.abs(event.deltaY);
-      const horizontalDistance = Math.abs(event.deltaX);
-      if (
-        wheelGestureLockedRef.current ||
-        verticalDistance < 3 ||
-        verticalDistance < horizontalDistance
-      ) {
+      if (gesture.locked) {
         return;
       }
 
-      wheelDistanceRef.current += event.deltaY;
-      if (Math.abs(wheelDistanceRef.current) < 28) {
+      wheelDistanceRef.current += deltaY;
+      if (Math.abs(wheelDistanceRef.current) < 20) {
         return;
       }
 
-      const direction = wheelDistanceRef.current > 0 ? 1 : -1;
+      const flipDirection: FlipDirection =
+        wheelDistanceRef.current > 0 ? 1 : -1;
       wheelDistanceRef.current = 0;
-      wheelGestureLockedRef.current = true;
-      changeMonth(direction);
+      gesture.locked = true;
+      gesture.direction = flipDirection;
+      gesture.flippedAt = now;
+      changeMonth(flipDirection);
     };
 
     calendar.addEventListener("wheel", handleCalendarWheel, {
@@ -527,10 +608,25 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
         window.clearTimeout(wheelGestureResetTimerRef.current);
       }
       wheelDistanceRef.current = 0;
-      wheelGestureLockedRef.current = false;
+      wheelGestureStateRef.current = {
+        direction: null,
+        flippedAt: 0,
+        lastEventAt: 0,
+        lastMagnitude: 0,
+        locked: false,
+      };
       wheelGestureResetTimerRef.current = null;
     };
   }, [confirmedBirthday, reducedMotion]);
+
+  useEffect(
+    () => () => {
+      if (suppressCalendarClickTimerRef.current !== null) {
+        window.clearTimeout(suppressCalendarClickTimerRef.current);
+      }
+    },
+    [],
+  );
 
   return (
     <>
@@ -566,7 +662,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
             </div>
 
             <div
-              className="calendar-paper"
+              className={`calendar-paper${dragDistance !== 0 ? " is-dragging" : ""}`}
               style={{ "--calendar-drag": `${dragDistance}px` } as CSSProperties}
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
@@ -575,6 +671,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
                 pointerStartRef.current = null;
                 setDragDistance(0);
               }}
+              onClickCapture={onCalendarClickCapture}
               onKeyDown={onCalendarKeyDown}
               role="group"
               tabIndex={0}
