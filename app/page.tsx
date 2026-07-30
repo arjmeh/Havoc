@@ -161,7 +161,15 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
         onClick={() => setLaunching(true)}
         disabled={launching}
       >
-        Get started <span aria-hidden="true">🚀</span>
+        Get started
+        <img
+          className="welcome-rocket-mark"
+          src="/havoc-rocket-cutout.png"
+          alt=""
+          width={343}
+          height={552}
+          aria-hidden="true"
+        />
       </button>
       <button className="welcome-secondary" onClick={onLogin} disabled={launching}>
         I already have an account
