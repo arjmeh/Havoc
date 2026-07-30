@@ -117,7 +117,6 @@ function LoadingScreen({ next }: { next: () => void }) {
 
 function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => void }) {
   return <div className="screen welcome-screen">
-    <div className="welcome-brand" aria-label="Havoc">HAVOC</div>
     <div className="welcome-joystick-stage" aria-hidden="true">
       <img
         className="welcome-joystick welcome-joystick-motion"
@@ -139,10 +138,10 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
       <p>Create a private party or join a live game in seconds.</p>
     </div>
     <div className="welcome-actions">
-      <button className="welcome-primary" onClick={next}>Create account</button>
-      <button className="welcome-secondary" onClick={onLogin}>
-        Already have an account? <strong>Log in</strong>
+      <button className="welcome-primary" onClick={next}>
+        Get started <span aria-hidden="true">🚀</span>
       </button>
+      <button className="welcome-secondary" onClick={onLogin}>I already have an account</button>
     </div>
   </div>;
 }
