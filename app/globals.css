@@ -1072,8 +1072,8 @@
 .birthday-cake {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: 112%;
+  object-fit: fill;
 }
 
 .birthday-candle-field {
