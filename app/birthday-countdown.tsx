@@ -302,7 +302,13 @@ function BirthdaySlotComposition({
             left: 15,
             width: 610,
             height: 1285,
-            clipPath: "polygon(0 0,87% 0,87% 90.35%,0 90.35%)",
+            // The draggable CSS lever covers the artwork's arm before launch.
+            // Reveal the artwork's real arm for the celebration so it remains
+            // attached to the machine and can be buried by the confetti layer.
+            clipPath:
+              frame >= CELEBRATION_START_FRAME
+                ? "polygon(0 0,100% 0,100% 90.35%,0 90.35%)"
+                : "polygon(0 0,87% 0,87% 90.35%,0 90.35%)",
           }}
         />
 
@@ -525,11 +531,11 @@ function BirthdaySlotComposition({
             }}
           />
 
-          {Array.from({ length: reducedMotion ? 320 : 1260 }, (_, index) => {
+          {Array.from({ length: reducedMotion ? 2160 : 4096 }, (_, index) => {
             // The square-root distribution deliberately increases the emission
             // rate: a trickle at first, then a near-solid burst at full speed.
-            const particleCount = reducedMotion ? 320 : 1260;
-            const particleColumns = reducedMotion ? 20 : 42;
+            const particleCount = reducedMotion ? 2160 : 4096;
+            const particleColumns = reducedMotion ? 40 : 64;
             const particleRows = particleCount / particleColumns;
             const startFrame =
               102 + 112 * Math.sqrt(index / (particleCount - 1));
@@ -610,9 +616,9 @@ function BirthdaySlotComposition({
             const column = cellIndex % particleColumns;
             const row = Math.floor(cellIndex / particleColumns);
             const jitterX =
-              ((((index * 83) % 103) / 102) - 0.5) * 36;
+              ((((index * 83) % 103) / 102) - 0.5) * 6;
             const jitterY =
-              ((((index * 149) % 107) / 106) - 0.5) * 78;
+              ((((index * 149) % 107) / 106) - 0.5) * 10;
             const targetX = Math.max(
               -30,
               Math.min(
@@ -697,21 +703,21 @@ function BirthdaySlotComposition({
               },
             );
             const pieceWidth =
-              index % 5 === 0
-                ? 52
-                : index % 3 === 0
-                  ? 42
-                  : index % 2 === 0
-                    ? 34
-                    : 28;
-            const pieceHeight =
-              index % 7 === 0
-                ? 68
-                : index % 4 === 0
-                  ? 58
+              index % 11 === 0
+                ? 28
+                : index % 5 === 0
+                  ? 24
                   : index % 3 === 0
-                    ? 46
-                    : 52;
+                    ? 22
+                    : 20;
+            const pieceHeight =
+              index % 13 === 0
+                ? 42
+                : index % 7 === 0
+                  ? 38
+                  : index % 3 === 0
+                    ? 34
+                    : 32;
 
             return (
               <span
@@ -723,7 +729,7 @@ function BirthdaySlotComposition({
                   left: 0,
                   width: pieceWidth,
                   height: pieceHeight,
-                  border: "2px solid rgba(23,19,31,.38)",
+                  border: "1px solid rgba(23,19,31,.38)",
                   borderRadius:
                     index % 5 === 0
                       ? 999
