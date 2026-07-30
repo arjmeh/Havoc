@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "filename": "kling_20260731_VIDEO_Animate_al_1496_0.mp4",
+    "sha256": "11c151174d51e663b6b8a9dc1d88d432fd11e33e7ed4db0fa6d0c4394b4b763b",
+    "width": 1292,
+    "height": 712,
+    "durationSeconds": 3.041995,
+    "fps": "24/1",
+    "sourceHadAudio": true
+  },
+  "runtime": {
+    "animatedSrc": "/havoc-friends-trio.webp",
+    "reducedMotionSrc": "/havoc-friends-trio-still.webp",
+    "format": "animated WebP",
+    "width": 520,
+    "height": 300,
+    "frames": 73,
+    "durationMilliseconds": 3042,
+    "loop": true,
+    "muted": true,
+    "containsAudio": false,
+    "cropBeforeKey": {
+      "x": 0,
+      "y": 10,
+      "width": 1292,
+      "height": 640
+    },
+    "watermarkExcluded": true,
+    "greenFringeRatio": 0.0,
+    "greenFringeRatioMaxSampled": 0.0,
+    "loopSeamMeanDifferenceBefore": 10.7025,
+    "loopSeamMeanDifferenceAfterBlend": 0.0,
+    "loopSeamMeanDifferenceAfterEncode": 0.0
+  }
+}

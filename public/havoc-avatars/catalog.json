@@ -1,0 +1,3418 @@
+{
+  "schemaVersion": 1,
+  "unicodeVersion": "17.0",
+  "artworkLicense": "Original Havoc repository artwork",
+  "vendorArtworkUsed": false,
+  "standardCount": 119,
+  "exclusiveCount": 12,
+  "fullSize": {
+    "width": 256,
+    "height": 256
+  },
+  "thumbnailSize": {
+    "width": 96,
+    "height": 96
+  },
+  "lockBadgeSrc": "/havoc-avatars/havoc-avatar-lock.webp",
+  "atlasSrc": "/havoc-avatars/havoc-avatar-atlas.webp",
+  "avatars": [
+    {
+      "id": "grinning-face",
+      "glyph": "😀",
+      "unicodeReference": "😀",
+      "unicodeCodepoints": [
+        "1F600"
+      ],
+      "name": "grinning face",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/grinning-face.webp",
+      "imageSrc": "/havoc-avatars/full/grinning-face.webp",
+      "fullSrc": "/havoc-avatars/full/grinning-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select grinning face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 0,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "grinning-face-with-big-eyes",
+      "glyph": "😃",
+      "unicodeReference": "😃",
+      "unicodeCodepoints": [
+        "1F603"
+      ],
+      "name": "grinning face with big eyes",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/grinning-face-with-big-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/grinning-face-with-big-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/grinning-face-with-big-eyes.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select grinning face with big eyes avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 96,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "grinning-face-with-smiling-eyes",
+      "glyph": "😄",
+      "unicodeReference": "😄",
+      "unicodeCodepoints": [
+        "1F604"
+      ],
+      "name": "grinning face with smiling eyes",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/grinning-face-with-smiling-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/grinning-face-with-smiling-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/grinning-face-with-smiling-eyes.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select grinning face with smiling eyes avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 192,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "beaming-face-with-smiling-eyes",
+      "glyph": "😁",
+      "unicodeReference": "😁",
+      "unicodeCodepoints": [
+        "1F601"
+      ],
+      "name": "beaming face with smiling eyes",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/beaming-face-with-smiling-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/beaming-face-with-smiling-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/beaming-face-with-smiling-eyes.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select beaming face with smiling eyes avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 288,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "grinning-squinting-face",
+      "glyph": "😆",
+      "unicodeReference": "😆",
+      "unicodeCodepoints": [
+        "1F606"
+      ],
+      "name": "grinning squinting face",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/grinning-squinting-face.webp",
+      "imageSrc": "/havoc-avatars/full/grinning-squinting-face.webp",
+      "fullSrc": "/havoc-avatars/full/grinning-squinting-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select grinning squinting face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 384,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "grinning-face-with-sweat",
+      "glyph": "😅",
+      "unicodeReference": "😅",
+      "unicodeCodepoints": [
+        "1F605"
+      ],
+      "name": "grinning face with sweat",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/grinning-face-with-sweat.webp",
+      "imageSrc": "/havoc-avatars/full/grinning-face-with-sweat.webp",
+      "fullSrc": "/havoc-avatars/full/grinning-face-with-sweat.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select grinning face with sweat avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 480,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "rolling-on-the-floor-laughing",
+      "glyph": "🤣",
+      "unicodeReference": "🤣",
+      "unicodeCodepoints": [
+        "1F923"
+      ],
+      "name": "rolling on the floor laughing",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/rolling-on-the-floor-laughing.webp",
+      "imageSrc": "/havoc-avatars/full/rolling-on-the-floor-laughing.webp",
+      "fullSrc": "/havoc-avatars/full/rolling-on-the-floor-laughing.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select rolling on the floor laughing avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 576,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-tears-of-joy",
+      "glyph": "😂",
+      "unicodeReference": "😂",
+      "unicodeCodepoints": [
+        "1F602"
+      ],
+      "name": "face with tears of joy",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-tears-of-joy.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-tears-of-joy.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-tears-of-joy.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with tears of joy avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 672,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "slightly-smiling-face",
+      "glyph": "🙂",
+      "unicodeReference": "🙂",
+      "unicodeCodepoints": [
+        "1F642"
+      ],
+      "name": "slightly smiling face",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/slightly-smiling-face.webp",
+      "imageSrc": "/havoc-avatars/full/slightly-smiling-face.webp",
+      "fullSrc": "/havoc-avatars/full/slightly-smiling-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select slightly smiling face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 768,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "upside-down-face",
+      "glyph": "🙃",
+      "unicodeReference": "🙃",
+      "unicodeCodepoints": [
+        "1F643"
+      ],
+      "name": "upside-down face",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/upside-down-face.webp",
+      "imageSrc": "/havoc-avatars/full/upside-down-face.webp",
+      "fullSrc": "/havoc-avatars/full/upside-down-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select upside-down face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 864,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "melting-face",
+      "glyph": "🫠",
+      "unicodeReference": "🫠",
+      "unicodeCodepoints": [
+        "1FAE0"
+      ],
+      "name": "melting face",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/melting-face.webp",
+      "imageSrc": "/havoc-avatars/full/melting-face.webp",
+      "fullSrc": "/havoc-avatars/full/melting-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select melting face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 960,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "winking-face",
+      "glyph": "😉",
+      "unicodeReference": "😉",
+      "unicodeCodepoints": [
+        "1F609"
+      ],
+      "name": "winking face",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/winking-face.webp",
+      "imageSrc": "/havoc-avatars/full/winking-face.webp",
+      "fullSrc": "/havoc-avatars/full/winking-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select winking face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 1056,
+        "y": 0,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "smiling-face-with-smiling-eyes",
+      "glyph": "😊",
+      "unicodeReference": "😊",
+      "unicodeCodepoints": [
+        "1F60A"
+      ],
+      "name": "smiling face with smiling eyes",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/smiling-face-with-smiling-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/smiling-face-with-smiling-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/smiling-face-with-smiling-eyes.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select smiling face with smiling eyes avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 0,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "smiling-face-with-halo",
+      "glyph": "😇",
+      "unicodeReference": "😇",
+      "unicodeCodepoints": [
+        "1F607"
+      ],
+      "name": "smiling face with halo",
+      "group": "face-smiling",
+      "thumbnailSrc": "/havoc-avatars/thumb/smiling-face-with-halo.webp",
+      "imageSrc": "/havoc-avatars/full/smiling-face-with-halo.webp",
+      "fullSrc": "/havoc-avatars/full/smiling-face-with-halo.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select smiling face with halo avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 96,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "smiling-face-with-hearts",
+      "glyph": "🥰",
+      "unicodeReference": "🥰",
+      "unicodeCodepoints": [
+        "1F970"
+      ],
+      "name": "smiling face with hearts",
+      "group": "face-affection",
+      "thumbnailSrc": "/havoc-avatars/thumb/smiling-face-with-hearts.webp",
+      "imageSrc": "/havoc-avatars/full/smiling-face-with-hearts.webp",
+      "fullSrc": "/havoc-avatars/full/smiling-face-with-hearts.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select smiling face with hearts avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 192,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "smiling-face-with-heart-eyes",
+      "glyph": "😍",
+      "unicodeReference": "😍",
+      "unicodeCodepoints": [
+        "1F60D"
+      ],
+      "name": "smiling face with heart-eyes",
+      "group": "face-affection",
+      "thumbnailSrc": "/havoc-avatars/thumb/smiling-face-with-heart-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/smiling-face-with-heart-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/smiling-face-with-heart-eyes.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select smiling face with heart-eyes avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 288,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "star-struck",
+      "glyph": "🤩",
+      "unicodeReference": "🤩",
+      "unicodeCodepoints": [
+        "1F929"
+      ],
+      "name": "star-struck",
+      "group": "face-affection",
+      "thumbnailSrc": "/havoc-avatars/thumb/star-struck.webp",
+      "imageSrc": "/havoc-avatars/full/star-struck.webp",
+      "fullSrc": "/havoc-avatars/full/star-struck.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select star-struck avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 384,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-blowing-a-kiss",
+      "glyph": "😘",
+      "unicodeReference": "😘",
+      "unicodeCodepoints": [
+        "1F618"
+      ],
+      "name": "face blowing a kiss",
+      "group": "face-affection",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-blowing-a-kiss.webp",
+      "imageSrc": "/havoc-avatars/full/face-blowing-a-kiss.webp",
+      "fullSrc": "/havoc-avatars/full/face-blowing-a-kiss.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face blowing a kiss avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 480,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "kissing-face",
+      "glyph": "😗",
+      "unicodeReference": "😗",
+      "unicodeCodepoints": [
+        "1F617"
+      ],
+      "name": "kissing face",
+      "group": "face-affection",
+      "thumbnailSrc": "/havoc-avatars/thumb/kissing-face.webp",
+      "imageSrc": "/havoc-avatars/full/kissing-face.webp",
+      "fullSrc": "/havoc-avatars/full/kissing-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select kissing face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 576,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "smiling-face",
+      "glyph": "☺️",
+      "unicodeReference": "☺️",
+      "unicodeCodepoints": [
+        "263A",
+        "FE0F"
+      ],
+      "name": "smiling face",
+      "group": "face-affection",
+      "thumbnailSrc": "/havoc-avatars/thumb/smiling-face.webp",
+      "imageSrc": "/havoc-avatars/full/smiling-face.webp",
+      "fullSrc": "/havoc-avatars/full/smiling-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select smiling face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 672,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "kissing-face-with-closed-eyes",
+      "glyph": "😚",
+      "unicodeReference": "😚",
+      "unicodeCodepoints": [
+        "1F61A"
+      ],
+      "name": "kissing face with closed eyes",
+      "group": "face-affection",
+      "thumbnailSrc": "/havoc-avatars/thumb/kissing-face-with-closed-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/kissing-face-with-closed-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/kissing-face-with-closed-eyes.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select kissing face with closed eyes avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 768,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "kissing-face-with-smiling-eyes",
+      "glyph": "😙",
+      "unicodeReference": "😙",
+      "unicodeCodepoints": [
+        "1F619"
+      ],
+      "name": "kissing face with smiling eyes",
+      "group": "face-affection",
+      "thumbnailSrc": "/havoc-avatars/thumb/kissing-face-with-smiling-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/kissing-face-with-smiling-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/kissing-face-with-smiling-eyes.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select kissing face with smiling eyes avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 864,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "smiling-face-with-tear",
+      "glyph": "🥲",
+      "unicodeReference": "🥲",
+      "unicodeCodepoints": [
+        "1F972"
+      ],
+      "name": "smiling face with tear",
+      "group": "face-affection",
+      "thumbnailSrc": "/havoc-avatars/thumb/smiling-face-with-tear.webp",
+      "imageSrc": "/havoc-avatars/full/smiling-face-with-tear.webp",
+      "fullSrc": "/havoc-avatars/full/smiling-face-with-tear.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select smiling face with tear avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 960,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-savoring-food",
+      "glyph": "😋",
+      "unicodeReference": "😋",
+      "unicodeCodepoints": [
+        "1F60B"
+      ],
+      "name": "face savoring food",
+      "group": "face-tongue",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-savoring-food.webp",
+      "imageSrc": "/havoc-avatars/full/face-savoring-food.webp",
+      "fullSrc": "/havoc-avatars/full/face-savoring-food.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face savoring food avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 1056,
+        "y": 96,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-tongue",
+      "glyph": "😛",
+      "unicodeReference": "😛",
+      "unicodeCodepoints": [
+        "1F61B"
+      ],
+      "name": "face with tongue",
+      "group": "face-tongue",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-tongue.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-tongue.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-tongue.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with tongue avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 0,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "winking-face-with-tongue",
+      "glyph": "😜",
+      "unicodeReference": "😜",
+      "unicodeCodepoints": [
+        "1F61C"
+      ],
+      "name": "winking face with tongue",
+      "group": "face-tongue",
+      "thumbnailSrc": "/havoc-avatars/thumb/winking-face-with-tongue.webp",
+      "imageSrc": "/havoc-avatars/full/winking-face-with-tongue.webp",
+      "fullSrc": "/havoc-avatars/full/winking-face-with-tongue.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select winking face with tongue avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 96,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "zany-face",
+      "glyph": "🤪",
+      "unicodeReference": "🤪",
+      "unicodeCodepoints": [
+        "1F92A"
+      ],
+      "name": "zany face",
+      "group": "face-tongue",
+      "thumbnailSrc": "/havoc-avatars/thumb/zany-face.webp",
+      "imageSrc": "/havoc-avatars/full/zany-face.webp",
+      "fullSrc": "/havoc-avatars/full/zany-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select zany face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 192,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "squinting-face-with-tongue",
+      "glyph": "😝",
+      "unicodeReference": "😝",
+      "unicodeCodepoints": [
+        "1F61D"
+      ],
+      "name": "squinting face with tongue",
+      "group": "face-tongue",
+      "thumbnailSrc": "/havoc-avatars/thumb/squinting-face-with-tongue.webp",
+      "imageSrc": "/havoc-avatars/full/squinting-face-with-tongue.webp",
+      "fullSrc": "/havoc-avatars/full/squinting-face-with-tongue.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select squinting face with tongue avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 288,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "money-mouth-face",
+      "glyph": "🤑",
+      "unicodeReference": "🤑",
+      "unicodeCodepoints": [
+        "1F911"
+      ],
+      "name": "money-mouth face",
+      "group": "face-tongue",
+      "thumbnailSrc": "/havoc-avatars/thumb/money-mouth-face.webp",
+      "imageSrc": "/havoc-avatars/full/money-mouth-face.webp",
+      "fullSrc": "/havoc-avatars/full/money-mouth-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select money-mouth face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 384,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "smiling-face-with-open-hands",
+      "glyph": "🤗",
+      "unicodeReference": "🤗",
+      "unicodeCodepoints": [
+        "1F917"
+      ],
+      "name": "smiling face with open hands",
+      "group": "face-hand",
+      "thumbnailSrc": "/havoc-avatars/thumb/smiling-face-with-open-hands.webp",
+      "imageSrc": "/havoc-avatars/full/smiling-face-with-open-hands.webp",
+      "fullSrc": "/havoc-avatars/full/smiling-face-with-open-hands.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select smiling face with open hands avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 480,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-hand-over-mouth",
+      "glyph": "🤭",
+      "unicodeReference": "🤭",
+      "unicodeCodepoints": [
+        "1F92D"
+      ],
+      "name": "face with hand over mouth",
+      "group": "face-hand",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-hand-over-mouth.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-hand-over-mouth.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-hand-over-mouth.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with hand over mouth avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 576,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-open-eyes-and-hand-over-mouth",
+      "glyph": "🫢",
+      "unicodeReference": "🫢",
+      "unicodeCodepoints": [
+        "1FAE2"
+      ],
+      "name": "face with open eyes and hand over mouth",
+      "group": "face-hand",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-open-eyes-and-hand-over-mouth.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-open-eyes-and-hand-over-mouth.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-open-eyes-and-hand-over-mouth.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with open eyes and hand over mouth avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 672,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-peeking-eye",
+      "glyph": "🫣",
+      "unicodeReference": "🫣",
+      "unicodeCodepoints": [
+        "1FAE3"
+      ],
+      "name": "face with peeking eye",
+      "group": "face-hand",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-peeking-eye.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-peeking-eye.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-peeking-eye.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with peeking eye avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 768,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "shushing-face",
+      "glyph": "🤫",
+      "unicodeReference": "🤫",
+      "unicodeCodepoints": [
+        "1F92B"
+      ],
+      "name": "shushing face",
+      "group": "face-hand",
+      "thumbnailSrc": "/havoc-avatars/thumb/shushing-face.webp",
+      "imageSrc": "/havoc-avatars/full/shushing-face.webp",
+      "fullSrc": "/havoc-avatars/full/shushing-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select shushing face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 864,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "thinking-face",
+      "glyph": "🤔",
+      "unicodeReference": "🤔",
+      "unicodeCodepoints": [
+        "1F914"
+      ],
+      "name": "thinking face",
+      "group": "face-hand",
+      "thumbnailSrc": "/havoc-avatars/thumb/thinking-face.webp",
+      "imageSrc": "/havoc-avatars/full/thinking-face.webp",
+      "fullSrc": "/havoc-avatars/full/thinking-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select thinking face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 960,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "saluting-face",
+      "glyph": "🫡",
+      "unicodeReference": "🫡",
+      "unicodeCodepoints": [
+        "1FAE1"
+      ],
+      "name": "saluting face",
+      "group": "face-hand",
+      "thumbnailSrc": "/havoc-avatars/thumb/saluting-face.webp",
+      "imageSrc": "/havoc-avatars/full/saluting-face.webp",
+      "fullSrc": "/havoc-avatars/full/saluting-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select saluting face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 1056,
+        "y": 192,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "zipper-mouth-face",
+      "glyph": "🤐",
+      "unicodeReference": "🤐",
+      "unicodeCodepoints": [
+        "1F910"
+      ],
+      "name": "zipper-mouth face",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/zipper-mouth-face.webp",
+      "imageSrc": "/havoc-avatars/full/zipper-mouth-face.webp",
+      "fullSrc": "/havoc-avatars/full/zipper-mouth-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select zipper-mouth face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 0,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-raised-eyebrow",
+      "glyph": "🤨",
+      "unicodeReference": "🤨",
+      "unicodeCodepoints": [
+        "1F928"
+      ],
+      "name": "face with raised eyebrow",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-raised-eyebrow.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-raised-eyebrow.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-raised-eyebrow.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with raised eyebrow avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 96,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "neutral-face",
+      "glyph": "😐",
+      "unicodeReference": "😐",
+      "unicodeCodepoints": [
+        "1F610"
+      ],
+      "name": "neutral face",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/neutral-face.webp",
+      "imageSrc": "/havoc-avatars/full/neutral-face.webp",
+      "fullSrc": "/havoc-avatars/full/neutral-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select neutral face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 192,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "expressionless-face",
+      "glyph": "😑",
+      "unicodeReference": "😑",
+      "unicodeCodepoints": [
+        "1F611"
+      ],
+      "name": "expressionless face",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/expressionless-face.webp",
+      "imageSrc": "/havoc-avatars/full/expressionless-face.webp",
+      "fullSrc": "/havoc-avatars/full/expressionless-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select expressionless face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 288,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-without-mouth",
+      "glyph": "😶",
+      "unicodeReference": "😶",
+      "unicodeCodepoints": [
+        "1F636"
+      ],
+      "name": "face without mouth",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-without-mouth.webp",
+      "imageSrc": "/havoc-avatars/full/face-without-mouth.webp",
+      "fullSrc": "/havoc-avatars/full/face-without-mouth.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face without mouth avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 384,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "dotted-line-face",
+      "glyph": "🫥",
+      "unicodeReference": "🫥",
+      "unicodeCodepoints": [
+        "1FAE5"
+      ],
+      "name": "dotted line face",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/dotted-line-face.webp",
+      "imageSrc": "/havoc-avatars/full/dotted-line-face.webp",
+      "fullSrc": "/havoc-avatars/full/dotted-line-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select dotted line face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 480,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-in-clouds",
+      "glyph": "😶‍🌫️",
+      "unicodeReference": "😶‍🌫️",
+      "unicodeCodepoints": [
+        "1F636",
+        "200D",
+        "1F32B",
+        "FE0F"
+      ],
+      "name": "face in clouds",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-in-clouds.webp",
+      "imageSrc": "/havoc-avatars/full/face-in-clouds.webp",
+      "fullSrc": "/havoc-avatars/full/face-in-clouds.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face in clouds avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 576,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "smirking-face",
+      "glyph": "😏",
+      "unicodeReference": "😏",
+      "unicodeCodepoints": [
+        "1F60F"
+      ],
+      "name": "smirking face",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/smirking-face.webp",
+      "imageSrc": "/havoc-avatars/full/smirking-face.webp",
+      "fullSrc": "/havoc-avatars/full/smirking-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select smirking face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 672,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "unamused-face",
+      "glyph": "😒",
+      "unicodeReference": "😒",
+      "unicodeCodepoints": [
+        "1F612"
+      ],
+      "name": "unamused face",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/unamused-face.webp",
+      "imageSrc": "/havoc-avatars/full/unamused-face.webp",
+      "fullSrc": "/havoc-avatars/full/unamused-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select unamused face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 768,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-rolling-eyes",
+      "glyph": "🙄",
+      "unicodeReference": "🙄",
+      "unicodeCodepoints": [
+        "1F644"
+      ],
+      "name": "face with rolling eyes",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-rolling-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-rolling-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-rolling-eyes.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with rolling eyes avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 864,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "grimacing-face",
+      "glyph": "😬",
+      "unicodeReference": "😬",
+      "unicodeCodepoints": [
+        "1F62C"
+      ],
+      "name": "grimacing face",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/grimacing-face.webp",
+      "imageSrc": "/havoc-avatars/full/grimacing-face.webp",
+      "fullSrc": "/havoc-avatars/full/grimacing-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select grimacing face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 960,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-exhaling",
+      "glyph": "😮‍💨",
+      "unicodeReference": "😮‍💨",
+      "unicodeCodepoints": [
+        "1F62E",
+        "200D",
+        "1F4A8"
+      ],
+      "name": "face exhaling",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-exhaling.webp",
+      "imageSrc": "/havoc-avatars/full/face-exhaling.webp",
+      "fullSrc": "/havoc-avatars/full/face-exhaling.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face exhaling avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 1056,
+        "y": 288,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "lying-face",
+      "glyph": "🤥",
+      "unicodeReference": "🤥",
+      "unicodeCodepoints": [
+        "1F925"
+      ],
+      "name": "lying face",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/lying-face.webp",
+      "imageSrc": "/havoc-avatars/full/lying-face.webp",
+      "fullSrc": "/havoc-avatars/full/lying-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select lying face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 0,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "shaking-face",
+      "glyph": "🫨",
+      "unicodeReference": "🫨",
+      "unicodeCodepoints": [
+        "1FAE8"
+      ],
+      "name": "shaking face",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/shaking-face.webp",
+      "imageSrc": "/havoc-avatars/full/shaking-face.webp",
+      "fullSrc": "/havoc-avatars/full/shaking-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select shaking face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 96,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "head-shaking-horizontally",
+      "glyph": "🙂‍↔️",
+      "unicodeReference": "🙂‍↔️",
+      "unicodeCodepoints": [
+        "1F642",
+        "200D",
+        "2194",
+        "FE0F"
+      ],
+      "name": "head shaking horizontally",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/head-shaking-horizontally.webp",
+      "imageSrc": "/havoc-avatars/full/head-shaking-horizontally.webp",
+      "fullSrc": "/havoc-avatars/full/head-shaking-horizontally.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select head shaking horizontally avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 192,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "head-shaking-vertically",
+      "glyph": "🙂‍↕️",
+      "unicodeReference": "🙂‍↕️",
+      "unicodeCodepoints": [
+        "1F642",
+        "200D",
+        "2195",
+        "FE0F"
+      ],
+      "name": "head shaking vertically",
+      "group": "face-neutral-skeptical",
+      "thumbnailSrc": "/havoc-avatars/thumb/head-shaking-vertically.webp",
+      "imageSrc": "/havoc-avatars/full/head-shaking-vertically.webp",
+      "fullSrc": "/havoc-avatars/full/head-shaking-vertically.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select head shaking vertically avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 288,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "relieved-face",
+      "glyph": "😌",
+      "unicodeReference": "😌",
+      "unicodeCodepoints": [
+        "1F60C"
+      ],
+      "name": "relieved face",
+      "group": "face-sleepy",
+      "thumbnailSrc": "/havoc-avatars/thumb/relieved-face.webp",
+      "imageSrc": "/havoc-avatars/full/relieved-face.webp",
+      "fullSrc": "/havoc-avatars/full/relieved-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select relieved face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 384,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "pensive-face",
+      "glyph": "😔",
+      "unicodeReference": "😔",
+      "unicodeCodepoints": [
+        "1F614"
+      ],
+      "name": "pensive face",
+      "group": "face-sleepy",
+      "thumbnailSrc": "/havoc-avatars/thumb/pensive-face.webp",
+      "imageSrc": "/havoc-avatars/full/pensive-face.webp",
+      "fullSrc": "/havoc-avatars/full/pensive-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select pensive face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 480,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "sleepy-face",
+      "glyph": "😪",
+      "unicodeReference": "😪",
+      "unicodeCodepoints": [
+        "1F62A"
+      ],
+      "name": "sleepy face",
+      "group": "face-sleepy",
+      "thumbnailSrc": "/havoc-avatars/thumb/sleepy-face.webp",
+      "imageSrc": "/havoc-avatars/full/sleepy-face.webp",
+      "fullSrc": "/havoc-avatars/full/sleepy-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select sleepy face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 576,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "drooling-face",
+      "glyph": "🤤",
+      "unicodeReference": "🤤",
+      "unicodeCodepoints": [
+        "1F924"
+      ],
+      "name": "drooling face",
+      "group": "face-sleepy",
+      "thumbnailSrc": "/havoc-avatars/thumb/drooling-face.webp",
+      "imageSrc": "/havoc-avatars/full/drooling-face.webp",
+      "fullSrc": "/havoc-avatars/full/drooling-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select drooling face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 672,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "sleeping-face",
+      "glyph": "😴",
+      "unicodeReference": "😴",
+      "unicodeCodepoints": [
+        "1F634"
+      ],
+      "name": "sleeping face",
+      "group": "face-sleepy",
+      "thumbnailSrc": "/havoc-avatars/thumb/sleeping-face.webp",
+      "imageSrc": "/havoc-avatars/full/sleeping-face.webp",
+      "fullSrc": "/havoc-avatars/full/sleeping-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select sleeping face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 768,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-bags-under-eyes",
+      "glyph": "🫩",
+      "unicodeReference": "🫩",
+      "unicodeCodepoints": [
+        "1FAE9"
+      ],
+      "name": "face with bags under eyes",
+      "group": "face-sleepy",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-bags-under-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-bags-under-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-bags-under-eyes.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with bags under eyes avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 864,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-medical-mask",
+      "glyph": "😷",
+      "unicodeReference": "😷",
+      "unicodeCodepoints": [
+        "1F637"
+      ],
+      "name": "face with medical mask",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-medical-mask.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-medical-mask.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-medical-mask.webp",
+      "background": "linear-gradient(145deg, #E6FBFF, #8BDDF4 58%, #3A79B8)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with medical mask avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 960,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-thermometer",
+      "glyph": "🤒",
+      "unicodeReference": "🤒",
+      "unicodeCodepoints": [
+        "1F912"
+      ],
+      "name": "face with thermometer",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-thermometer.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-thermometer.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-thermometer.webp",
+      "background": "linear-gradient(145deg, #E6FBFF, #8BDDF4 58%, #3A79B8)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with thermometer avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 1056,
+        "y": 384,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-head-bandage",
+      "glyph": "🤕",
+      "unicodeReference": "🤕",
+      "unicodeCodepoints": [
+        "1F915"
+      ],
+      "name": "face with head-bandage",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-head-bandage.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-head-bandage.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-head-bandage.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with head-bandage avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 0,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "nauseated-face",
+      "glyph": "🤢",
+      "unicodeReference": "🤢",
+      "unicodeCodepoints": [
+        "1F922"
+      ],
+      "name": "nauseated face",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/nauseated-face.webp",
+      "imageSrc": "/havoc-avatars/full/nauseated-face.webp",
+      "fullSrc": "/havoc-avatars/full/nauseated-face.webp",
+      "background": "linear-gradient(145deg, #E8FF88, #B8EC35 58%, #5C9C29)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select nauseated face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 96,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-vomiting",
+      "glyph": "🤮",
+      "unicodeReference": "🤮",
+      "unicodeCodepoints": [
+        "1F92E"
+      ],
+      "name": "face vomiting",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-vomiting.webp",
+      "imageSrc": "/havoc-avatars/full/face-vomiting.webp",
+      "fullSrc": "/havoc-avatars/full/face-vomiting.webp",
+      "background": "linear-gradient(145deg, #E8FF88, #B8EC35 58%, #5C9C29)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face vomiting avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 192,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "sneezing-face",
+      "glyph": "🤧",
+      "unicodeReference": "🤧",
+      "unicodeCodepoints": [
+        "1F927"
+      ],
+      "name": "sneezing face",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/sneezing-face.webp",
+      "imageSrc": "/havoc-avatars/full/sneezing-face.webp",
+      "fullSrc": "/havoc-avatars/full/sneezing-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select sneezing face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 288,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "hot-face",
+      "glyph": "🥵",
+      "unicodeReference": "🥵",
+      "unicodeCodepoints": [
+        "1F975"
+      ],
+      "name": "hot face",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/hot-face.webp",
+      "imageSrc": "/havoc-avatars/full/hot-face.webp",
+      "fullSrc": "/havoc-avatars/full/hot-face.webp",
+      "background": "linear-gradient(145deg, #FF9C9F, #FF5D6C 58%, #B91E4C)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select hot face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 384,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "cold-face",
+      "glyph": "🥶",
+      "unicodeReference": "🥶",
+      "unicodeCodepoints": [
+        "1F976"
+      ],
+      "name": "cold face",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/cold-face.webp",
+      "imageSrc": "/havoc-avatars/full/cold-face.webp",
+      "fullSrc": "/havoc-avatars/full/cold-face.webp",
+      "background": "linear-gradient(145deg, #E6FBFF, #8BDDF4 58%, #3A79B8)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select cold face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 480,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "woozy-face",
+      "glyph": "🥴",
+      "unicodeReference": "🥴",
+      "unicodeCodepoints": [
+        "1F974"
+      ],
+      "name": "woozy face",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/woozy-face.webp",
+      "imageSrc": "/havoc-avatars/full/woozy-face.webp",
+      "fullSrc": "/havoc-avatars/full/woozy-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select woozy face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 576,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-crossed-out-eyes",
+      "glyph": "😵",
+      "unicodeReference": "😵",
+      "unicodeCodepoints": [
+        "1F635"
+      ],
+      "name": "face with crossed-out eyes",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-crossed-out-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-crossed-out-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-crossed-out-eyes.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with crossed-out eyes avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 672,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-spiral-eyes",
+      "glyph": "😵‍💫",
+      "unicodeReference": "😵‍💫",
+      "unicodeCodepoints": [
+        "1F635",
+        "200D",
+        "1F4AB"
+      ],
+      "name": "face with spiral eyes",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-spiral-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-spiral-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-spiral-eyes.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with spiral eyes avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 768,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exploding-head",
+      "glyph": "🤯",
+      "unicodeReference": "🤯",
+      "unicodeCodepoints": [
+        "1F92F"
+      ],
+      "name": "exploding head",
+      "group": "face-unwell",
+      "thumbnailSrc": "/havoc-avatars/thumb/exploding-head.webp",
+      "imageSrc": "/havoc-avatars/full/exploding-head.webp",
+      "fullSrc": "/havoc-avatars/full/exploding-head.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select exploding head avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 864,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "cowboy-hat-face",
+      "glyph": "🤠",
+      "unicodeReference": "🤠",
+      "unicodeCodepoints": [
+        "1F920"
+      ],
+      "name": "cowboy hat face",
+      "group": "face-hat",
+      "thumbnailSrc": "/havoc-avatars/thumb/cowboy-hat-face.webp",
+      "imageSrc": "/havoc-avatars/full/cowboy-hat-face.webp",
+      "fullSrc": "/havoc-avatars/full/cowboy-hat-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select cowboy hat face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 960,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "partying-face",
+      "glyph": "🥳",
+      "unicodeReference": "🥳",
+      "unicodeCodepoints": [
+        "1F973"
+      ],
+      "name": "partying face",
+      "group": "face-hat",
+      "thumbnailSrc": "/havoc-avatars/thumb/partying-face.webp",
+      "imageSrc": "/havoc-avatars/full/partying-face.webp",
+      "fullSrc": "/havoc-avatars/full/partying-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select partying face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 1056,
+        "y": 480,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "disguised-face",
+      "glyph": "🥸",
+      "unicodeReference": "🥸",
+      "unicodeCodepoints": [
+        "1F978"
+      ],
+      "name": "disguised face",
+      "group": "face-hat",
+      "thumbnailSrc": "/havoc-avatars/thumb/disguised-face.webp",
+      "imageSrc": "/havoc-avatars/full/disguised-face.webp",
+      "fullSrc": "/havoc-avatars/full/disguised-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select disguised face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 0,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "smiling-face-with-sunglasses",
+      "glyph": "😎",
+      "unicodeReference": "😎",
+      "unicodeCodepoints": [
+        "1F60E"
+      ],
+      "name": "smiling face with sunglasses",
+      "group": "face-glasses",
+      "thumbnailSrc": "/havoc-avatars/thumb/smiling-face-with-sunglasses.webp",
+      "imageSrc": "/havoc-avatars/full/smiling-face-with-sunglasses.webp",
+      "fullSrc": "/havoc-avatars/full/smiling-face-with-sunglasses.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select smiling face with sunglasses avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 96,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "nerd-face",
+      "glyph": "🤓",
+      "unicodeReference": "🤓",
+      "unicodeCodepoints": [
+        "1F913"
+      ],
+      "name": "nerd face",
+      "group": "face-glasses",
+      "thumbnailSrc": "/havoc-avatars/thumb/nerd-face.webp",
+      "imageSrc": "/havoc-avatars/full/nerd-face.webp",
+      "fullSrc": "/havoc-avatars/full/nerd-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select nerd face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 192,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-monocle",
+      "glyph": "🧐",
+      "unicodeReference": "🧐",
+      "unicodeCodepoints": [
+        "1F9D0"
+      ],
+      "name": "face with monocle",
+      "group": "face-glasses",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-monocle.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-monocle.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-monocle.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with monocle avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 288,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "confused-face",
+      "glyph": "😕",
+      "unicodeReference": "😕",
+      "unicodeCodepoints": [
+        "1F615"
+      ],
+      "name": "confused face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/confused-face.webp",
+      "imageSrc": "/havoc-avatars/full/confused-face.webp",
+      "fullSrc": "/havoc-avatars/full/confused-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select confused face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 384,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-diagonal-mouth",
+      "glyph": "🫤",
+      "unicodeReference": "🫤",
+      "unicodeCodepoints": [
+        "1FAE4"
+      ],
+      "name": "face with diagonal mouth",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-diagonal-mouth.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-diagonal-mouth.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-diagonal-mouth.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with diagonal mouth avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 480,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "worried-face",
+      "glyph": "😟",
+      "unicodeReference": "😟",
+      "unicodeCodepoints": [
+        "1F61F"
+      ],
+      "name": "worried face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/worried-face.webp",
+      "imageSrc": "/havoc-avatars/full/worried-face.webp",
+      "fullSrc": "/havoc-avatars/full/worried-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select worried face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 576,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "slightly-frowning-face",
+      "glyph": "🙁",
+      "unicodeReference": "🙁",
+      "unicodeCodepoints": [
+        "1F641"
+      ],
+      "name": "slightly frowning face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/slightly-frowning-face.webp",
+      "imageSrc": "/havoc-avatars/full/slightly-frowning-face.webp",
+      "fullSrc": "/havoc-avatars/full/slightly-frowning-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select slightly frowning face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 672,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "frowning-face",
+      "glyph": "☹️",
+      "unicodeReference": "☹️",
+      "unicodeCodepoints": [
+        "2639",
+        "FE0F"
+      ],
+      "name": "frowning face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/frowning-face.webp",
+      "imageSrc": "/havoc-avatars/full/frowning-face.webp",
+      "fullSrc": "/havoc-avatars/full/frowning-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select frowning face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 768,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-open-mouth",
+      "glyph": "😮",
+      "unicodeReference": "😮",
+      "unicodeCodepoints": [
+        "1F62E"
+      ],
+      "name": "face with open mouth",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-open-mouth.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-open-mouth.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-open-mouth.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with open mouth avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 864,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "hushed-face",
+      "glyph": "😯",
+      "unicodeReference": "😯",
+      "unicodeCodepoints": [
+        "1F62F"
+      ],
+      "name": "hushed face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/hushed-face.webp",
+      "imageSrc": "/havoc-avatars/full/hushed-face.webp",
+      "fullSrc": "/havoc-avatars/full/hushed-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select hushed face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 960,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "astonished-face",
+      "glyph": "😲",
+      "unicodeReference": "😲",
+      "unicodeCodepoints": [
+        "1F632"
+      ],
+      "name": "astonished face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/astonished-face.webp",
+      "imageSrc": "/havoc-avatars/full/astonished-face.webp",
+      "fullSrc": "/havoc-avatars/full/astonished-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select astonished face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 1056,
+        "y": 576,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "flushed-face",
+      "glyph": "😳",
+      "unicodeReference": "😳",
+      "unicodeCodepoints": [
+        "1F633"
+      ],
+      "name": "flushed face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/flushed-face.webp",
+      "imageSrc": "/havoc-avatars/full/flushed-face.webp",
+      "fullSrc": "/havoc-avatars/full/flushed-face.webp",
+      "background": "linear-gradient(145deg, #FFE39A, #F6BA3C 58%, #E36B2D)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select flushed face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 0,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "distorted-face",
+      "glyph": "🫪",
+      "unicodeReference": "🫪",
+      "unicodeCodepoints": [
+        "1FAEA"
+      ],
+      "name": "distorted face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/distorted-face.webp",
+      "imageSrc": "/havoc-avatars/full/distorted-face.webp",
+      "fullSrc": "/havoc-avatars/full/distorted-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select distorted face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 96,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "pleading-face",
+      "glyph": "🥺",
+      "unicodeReference": "🥺",
+      "unicodeCodepoints": [
+        "1F97A"
+      ],
+      "name": "pleading face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/pleading-face.webp",
+      "imageSrc": "/havoc-avatars/full/pleading-face.webp",
+      "fullSrc": "/havoc-avatars/full/pleading-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select pleading face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 192,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-holding-back-tears",
+      "glyph": "🥹",
+      "unicodeReference": "🥹",
+      "unicodeCodepoints": [
+        "1F979"
+      ],
+      "name": "face holding back tears",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-holding-back-tears.webp",
+      "imageSrc": "/havoc-avatars/full/face-holding-back-tears.webp",
+      "fullSrc": "/havoc-avatars/full/face-holding-back-tears.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face holding back tears avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 288,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "frowning-face-with-open-mouth",
+      "glyph": "😦",
+      "unicodeReference": "😦",
+      "unicodeCodepoints": [
+        "1F626"
+      ],
+      "name": "frowning face with open mouth",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/frowning-face-with-open-mouth.webp",
+      "imageSrc": "/havoc-avatars/full/frowning-face-with-open-mouth.webp",
+      "fullSrc": "/havoc-avatars/full/frowning-face-with-open-mouth.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select frowning face with open mouth avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 384,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "anguished-face",
+      "glyph": "😧",
+      "unicodeReference": "😧",
+      "unicodeCodepoints": [
+        "1F627"
+      ],
+      "name": "anguished face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/anguished-face.webp",
+      "imageSrc": "/havoc-avatars/full/anguished-face.webp",
+      "fullSrc": "/havoc-avatars/full/anguished-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select anguished face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 480,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "fearful-face",
+      "glyph": "😨",
+      "unicodeReference": "😨",
+      "unicodeCodepoints": [
+        "1F628"
+      ],
+      "name": "fearful face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/fearful-face.webp",
+      "imageSrc": "/havoc-avatars/full/fearful-face.webp",
+      "fullSrc": "/havoc-avatars/full/fearful-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select fearful face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 576,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "anxious-face-with-sweat",
+      "glyph": "😰",
+      "unicodeReference": "😰",
+      "unicodeCodepoints": [
+        "1F630"
+      ],
+      "name": "anxious face with sweat",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/anxious-face-with-sweat.webp",
+      "imageSrc": "/havoc-avatars/full/anxious-face-with-sweat.webp",
+      "fullSrc": "/havoc-avatars/full/anxious-face-with-sweat.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select anxious face with sweat avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 672,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "sad-but-relieved-face",
+      "glyph": "😥",
+      "unicodeReference": "😥",
+      "unicodeCodepoints": [
+        "1F625"
+      ],
+      "name": "sad but relieved face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/sad-but-relieved-face.webp",
+      "imageSrc": "/havoc-avatars/full/sad-but-relieved-face.webp",
+      "fullSrc": "/havoc-avatars/full/sad-but-relieved-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select sad but relieved face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 768,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "crying-face",
+      "glyph": "😢",
+      "unicodeReference": "😢",
+      "unicodeCodepoints": [
+        "1F622"
+      ],
+      "name": "crying face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/crying-face.webp",
+      "imageSrc": "/havoc-avatars/full/crying-face.webp",
+      "fullSrc": "/havoc-avatars/full/crying-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select crying face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 864,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "loudly-crying-face",
+      "glyph": "😭",
+      "unicodeReference": "😭",
+      "unicodeCodepoints": [
+        "1F62D"
+      ],
+      "name": "loudly crying face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/loudly-crying-face.webp",
+      "imageSrc": "/havoc-avatars/full/loudly-crying-face.webp",
+      "fullSrc": "/havoc-avatars/full/loudly-crying-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select loudly crying face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 960,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-screaming-in-fear",
+      "glyph": "😱",
+      "unicodeReference": "😱",
+      "unicodeCodepoints": [
+        "1F631"
+      ],
+      "name": "face screaming in fear",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-screaming-in-fear.webp",
+      "imageSrc": "/havoc-avatars/full/face-screaming-in-fear.webp",
+      "fullSrc": "/havoc-avatars/full/face-screaming-in-fear.webp",
+      "background": "linear-gradient(145deg, #FFE39A, #F6BA3C 58%, #E36B2D)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face screaming in fear avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 1056,
+        "y": 672,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "confounded-face",
+      "glyph": "😖",
+      "unicodeReference": "😖",
+      "unicodeCodepoints": [
+        "1F616"
+      ],
+      "name": "confounded face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/confounded-face.webp",
+      "imageSrc": "/havoc-avatars/full/confounded-face.webp",
+      "fullSrc": "/havoc-avatars/full/confounded-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select confounded face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 0,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "persevering-face",
+      "glyph": "😣",
+      "unicodeReference": "😣",
+      "unicodeCodepoints": [
+        "1F623"
+      ],
+      "name": "persevering face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/persevering-face.webp",
+      "imageSrc": "/havoc-avatars/full/persevering-face.webp",
+      "fullSrc": "/havoc-avatars/full/persevering-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select persevering face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 96,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "disappointed-face",
+      "glyph": "😞",
+      "unicodeReference": "😞",
+      "unicodeCodepoints": [
+        "1F61E"
+      ],
+      "name": "disappointed face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/disappointed-face.webp",
+      "imageSrc": "/havoc-avatars/full/disappointed-face.webp",
+      "fullSrc": "/havoc-avatars/full/disappointed-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select disappointed face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 192,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "downcast-face-with-sweat",
+      "glyph": "😓",
+      "unicodeReference": "😓",
+      "unicodeCodepoints": [
+        "1F613"
+      ],
+      "name": "downcast face with sweat",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/downcast-face-with-sweat.webp",
+      "imageSrc": "/havoc-avatars/full/downcast-face-with-sweat.webp",
+      "fullSrc": "/havoc-avatars/full/downcast-face-with-sweat.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select downcast face with sweat avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 288,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "weary-face",
+      "glyph": "😩",
+      "unicodeReference": "😩",
+      "unicodeCodepoints": [
+        "1F629"
+      ],
+      "name": "weary face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/weary-face.webp",
+      "imageSrc": "/havoc-avatars/full/weary-face.webp",
+      "fullSrc": "/havoc-avatars/full/weary-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select weary face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 384,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "tired-face",
+      "glyph": "😫",
+      "unicodeReference": "😫",
+      "unicodeCodepoints": [
+        "1F62B"
+      ],
+      "name": "tired face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/tired-face.webp",
+      "imageSrc": "/havoc-avatars/full/tired-face.webp",
+      "fullSrc": "/havoc-avatars/full/tired-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select tired face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 480,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "yawning-face",
+      "glyph": "🥱",
+      "unicodeReference": "🥱",
+      "unicodeCodepoints": [
+        "1F971"
+      ],
+      "name": "yawning face",
+      "group": "face-concerned",
+      "thumbnailSrc": "/havoc-avatars/thumb/yawning-face.webp",
+      "imageSrc": "/havoc-avatars/full/yawning-face.webp",
+      "fullSrc": "/havoc-avatars/full/yawning-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select yawning face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 576,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-steam-from-nose",
+      "glyph": "😤",
+      "unicodeReference": "😤",
+      "unicodeCodepoints": [
+        "1F624"
+      ],
+      "name": "face with steam from nose",
+      "group": "face-negative",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-steam-from-nose.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-steam-from-nose.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-steam-from-nose.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with steam from nose avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 672,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "enraged-face",
+      "glyph": "😡",
+      "unicodeReference": "😡",
+      "unicodeCodepoints": [
+        "1F621"
+      ],
+      "name": "enraged face",
+      "group": "face-negative",
+      "thumbnailSrc": "/havoc-avatars/thumb/enraged-face.webp",
+      "imageSrc": "/havoc-avatars/full/enraged-face.webp",
+      "fullSrc": "/havoc-avatars/full/enraged-face.webp",
+      "background": "linear-gradient(145deg, #FF9C9F, #FF5D6C 58%, #B91E4C)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select enraged face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 768,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "angry-face",
+      "glyph": "😠",
+      "unicodeReference": "😠",
+      "unicodeCodepoints": [
+        "1F620"
+      ],
+      "name": "angry face",
+      "group": "face-negative",
+      "thumbnailSrc": "/havoc-avatars/thumb/angry-face.webp",
+      "imageSrc": "/havoc-avatars/full/angry-face.webp",
+      "fullSrc": "/havoc-avatars/full/angry-face.webp",
+      "background": "linear-gradient(145deg, #FF9C9F, #FF5D6C 58%, #B91E4C)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select angry face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 864,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "face-with-symbols-on-mouth",
+      "glyph": "🤬",
+      "unicodeReference": "🤬",
+      "unicodeCodepoints": [
+        "1F92C"
+      ],
+      "name": "face with symbols on mouth",
+      "group": "face-negative",
+      "thumbnailSrc": "/havoc-avatars/thumb/face-with-symbols-on-mouth.webp",
+      "imageSrc": "/havoc-avatars/full/face-with-symbols-on-mouth.webp",
+      "fullSrc": "/havoc-avatars/full/face-with-symbols-on-mouth.webp",
+      "background": "linear-gradient(145deg, #FF9C9F, #FF5D6C 58%, #B91E4C)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select face with symbols on mouth avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 960,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "smiling-face-with-horns",
+      "glyph": "😈",
+      "unicodeReference": "😈",
+      "unicodeCodepoints": [
+        "1F608"
+      ],
+      "name": "smiling face with horns",
+      "group": "face-negative",
+      "thumbnailSrc": "/havoc-avatars/thumb/smiling-face-with-horns.webp",
+      "imageSrc": "/havoc-avatars/full/smiling-face-with-horns.webp",
+      "fullSrc": "/havoc-avatars/full/smiling-face-with-horns.webp",
+      "background": "linear-gradient(145deg, #D2A5FF, #8C4AF0 58%, #4B1A91)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select smiling face with horns avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 1056,
+        "y": 768,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "angry-face-with-horns",
+      "glyph": "👿",
+      "unicodeReference": "👿",
+      "unicodeCodepoints": [
+        "1F47F"
+      ],
+      "name": "angry face with horns",
+      "group": "face-negative",
+      "thumbnailSrc": "/havoc-avatars/thumb/angry-face-with-horns.webp",
+      "imageSrc": "/havoc-avatars/full/angry-face-with-horns.webp",
+      "fullSrc": "/havoc-avatars/full/angry-face-with-horns.webp",
+      "background": "linear-gradient(145deg, #D2A5FF, #8C4AF0 58%, #4B1A91)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select angry face with horns avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 0,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "skull",
+      "glyph": "💀",
+      "unicodeReference": "💀",
+      "unicodeCodepoints": [
+        "1F480"
+      ],
+      "name": "skull",
+      "group": "face-negative",
+      "thumbnailSrc": "/havoc-avatars/thumb/skull.webp",
+      "imageSrc": "/havoc-avatars/full/skull.webp",
+      "fullSrc": "/havoc-avatars/full/skull.webp",
+      "background": "linear-gradient(145deg, #FFFDE8, #E9DFC3 58%, #9E8E7A)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select skull avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 96,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "skull-and-crossbones",
+      "glyph": "☠️",
+      "unicodeReference": "☠️",
+      "unicodeCodepoints": [
+        "2620",
+        "FE0F"
+      ],
+      "name": "skull and crossbones",
+      "group": "face-negative",
+      "thumbnailSrc": "/havoc-avatars/thumb/skull-and-crossbones.webp",
+      "imageSrc": "/havoc-avatars/full/skull-and-crossbones.webp",
+      "fullSrc": "/havoc-avatars/full/skull-and-crossbones.webp",
+      "background": "linear-gradient(145deg, #FFFDE8, #E9DFC3 58%, #9E8E7A)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select skull and crossbones avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 192,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "pile-of-poo",
+      "glyph": "💩",
+      "unicodeReference": "💩",
+      "unicodeCodepoints": [
+        "1F4A9"
+      ],
+      "name": "pile of poo",
+      "group": "face-costume",
+      "thumbnailSrc": "/havoc-avatars/thumb/pile-of-poo.webp",
+      "imageSrc": "/havoc-avatars/full/pile-of-poo.webp",
+      "fullSrc": "/havoc-avatars/full/pile-of-poo.webp",
+      "background": "linear-gradient(145deg, #F3A962, #A85A32 58%, #5B251E)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select pile of poo avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 288,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "clown-face",
+      "glyph": "🤡",
+      "unicodeReference": "🤡",
+      "unicodeCodepoints": [
+        "1F921"
+      ],
+      "name": "clown face",
+      "group": "face-costume",
+      "thumbnailSrc": "/havoc-avatars/thumb/clown-face.webp",
+      "imageSrc": "/havoc-avatars/full/clown-face.webp",
+      "fullSrc": "/havoc-avatars/full/clown-face.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select clown face avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 384,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "ogre",
+      "glyph": "👹",
+      "unicodeReference": "👹",
+      "unicodeCodepoints": [
+        "1F479"
+      ],
+      "name": "ogre",
+      "group": "face-costume",
+      "thumbnailSrc": "/havoc-avatars/thumb/ogre.webp",
+      "imageSrc": "/havoc-avatars/full/ogre.webp",
+      "fullSrc": "/havoc-avatars/full/ogre.webp",
+      "background": "linear-gradient(145deg, #D2A5FF, #8C4AF0 58%, #4B1A91)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select ogre avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 480,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "goblin",
+      "glyph": "👺",
+      "unicodeReference": "👺",
+      "unicodeCodepoints": [
+        "1F47A"
+      ],
+      "name": "goblin",
+      "group": "face-costume",
+      "thumbnailSrc": "/havoc-avatars/thumb/goblin.webp",
+      "imageSrc": "/havoc-avatars/full/goblin.webp",
+      "fullSrc": "/havoc-avatars/full/goblin.webp",
+      "background": "linear-gradient(145deg, #D2A5FF, #8C4AF0 58%, #4B1A91)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select goblin avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 576,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "ghost",
+      "glyph": "👻",
+      "unicodeReference": "👻",
+      "unicodeCodepoints": [
+        "1F47B"
+      ],
+      "name": "ghost",
+      "group": "face-costume",
+      "thumbnailSrc": "/havoc-avatars/thumb/ghost.webp",
+      "imageSrc": "/havoc-avatars/full/ghost.webp",
+      "fullSrc": "/havoc-avatars/full/ghost.webp",
+      "background": "linear-gradient(145deg, #FFFDE8, #E9DFC3 58%, #9E8E7A)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select ghost avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 672,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "alien",
+      "glyph": "👽",
+      "unicodeReference": "👽",
+      "unicodeCodepoints": [
+        "1F47D"
+      ],
+      "name": "alien",
+      "group": "face-costume",
+      "thumbnailSrc": "/havoc-avatars/thumb/alien.webp",
+      "imageSrc": "/havoc-avatars/full/alien.webp",
+      "fullSrc": "/havoc-avatars/full/alien.webp",
+      "background": "linear-gradient(145deg, #A6FFF3, #38D8CE 58%, #147C98)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select alien avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 768,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "alien-monster",
+      "glyph": "👾",
+      "unicodeReference": "👾",
+      "unicodeCodepoints": [
+        "1F47E"
+      ],
+      "name": "alien monster",
+      "group": "face-costume",
+      "thumbnailSrc": "/havoc-avatars/thumb/alien-monster.webp",
+      "imageSrc": "/havoc-avatars/full/alien-monster.webp",
+      "fullSrc": "/havoc-avatars/full/alien-monster.webp",
+      "background": "linear-gradient(145deg, #A6FFF3, #38D8CE 58%, #147C98)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select alien monster avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 864,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "robot",
+      "glyph": "🤖",
+      "unicodeReference": "🤖",
+      "unicodeCodepoints": [
+        "1F916"
+      ],
+      "name": "robot",
+      "group": "face-costume",
+      "thumbnailSrc": "/havoc-avatars/thumb/robot.webp",
+      "imageSrc": "/havoc-avatars/full/robot.webp",
+      "fullSrc": "/havoc-avatars/full/robot.webp",
+      "background": "linear-gradient(145deg, #FFFFFF, #B9C5D2 58%, #58677C)",
+      "tier": "standard",
+      "locked": false,
+      "ariaLabel": "Select robot avatar",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 960,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-crowned-chaos",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Crowned Chaos",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-crowned-chaos.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-crowned-chaos.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-crowned-chaos.webp",
+      "background": "linear-gradient(145deg, #D2A5FF, #8C4AF0 58%, #4B1A91)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Crowned Chaos",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 1056,
+        "y": 864,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-liquid-gold",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Liquid Gold",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-liquid-gold.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-liquid-gold.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-liquid-gold.webp",
+      "background": "linear-gradient(145deg, #FFF38A, #F4CB3C 58%, #D98B18)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Liquid Gold",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 0,
+        "y": 960,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-jeweled-gaze",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Jeweled Gaze",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-jeweled-gaze.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-jeweled-gaze.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-jeweled-gaze.webp",
+      "background": "linear-gradient(145deg, #7164A8, #292447 58%, #0B0911)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Jeweled Gaze",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 96,
+        "y": 960,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-electric-pulse",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Electric Pulse",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-electric-pulse.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-electric-pulse.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-electric-pulse.webp",
+      "background": "linear-gradient(145deg, #A6FFF3, #38D8CE 58%, #147C98)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Electric Pulse",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 192,
+        "y": 960,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-fire-eyes",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Fire Eyes",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-fire-eyes.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-fire-eyes.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-fire-eyes.webp",
+      "background": "linear-gradient(145deg, #FF9C9F, #FF5D6C 58%, #B91E4C)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Fire Eyes",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 288,
+        "y": 960,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-chrome-mischief",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Chrome Mischief",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-chrome-mischief.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-chrome-mischief.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-chrome-mischief.webp",
+      "background": "linear-gradient(145deg, #FFFFFF, #B9C5D2 58%, #58677C)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Chrome Mischief",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 384,
+        "y": 960,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-cosmic-spiral",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Cosmic Spiral",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-cosmic-spiral.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-cosmic-spiral.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-cosmic-spiral.webp",
+      "background": "linear-gradient(145deg, #7164A8, #292447 58%, #0B0911)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Cosmic Spiral",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 480,
+        "y": 960,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-holographic-wink",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Holographic Wink",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-holographic-wink.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-holographic-wink.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-holographic-wink.webp",
+      "background": "linear-gradient(145deg, #FFD4F7, #7CDDF2 58%, #7C3AED)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Holographic Wink",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 576,
+        "y": 960,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-diamond-grin",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Diamond Grin",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-diamond-grin.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-diamond-grin.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-diamond-grin.webp",
+      "background": "linear-gradient(145deg, #E6FBFF, #8BDDF4 58%, #3A79B8)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Diamond Grin",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 672,
+        "y": 960,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-void-halo",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Void Halo",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-void-halo.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-void-halo.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-void-halo.webp",
+      "background": "linear-gradient(145deg, #7164A8, #292447 58%, #0B0911)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Void Halo",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 768,
+        "y": 960,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-neon-venom",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Neon Venom",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-neon-venom.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-neon-venom.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-neon-venom.webp",
+      "background": "linear-gradient(145deg, #E8FF88, #B8EC35 58%, #5C9C29)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Neon Venom",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 864,
+        "y": 960,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    },
+    {
+      "id": "exclusive-royal-freeze",
+      "glyph": "✦",
+      "unicodeReference": "",
+      "unicodeCodepoints": [],
+      "name": "Royal Freeze",
+      "group": "exclusive-original",
+      "thumbnailSrc": "/havoc-avatars/thumb/exclusive-royal-freeze.webp",
+      "imageSrc": "/havoc-avatars/full/exclusive-royal-freeze.webp",
+      "fullSrc": "/havoc-avatars/full/exclusive-royal-freeze.webp",
+      "background": "linear-gradient(145deg, #E6FBFF, #8BDDF4 58%, #3A79B8)",
+      "tier": "exclusive",
+      "locked": true,
+      "ariaLabel": "Exclusive avatar—locked: Royal Freeze",
+      "atlas": {
+        "src": "/havoc-avatars/havoc-avatar-atlas.webp",
+        "x": 960,
+        "y": 960,
+        "width": 96,
+        "height": 96,
+        "columns": 12,
+        "rows": 11
+      }
+    }
+  ]
+}
