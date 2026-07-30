@@ -383,6 +383,7 @@ function BirthdaySlotComposition({
             display: "flex",
             width: 288,
             height: 128,
+            boxSizing: "border-box",
             alignItems: "center",
             flexDirection: "column",
             justifyContent: "center",
