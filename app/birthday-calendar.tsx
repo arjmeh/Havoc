@@ -372,7 +372,8 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   const flipIdRef = useRef(0);
   const monthRef = useRef(0);
   const wheelDistanceRef = useRef(0);
-  const wheelStepAtRef = useRef(0);
+  const wheelGestureLockedRef = useRef(false);
+  const wheelGestureResetTimerRef = useRef<number | null>(null);
   const reducedMotion = useReducedMotion();
   const season = getSeason(month);
   const cells = getMonthCells(month);
@@ -486,25 +487,33 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
       event.preventDefault();
       event.stopPropagation();
 
+      if (wheelGestureResetTimerRef.current !== null) {
+        window.clearTimeout(wheelGestureResetTimerRef.current);
+      }
+      wheelGestureResetTimerRef.current = window.setTimeout(() => {
+        wheelDistanceRef.current = 0;
+        wheelGestureLockedRef.current = false;
+        wheelGestureResetTimerRef.current = null;
+      }, 180);
+
       const verticalDistance = Math.abs(event.deltaY);
       const horizontalDistance = Math.abs(event.deltaX);
-      if (verticalDistance < 3 || verticalDistance < horizontalDistance) {
+      if (
+        wheelGestureLockedRef.current ||
+        verticalDistance < 3 ||
+        verticalDistance < horizontalDistance
+      ) {
         return;
       }
 
       wheelDistanceRef.current += event.deltaY;
-
-      const now = window.performance.now();
-      if (
-        Math.abs(wheelDistanceRef.current) < 28 ||
-        now - wheelStepAtRef.current < 190
-      ) {
+      if (Math.abs(wheelDistanceRef.current) < 28) {
         return;
       }
 
       const direction = wheelDistanceRef.current > 0 ? 1 : -1;
       wheelDistanceRef.current = 0;
-      wheelStepAtRef.current = now;
+      wheelGestureLockedRef.current = true;
       changeMonth(direction);
     };
 
@@ -512,8 +521,15 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
       capture: true,
       passive: false,
     });
-    return () =>
+    return () => {
       calendar.removeEventListener("wheel", handleCalendarWheel, true);
+      if (wheelGestureResetTimerRef.current !== null) {
+        window.clearTimeout(wheelGestureResetTimerRef.current);
+      }
+      wheelDistanceRef.current = 0;
+      wheelGestureLockedRef.current = false;
+      wheelGestureResetTimerRef.current = null;
+    };
   }, [confirmedBirthday, reducedMotion]);
 
   return (
