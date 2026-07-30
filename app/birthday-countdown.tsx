@@ -228,15 +228,6 @@ function BirthdaySlotComposition({
   const resultVisible = reducedMotion
     ? frame >= SPIN_START_FRAME
     : frame >= 72;
-  const celebrationProgress = interpolate(
-    frame,
-    [CELEBRATION_START_FRAME, FINAL_FRAME],
-    [0, 1],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
   const machineOpacity = interpolate(
     frame,
     [232, 239],
@@ -262,7 +253,9 @@ function BirthdaySlotComposition({
       style={{
         overflow: "hidden",
         background:
-          "radial-gradient(circle at 11% 7%,rgba(201,255,47,.58),transparent 24%),radial-gradient(circle at 92% 17%,rgba(124,58,237,.24),transparent 27%),linear-gradient(180deg,#fffef8 0%,#fff2e7 62%,#eee5ff 100%)",
+          frame >= 240
+            ? "transparent"
+            : "radial-gradient(circle at 11% 7%,rgba(201,255,47,.58),transparent 24%),radial-gradient(circle at 92% 17%,rgba(124,58,237,.24),transparent 27%),linear-gradient(180deg,#fffef8 0%,#fff2e7 62%,#eee5ff 100%)",
         color: "#17131f",
         fontFamily: "Arial, Helvetica, sans-serif",
       }}
@@ -771,9 +764,9 @@ function BirthdaySlotComposition({
           inset: 0,
           background: "#fffef8",
           opacity: interpolate(
-            celebrationProgress,
-            [0.83, 0.87],
-            [0, 1],
+            frame,
+            [232, 239, 240, 242],
+            [0, 1, 1, 0],
             {
               extrapolateLeft: "clamp",
               extrapolateRight: "clamp",
@@ -789,11 +782,13 @@ export function BirthdayCountdownScreen({
   day,
   monthIndex,
   next,
+  onTransitionStart,
   reducedMotion,
 }: {
   day: number;
   monthIndex: number;
   next: () => void;
+  onTransitionStart: () => void;
   reducedMotion: boolean;
 }) {
   const daysUntil = getDaysUntilBirthday(monthIndex, day);
@@ -882,6 +877,7 @@ export function BirthdayCountdownScreen({
 
   const startCelebration = useCallback(() => {
     if (phase !== "revealed") return;
+    onTransitionStart();
     setPhase("celebrating");
     navigator.vibrate?.(18);
     playFrames(
@@ -890,7 +886,7 @@ export function BirthdayCountdownScreen({
       reducedMotion ? 1300 : 4800,
       next,
     );
-  }, [next, phase, playFrames, reducedMotion]);
+  }, [next, onTransitionStart, phase, playFrames, reducedMotion]);
 
   useEffect(() => {
     playFrames(0, ENTRY_END_FRAME, reducedMotion ? 90 : 480, () => {

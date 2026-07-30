@@ -1606,6 +1606,24 @@
   background: #fffef8;
 }
 
+.birthday-transition-backdrop {
+  position: absolute;
+  z-index: 45;
+  inset: 0;
+  overflow: hidden;
+  background: #fffaf0;
+  pointer-events: none;
+}
+
+.birthday-transition-backdrop > .screen {
+  position: absolute;
+  inset: 0;
+}
+
+.birthday-countdown-screen[data-slot-phase="celebrating"] {
+  background: transparent;
+}
+
 .phone {
   overflow-anchor: none;
 }

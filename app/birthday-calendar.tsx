@@ -17,6 +17,7 @@ import type {
   CSSProperties,
   KeyboardEvent as ReactKeyboardEvent,
   PointerEvent as ReactPointerEvent,
+  ReactNode,
 } from "react";
 
 import { BirthdayCountdownScreen } from "./birthday-countdown";
@@ -390,13 +391,20 @@ function SeasonalScene({ season }: { season: Season }) {
   );
 }
 
-export function BirthdayCalendarScreen({ next }: { next: () => void }) {
+export function BirthdayCalendarScreen({
+  next,
+  transitionBackdrop,
+}: {
+  next: () => void;
+  transitionBackdrop: ReactNode;
+}) {
   const [month, setMonth] = useState(0);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [confirmedBirthday, setConfirmedBirthday] = useState<{
     day: number;
     monthIndex: number;
   } | null>(null);
+  const [isRevealingNextScreen, setIsRevealingNextScreen] = useState(false);
   const [flip, setFlip] = useState<{
     direction: FlipDirection;
     id: number;
@@ -755,11 +763,21 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
           </button>
         </div>
       </div>
+      {isRevealingNextScreen ? (
+        <div
+          className="birthday-transition-backdrop"
+          aria-hidden="true"
+          inert
+        >
+          {transitionBackdrop}
+        </div>
+      ) : null}
       {confirmedBirthday ? (
         <BirthdayCountdownScreen
           day={confirmedBirthday.day}
           monthIndex={confirmedBirthday.monthIndex}
           next={next}
+          onTransitionStart={() => setIsRevealingNextScreen(true)}
           reducedMotion={reducedMotion}
         />
       ) : null}
