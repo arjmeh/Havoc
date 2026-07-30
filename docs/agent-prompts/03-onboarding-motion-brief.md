@@ -56,7 +56,7 @@ When Get started is pressed:
   beyond the bottom edge so black never reopens.
 - Escalate rocket vibration during ascent without scaling it.
 - Let the rocket break through and exit completely above the phone.
-- Only then mount the birthday screen.
+- Only then mount the account-method screen.
 - Keep the complete flame tip visible; no source-canvas or phone-edge cutoff.
 
 Reduced motion should hide the rocket and crossfade the cream surface in about

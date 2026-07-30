@@ -49,7 +49,7 @@ not a raw chat transcript.
 - The impact pause is brief.
 - The rocket vibrates, keeps animated exhaust, and exits fully above the phone.
 - The complete flame tip must remain visible.
-- The birthday screen appears only after the wipe is complete.
+- The account-method screen appears only after the wipe is complete.
 
 ## Source and implementation decisions
 
