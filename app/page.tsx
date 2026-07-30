@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent } from "react";
+
+import { getAgeLine } from "./age-copy";
 
 const screens = [
   { id: "loading", group: "Entry & setup", label: "Loading", job: "Brand ignition", emoji: "💥" },
@@ -185,8 +188,158 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
   </div>;
 }
 
+const AGE_VALUES = Array.from({ length: 99 }, (_, index) => index + 1);
+
 function AgeScreen({ next }: { next: () => void }) {
-  return <div className="screen form-screen"><Status /><button className="back-link">← Back</button><span className="pill">Before the chaos</span><h2>When were you born?</h2><p className="sub">Age-appropriate parties, privacy, and game playlists.</p><label>Birthday<input type="text" inputMode="numeric" defaultValue="July 14, 2008" /></label><div className="trust-list"><span>✓ Friends-only at launch</span><span>✓ No public location sharing</span><span>✓ Game scoring, not open chat</span></div><button className="cta sticky" onClick={next}>Continue</button></div>;
+  const [age, setAge] = useState(18);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const readyRef = useRef(false);
+  const settleTimerRef = useRef<number | null>(null);
+
+  const scrollToAge = (nextAge: number, behavior: ScrollBehavior = "smooth") => {
+    const safeAge = Math.max(1, Math.min(99, nextAge));
+    const carousel = carouselRef.current;
+    const card = carousel?.querySelector<HTMLElement>(`[data-age="${safeAge}"]`);
+
+    setAge(safeAge);
+    setHasInteracted(true);
+
+    if (carousel && card) {
+      const left = card.offsetLeft - (carousel.clientWidth - card.offsetWidth) / 2;
+      if (behavior === "auto") {
+        carousel.style.scrollBehavior = "auto";
+        carousel.scrollLeft = left;
+        window.requestAnimationFrame(() => {
+          carousel.style.scrollBehavior = "";
+        });
+      } else {
+        carousel.scrollTo({ left, behavior });
+      }
+    }
+  };
+
+  useEffect(() => {
+    let readyFrame = 0;
+    const firstFrame = window.requestAnimationFrame(() => {
+      const carousel = carouselRef.current;
+      const card = carousel?.querySelector<HTMLElement>('[data-age="18"]');
+
+      if (carousel && card) {
+        const left = card.offsetLeft - (carousel.clientWidth - card.offsetWidth) / 2;
+        carousel.style.scrollBehavior = "auto";
+        carousel.scrollLeft = left;
+      }
+
+      readyFrame = window.requestAnimationFrame(() => {
+        if (carousel) carousel.style.scrollBehavior = "";
+        readyRef.current = true;
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(readyFrame);
+      if (settleTimerRef.current !== null) {
+        window.clearTimeout(settleTimerRef.current);
+      }
+    };
+  }, []);
+
+  const syncAgeFromScroll = () => {
+    if (!readyRef.current || !carouselRef.current) return;
+
+    const carousel = carouselRef.current;
+    const center = carousel.scrollLeft + carousel.clientWidth / 2;
+    const cards = Array.from(carousel.querySelectorAll<HTMLElement>("[data-age]"));
+    const closest = cards.reduce((best, card) => {
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const bestCenter = best.offsetLeft + best.offsetWidth / 2;
+      return Math.abs(cardCenter - center) < Math.abs(bestCenter - center) ? card : best;
+    });
+    const nextAge = Number(closest.dataset.age);
+
+    if (nextAge !== age) setAge(nextAge);
+    setHasInteracted(true);
+
+    if (settleTimerRef.current !== null) {
+      window.clearTimeout(settleTimerRef.current);
+    }
+    settleTimerRef.current = window.setTimeout(() => {
+      const left = closest.offsetLeft - (carousel.clientWidth - closest.offsetWidth) / 2;
+      carousel.scrollTo({ left, behavior: "smooth" });
+    }, 90);
+  };
+
+  const handleAgeKeys = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const commands: Record<string, number> = {
+      ArrowLeft: age - 1,
+      ArrowDown: age - 1,
+      ArrowRight: age + 1,
+      ArrowUp: age + 1,
+      PageDown: age - 10,
+      PageUp: age + 10,
+      Home: 1,
+      End: 99,
+    };
+
+    if (commands[event.key] === undefined) return;
+    event.preventDefault();
+    scrollToAge(commands[event.key], event.key === "Home" || event.key === "End" ? "auto" : "smooth");
+  };
+
+  return <div className="screen age-screen">
+    <Status />
+    <div className="age-topline">
+      <button className="back-link" aria-label="Go back">← Back</button>
+      <span className="pill">Your age</span>
+    </div>
+    <div className="age-heading">
+      <h2>How old are you?</h2>
+      <p>No fake birthdays. Once you confirm, this age is locked.</p>
+    </div>
+    <div
+      className="age-carousel"
+      ref={carouselRef}
+      onScroll={syncAgeFromScroll}
+      onKeyDown={handleAgeKeys}
+      role="slider"
+      tabIndex={0}
+      aria-label="Choose your age"
+      aria-valuemin={1}
+      aria-valuemax={99}
+      aria-valuenow={age}
+      aria-valuetext={`${age}. ${getAgeLine(age)}`}
+    >
+      {AGE_VALUES.map((value) => <button
+        type="button"
+        className={`age-keycap${value === age ? " is-selected" : ""}`}
+        data-age={value}
+        key={value}
+        onClick={() => scrollToAge(value)}
+        aria-label={`Choose age ${value}`}
+        aria-current={value === age ? "true" : undefined}
+        tabIndex={value === age ? 0 : -1}
+      >
+        <span>{value}</span>
+      </button>)}
+    </div>
+    <div className="age-fact" aria-live="polite" aria-atomic="true">
+      <span>Age {age} says</span>
+      <strong key={age}>{getAgeLine(age)}</strong>
+    </div>
+    <div className="age-stepper" aria-label="Fine tune age">
+      <button type="button" onClick={() => scrollToAge(age - 1)} disabled={age === 1} aria-label="Previous age">−</button>
+      <span><b>{age}</b> years old</span>
+      <button type="button" onClick={() => scrollToAge(age + 1)} disabled={age === 99} aria-label="Next age">＋</button>
+    </div>
+    <div className="age-confirm">
+      <small>{hasInteracted ? "Double-check it. This cannot be changed later." : "Slide the cards once to choose."}</small>
+      <button className="cta" onClick={next} disabled={!hasInteracted}>
+        {hasInteracted ? `Confirm age ${age}` : "Choose your age"}
+      </button>
+    </div>
+  </div>;
 }
 
 function PermissionsScreen({ next }: { next: () => void }) {
