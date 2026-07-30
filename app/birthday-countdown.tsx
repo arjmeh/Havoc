@@ -379,7 +379,8 @@ function BirthdaySlotComposition({
             position: "absolute",
             zIndex: 5,
             top: 1153,
-            left: 176,
+            // The plaque is optically left of the artwork canvas because of the lever.
+            left: 159,
             display: "flex",
             width: 288,
             height: 128,
@@ -458,7 +459,7 @@ function BirthdaySlotComposition({
               left: 170,
               width: 300,
               height: 632,
-              opacity: interpolate(frame, [90, 94, 190, 199], [0, 1, 1, 0], {
+              opacity: interpolate(frame, [90, 94, 220, 232], [0, 1, 1, 0], {
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
               }),
@@ -473,19 +474,19 @@ function BirthdaySlotComposition({
                 ? "0px 0px"
                 : interpolate(
                     frame,
-                    [90, 100, 118, 136, 148, 160, 168, 176, 181, 186, 191, 197, 204],
+                    [90, 100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224, 232],
                     [
-                      "0px -190px",
-                      "0px 0px",
-                      "-320px 0px",
-                      "320px 0px",
-                      "-320px 0px",
-                      "320px 0px",
-                      "-320px 0px",
-                      "320px 0px",
-                      "-320px 0px",
-                      "320px 0px",
-                      "-320px 0px",
+                      "-340px -190px",
+                      "-340px 0px",
+                      "340px 0px",
+                      "-340px 0px",
+                      "340px 0px",
+                      "-340px 0px",
+                      "340px 0px",
+                      "-340px 0px",
+                      "340px 0px",
+                      "-340px 0px",
+                      "340px 0px",
                       "0px 0px",
                       "0px -240px",
                     ],
@@ -498,21 +499,25 @@ function BirthdaySlotComposition({
             }}
           />
 
-          {Array.from({ length: 840 }, (_, index) => {
+          {Array.from({ length: reducedMotion ? 320 : 1260 }, (_, index) => {
             // The square-root distribution deliberately increases the emission
             // rate: a trickle at first, then a near-solid burst at full speed.
-            const startFrame = 103 + 87 * Math.sqrt(index / 839);
+            const particleCount = reducedMotion ? 320 : 1260;
+            const particleColumns = reducedMotion ? 20 : 42;
+            const particleRows = particleCount / particleColumns;
+            const startFrame =
+              102 + 112 * Math.sqrt(index / (particleCount - 1));
             const sourceX = interpolate(
               startFrame,
-              [100, 118, 136, 148, 160, 168, 176, 181, 186, 191, 197],
-              [320, 0, 640, 0, 640, 0, 640, 0, 640, 0, 320],
+              [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
+              [-20, 660, -20, 660, -20, 660, -20, 660, -20, 660, 320],
               {
                 easing: Easing.inOut(Easing.quad),
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
               },
             );
-            const settleFrame = Math.min(205, startFrame + 38);
+            const settleFrame = Math.min(231, startFrame + 34);
             const flightProgress = interpolate(
               frame,
               [startFrame, settleFrame],
@@ -525,7 +530,7 @@ function BirthdaySlotComposition({
             );
             const fallProgress = interpolate(
               frame,
-              [220, 256],
+              [236, 260],
               [0, 1],
               {
                 easing: Easing.in(Easing.quad),
@@ -533,12 +538,16 @@ function BirthdaySlotComposition({
                 extrapolateRight: "clamp",
               },
             );
-            const column = index % 30;
-            const row = Math.floor(index / 30);
+            const column = index % particleColumns;
+            const row = Math.floor(index / particleColumns);
             const targetX =
-              (column / 29) * 640 + ((index * 17) % 19) - 9;
+              (column / (particleColumns - 1)) * 640 +
+              ((index * 17) % 17) -
+              8;
             const targetY =
-              (row / 27) * 1355 + ((index * 29) % 25) - 12;
+              (row / (particleRows - 1)) * 1355 +
+              ((index * 29) % 21) -
+              10;
             const arc =
               Math.sin(flightProgress * Math.PI) *
               (110 + (index % 7) * 18);
@@ -567,20 +576,20 @@ function BirthdaySlotComposition({
             );
             const pieceWidth =
               index % 5 === 0
-                ? 48
+                ? 52
                 : index % 3 === 0
-                  ? 38
+                  ? 42
                   : index % 2 === 0
-                    ? 30
-                    : 24;
+                    ? 34
+                    : 28;
             const pieceHeight =
               index % 7 === 0
-                ? 64
+                ? 68
                 : index % 4 === 0
-                  ? 54
+                  ? 58
                   : index % 3 === 0
-                    ? 42
-                    : 48;
+                    ? 46
+                    : 52;
 
             return (
               <span
@@ -810,6 +819,7 @@ export function BirthdayCountdownScreen({
     >
       <div className="birthday-slot-player" aria-hidden="true">
         <Player
+          className="birthday-slot-remotion-player"
           ref={playerRef}
           component={BirthdaySlotComposition}
           inputProps={{
