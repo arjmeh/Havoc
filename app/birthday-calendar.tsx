@@ -362,8 +362,11 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   } | null>(null);
   const [dragDistance, setDragDistance] = useState(0);
   const pointerStartRef = useRef<number | null>(null);
+  const screenRef = useRef<HTMLDivElement>(null);
   const flipIdRef = useRef(0);
   const monthRef = useRef(0);
+  const wheelDistanceRef = useRef(0);
+  const wheelStepAtRef = useRef(0);
   const reducedMotion = useReducedMotion();
   const season = getSeason(month);
   const cells = getMonthCells(month);
@@ -454,13 +457,52 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
       }
     };
 
-    window.addEventListener("keydown", handleWindowCalendarKeys);
+    window.addEventListener("keydown", handleWindowCalendarKeys, true);
     return () =>
-      window.removeEventListener("keydown", handleWindowCalendarKeys);
+      window.removeEventListener("keydown", handleWindowCalendarKeys, true);
+  }, [reducedMotion]);
+
+  useEffect(() => {
+    const screen = screenRef.current;
+    if (!screen) return;
+
+    const handleCalendarWheel = (event: WheelEvent) => {
+      const verticalDistance = Math.abs(event.deltaY);
+      const horizontalDistance = Math.abs(event.deltaX);
+      if (verticalDistance < 3 || verticalDistance < horizontalDistance) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      wheelDistanceRef.current += event.deltaY;
+
+      const now = window.performance.now();
+      if (
+        Math.abs(wheelDistanceRef.current) < 28 ||
+        now - wheelStepAtRef.current < 190
+      ) {
+        return;
+      }
+
+      const direction = wheelDistanceRef.current > 0 ? 1 : -1;
+      wheelDistanceRef.current = 0;
+      wheelStepAtRef.current = now;
+      changeMonth(direction);
+    };
+
+    screen.addEventListener("wheel", handleCalendarWheel, {
+      capture: true,
+      passive: false,
+    });
+    return () => screen.removeEventListener("wheel", handleCalendarWheel, true);
   }, [reducedMotion]);
 
   return (
-    <div className={`screen birthday-screen season-${season}`}>
+    <div
+      className={`screen birthday-screen season-${season}`}
+      ref={screenRef}
+    >
       <SeasonalScene season={season} />
 
       <div className="status">

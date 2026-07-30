@@ -241,11 +241,14 @@ function AgeScreen({ next }: { next: () => void }) {
     "idle" | "dropping" | "holding" | "sweeping" | "falling"
   >("idle");
   const carouselRef = useRef<HTMLDivElement>(null);
+  const screenRef = useRef<HTMLDivElement>(null);
   const readyRef = useRef(false);
   const settleTimerRef = useRef<number | null>(null);
   const celebrationTimersRef = useRef<number[]>([]);
   const settledAgeRef = useRef(18);
   const keyboardAgeRef = useRef(18);
+  const wheelDistanceRef = useRef(0);
+  const wheelStepAtRef = useRef(0);
   const candleLayout = celebration === "idle" ? [] : getCandleLayout(age);
 
   useEffect(() => {
@@ -378,8 +381,45 @@ function AgeScreen({ next }: { next: () => void }) {
       handleAgeKeys(event);
     };
 
-    window.addEventListener("keydown", handleWindowAgeKeys);
-    return () => window.removeEventListener("keydown", handleWindowAgeKeys);
+    window.addEventListener("keydown", handleWindowAgeKeys, true);
+    return () =>
+      window.removeEventListener("keydown", handleWindowAgeKeys, true);
+  }, [celebration]);
+
+  useEffect(() => {
+    const screen = screenRef.current;
+    if (!screen || celebration !== "idle") return;
+
+    const handleAgeWheel = (event: WheelEvent) => {
+      const horizontalDistance = Math.abs(event.deltaX);
+      const verticalDistance = Math.abs(event.deltaY);
+      if (horizontalDistance < 3 || horizontalDistance <= verticalDistance) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      wheelDistanceRef.current += event.deltaX;
+
+      const now = window.performance.now();
+      if (
+        Math.abs(wheelDistanceRef.current) < 24 ||
+        now - wheelStepAtRef.current < 160
+      ) {
+        return;
+      }
+
+      const direction = wheelDistanceRef.current > 0 ? 1 : -1;
+      wheelDistanceRef.current = 0;
+      wheelStepAtRef.current = now;
+      scrollToAge(keyboardAgeRef.current + direction);
+    };
+
+    screen.addEventListener("wheel", handleAgeWheel, {
+      capture: true,
+      passive: false,
+    });
+    return () => screen.removeEventListener("wheel", handleAgeWheel, true);
   }, [celebration]);
 
   const confirmAge = () => {
@@ -402,7 +442,11 @@ function AgeScreen({ next }: { next: () => void }) {
     ];
   };
 
-  return <div className={`screen age-screen is-${celebration}`} aria-busy={celebration !== "idle"}>
+  return <div
+    className={`screen age-screen is-${celebration}`}
+    ref={screenRef}
+    aria-busy={celebration !== "idle"}
+  >
     <Status />
     <div className="age-heading">
       <h2>How old are you?</h2>
