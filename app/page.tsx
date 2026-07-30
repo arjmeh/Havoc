@@ -134,8 +134,8 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
       />
     </div>
     <div className="welcome-copy">
-      <h2>Bring friends or find a match.</h2>
-      <p>Create a private party or join a live game in seconds.</p>
+      <h2>Make Havoc yours.</h2>
+      <p>Create an account to save your progress, highlights, and wins.</p>
     </div>
     <div className="welcome-actions">
       <button className="welcome-primary" onClick={next}>
