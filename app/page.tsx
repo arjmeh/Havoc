@@ -9,6 +9,7 @@ import { BirthdayCalendarScreen } from "./birthday-calendar";
 const screens = [
   { id: "loading", group: "Entry & setup", label: "Loading", job: "Brand ignition", emoji: "💥" },
   { id: "welcome", group: "Entry & setup", label: "Welcome", job: "Promise in one beat", emoji: "👋" },
+  { id: "auth", group: "Entry & setup", label: "Account", job: "Fake sign-in flow", emoji: "🔐" },
   { id: "age", group: "Entry & setup", label: "Age gate", job: "Trust without drag", emoji: "🎂" },
   { id: "birthday", group: "Entry & setup", label: "Birthday", job: "Perks meet the seasons", emoji: "📅" },
   { id: "permissions", group: "Entry & setup", label: "Permissions", job: "Explain before asking", emoji: "🎥" },
@@ -121,8 +122,13 @@ function LoadingScreen({ next }: { next: () => void }) {
   </button>;
 }
 
-function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => void }) {
+type AuthMode = "signup" | "login";
+type AuthMethod = "google" | "apple" | "phone" | "email";
+type AuthStep = "services" | "identity" | "password" | "verify";
+
+function WelcomeScreen({ onChooseAuth }: { onChooseAuth: (mode: AuthMode) => void }) {
   const [launching, setLaunching] = useState(false);
+  const [authMode, setAuthMode] = useState<AuthMode>("signup");
 
   useEffect(() => {
     const rocket = new Image();
@@ -133,9 +139,15 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
     if (!launching) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const timer = window.setTimeout(next, reduceMotion ? 240 : 1120);
+    const timer = window.setTimeout(() => onChooseAuth(authMode), reduceMotion ? 240 : 1120);
     return () => window.clearTimeout(timer);
-  }, [launching, next]);
+  }, [authMode, launching, onChooseAuth]);
+
+  const startAuth = (mode: AuthMode) => {
+    if (launching) return;
+    setAuthMode(mode);
+    setLaunching(true);
+  };
 
   return <div
     className={`screen welcome-screen${launching ? " is-launching" : ""}`}
@@ -164,7 +176,7 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
     <div className="welcome-actions">
       <button
         className="welcome-primary"
-        onClick={() => setLaunching(true)}
+        onClick={() => startAuth("signup")}
         disabled={launching}
       >
         Get started
@@ -177,7 +189,7 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
           aria-hidden="true"
         />
       </button>
-      <button className="welcome-secondary" onClick={onLogin} disabled={launching}>
+      <button className="welcome-secondary" onClick={() => startAuth("login")} disabled={launching}>
         I already have an account
       </button>
     </div>
@@ -195,6 +207,206 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
           height={665}
         />
       </span>
+    </div>
+  </div>;
+}
+
+const authMethods: Array<{
+  id: AuthMethod;
+  label: string;
+  mark: string;
+}> = [
+  { id: "google", label: "Google", mark: "G" },
+  { id: "apple", label: "Apple", mark: "" },
+  { id: "phone", label: "Phone number", mark: "☎" },
+  { id: "email", label: "Email", mark: "@" },
+];
+
+function AuthScreen({
+  mode,
+  onBack,
+  onComplete,
+}: {
+  mode: AuthMode;
+  onBack: () => void;
+  onComplete: () => void;
+}) {
+  const [step, setStep] = useState<AuthStep>("services");
+  const [method, setMethod] = useState<AuthMethod | null>(null);
+  const [identity, setIdentity] = useState("");
+  const [password, setPassword] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [finishing, setFinishing] = useState(false);
+  const isSignup = mode === "signup";
+
+  useEffect(() => {
+    setStep("services");
+    setMethod(null);
+    setIdentity("");
+    setPassword("");
+    setVerificationCode("");
+    setFinishing(false);
+  }, [mode]);
+
+  const finish = () => {
+    if (finishing) return;
+    setFinishing(true);
+    window.setTimeout(onComplete, 320);
+  };
+
+  const chooseMethod = (nextMethod: AuthMethod) => {
+    setMethod(nextMethod);
+    if (nextMethod === "google" || nextMethod === "apple") {
+      finish();
+      return;
+    }
+    setStep("identity");
+  };
+
+  const submitIdentity = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStep("password");
+  };
+
+  const submitPassword = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (method === "phone") {
+      setStep("verify");
+      return;
+    }
+    finish();
+  };
+
+  const submitVerification = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    finish();
+  };
+
+  const back = () => {
+    if (step === "services") {
+      onBack();
+      return;
+    }
+    if (step === "identity") {
+      setStep("services");
+      setMethod(null);
+      return;
+    }
+    if (step === "password") {
+      setStep("identity");
+      return;
+    }
+    setStep("password");
+  };
+
+  const title = step === "services"
+    ? isSignup ? "Create your account." : "Welcome back."
+    : step === "identity"
+      ? method === "phone" ? "What’s your number?" : "What’s your email?"
+      : step === "password"
+        ? isSignup ? "Create a password." : "Enter your password."
+        : "Check your phone.";
+
+  const description = step === "services"
+    ? isSignup
+      ? "Choose a quick way in. You can finish your profile after the fun starts."
+      : "Use the same method you picked when you joined."
+    : step === "identity"
+      ? method === "phone"
+        ? "We’ll text a one-time code to make sure it’s you."
+        : "Use an email you can get back into later."
+      : step === "password"
+        ? isSignup
+          ? "Make it memorable. You can change it anytime."
+          : "Enter your password to jump back in."
+        : "Enter the six-digit code we pretended to send.";
+
+  const progress = step === "services" ? "1 of 3" : step === "identity" ? "2 of 3" : "3 of 3";
+
+  return <div className={`screen auth-screen${finishing ? " is-finishing" : ""}`}>
+    <Status />
+    <div className="auth-topline">
+      <button className="auth-back" type="button" onClick={back} aria-label="Go back">
+        <span aria-hidden="true">←</span>
+      </button>
+      <span className="auth-progress">{progress}</span>
+    </div>
+
+    <div className="auth-heading" aria-live="polite">
+      <span className="auth-kicker">{isSignup ? "New player" : "Player login"}</span>
+      <h2>{title}</h2>
+      <p>{description}</p>
+    </div>
+
+    {step === "services" && <div className="auth-methods" aria-label={`${isSignup ? "Sign up" : "Log in"} methods`}>
+      {authMethods.map((item) => <button
+        className={`auth-method auth-method-${item.id}`}
+        type="button"
+        key={item.id}
+        onClick={() => chooseMethod(item.id)}
+        disabled={finishing}
+      >
+        <span className="auth-method-mark" aria-hidden="true">{item.mark}</span>
+        <b>{isSignup ? "Continue" : "Log in"} with {item.label}</b>
+        <span className="auth-method-arrow" aria-hidden="true">→</span>
+      </button>)}
+    </div>}
+
+    {step === "identity" && <form className="auth-form" onSubmit={submitIdentity} noValidate>
+      <label htmlFor="auth-identity">{method === "phone" ? "Phone number" : "Email address"}</label>
+      <input
+        id="auth-identity"
+        type={method === "phone" ? "tel" : "email"}
+        inputMode={method === "phone" ? "tel" : "email"}
+        autoComplete={method === "phone" ? "tel" : "email"}
+        value={identity}
+        onChange={(event) => setIdentity(event.target.value)}
+        placeholder={method === "phone" ? "(555) 555-0123" : "you@example.com"}
+        autoFocus
+      />
+      <button className="auth-submit" type="submit">Continue <span aria-hidden="true">→</span></button>
+    </form>}
+
+    {step === "password" && <form className="auth-form" onSubmit={submitPassword} noValidate>
+      <label htmlFor="auth-password">{isSignup ? "Create password" : "Password"}</label>
+      <input
+        id="auth-password"
+        type="password"
+        autoComplete={isSignup ? "new-password" : "current-password"}
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+        placeholder="••••••••"
+        autoFocus
+      />
+      <small>{isSignup ? "Eight characters is a solid start." : "Forgot it? We’ll fake that later."}</small>
+      <button className="auth-submit" type="submit">
+        {method === "phone" ? "Send code" : isSignup ? "Create account" : "Log in"}
+        <span aria-hidden="true">→</span>
+      </button>
+    </form>}
+
+    {step === "verify" && <form className="auth-form auth-code-form" onSubmit={submitVerification} noValidate>
+      <label htmlFor="auth-code">Verification code</label>
+      <input
+        id="auth-code"
+        className="auth-code"
+        type="text"
+        inputMode="numeric"
+        autoComplete="one-time-code"
+        maxLength={6}
+        value={verificationCode}
+        onChange={(event) => setVerificationCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+        placeholder="000000"
+        autoFocus
+      />
+      <button className="auth-resend" type="button">Send another code</button>
+      <button className="auth-submit" type="submit">Verify &amp; continue <span aria-hidden="true">→</span></button>
+    </form>}
+
+    <p className="auth-prototype-note">Prototype mode · blank fields still work</p>
+    <div className="auth-finish-card" role="status" aria-live="polite">
+      <span aria-hidden="true">✓</span>
+      <b>You’re in.</b>
     </div>
   </div>;
 }
@@ -647,10 +859,19 @@ function SafetyScreen() {
 }
 
 function AppScreen({ index, setIndex }: { index: number; setIndex: (value: number) => void }) {
+  const [authMode, setAuthMode] = useState<AuthMode>("signup");
   const next = () => setIndex(Math.min(index + 1, screens.length - 1));
   const id = screens[index].id;
   if (id === "loading") return <LoadingScreen next={next} />;
-  if (id === "welcome") return <WelcomeScreen next={next} onLogin={() => setIndex(screenIndex("home"))} />;
+  if (id === "welcome") return <WelcomeScreen onChooseAuth={(mode) => {
+    setAuthMode(mode);
+    setIndex(screenIndex("auth"));
+  }} />;
+  if (id === "auth") return <AuthScreen
+    mode={authMode}
+    onBack={() => setIndex(screenIndex("welcome"))}
+    onComplete={() => setIndex(screenIndex("age"))}
+  />;
   if (id === "age") return <AgeScreen next={next} />;
   if (id === "birthday") return <BirthdayCalendarScreen next={next} />;
   if (id === "permissions") return <PermissionsScreen next={next} />;
@@ -707,7 +928,7 @@ export default function Home() {
     </header>
 
     <section className="hero">
-      <div><span className="eyebrow">Complete app layout · 22 screens</span><h1>Make the group chat playable.</h1><p>A full mobile product system from first launch to live competition, Highlights, progression, settings, and safety.</p></div>
+      <div><span className="eyebrow">Complete app layout · 23 screens</span><h1>Make the group chat playable.</h1><p>A full mobile product system from first launch to live competition, Highlights, progression, settings, and safety.</p></div>
       <aside><span>🗺️</span><h2>Every main page.</h2><p>Explore the app by system, jump to any screen, or walk the complete flow with the arrow controls.</p></aside>
     </section>
 
@@ -715,7 +936,7 @@ export default function Home() {
       <div className="prototype-copy">
         <span className="eyebrow dark">Interactive app atlas</span>
         <h2>The whole Havoc app.</h2>
-        <p>Twenty-two main screens grouped into five product systems. Every page has one emotional job and one obvious next action.</p>
+        <p>Twenty-three main screens grouped into five product systems. Every page has one emotional job and one obvious next action.</p>
         <nav className="screen-map" aria-label="Havoc screen map">
           {groups.map(group => <section key={group}><h3>{group}</h3><div>{screens.map((item, index) => item.group === group && <button key={item.id} className={step === index ? "selected" : ""} onClick={() => setStep(index)} aria-current={step === index ? "page" : undefined}><span>{item.emoji}</span><b>{item.label}</b><small>{item.job}</small></button>)}</div></section>)}
         </nav>
