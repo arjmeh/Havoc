@@ -381,6 +381,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   const suppressCalendarClickTimerRef = useRef<number | null>(null);
   const calendarRef = useRef<HTMLElement>(null);
   const flipIdRef = useRef(0);
+  const flipActiveRef = useRef(false);
   const monthRef = useRef(0);
   const wheelDistanceRef = useRef(0);
   const wheelGestureStateRef = useRef<WheelGestureState>({
@@ -399,8 +400,12 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
     if (!flip) return;
     const activeFlip = flip.id;
     const timer = window.setTimeout(() => {
-      setFlip((current) => (current?.id === activeFlip ? null : current));
-    }, 430);
+      setFlip((current) => {
+        if (current?.id !== activeFlip) return current;
+        flipActiveRef.current = false;
+        return null;
+      });
+    }, 320);
     return () => window.clearTimeout(timer);
   }, [flip]);
 
@@ -410,14 +415,16 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
     monthRef.current = nextMonth;
     setSelectedDay(null);
 
-    if (!reducedMotion) {
+    if (!reducedMotion && !flipActiveRef.current) {
+      flipActiveRef.current = true;
       flipIdRef.current += 1;
       setFlip({
         direction,
         id: flipIdRef.current,
         monthIndex: previousMonth,
       });
-    } else {
+    } else if (reducedMotion) {
+      flipActiveRef.current = false;
       setFlip(null);
     }
 
@@ -426,7 +433,6 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     pointerStartRef.current = event.clientY;
-    event.currentTarget.setPointerCapture(event.pointerId);
   };
 
   const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -434,6 +440,9 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
     const distance = event.clientY - pointerStartRef.current;
     if (Math.abs(distance) >= 8) {
       event.preventDefault();
+      if (!event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }
     }
     setDragDistance(Math.max(-24, Math.min(24, distance * 0.28)));
   };
@@ -713,7 +722,7 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
                       direction: flip.direction,
                       monthIndex: flip.monthIndex,
                     }}
-                    durationInFrames={11}
+                    durationInFrames={9}
                     compositionWidth={640}
                     compositionHeight={610}
                     fps={30}
