@@ -13,9 +13,11 @@
     "test": "npm run typecheck && npm run build"
   },
   "dependencies": {
+    "@remotion/player": "^4.0.501",
     "next": "16.2.12",
     "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react-dom": "19.2.6",
+    "remotion": "^4.0.501"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.2.1",

@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent } from "react";
 
 import { getAgeLine } from "./age-copy";
+import { BirthdayCalendarScreen } from "./birthday-calendar";
 
 const screens = [
   { id: "loading", group: "Entry & setup", label: "Loading", job: "Brand ignition", emoji: "💥" },
   { id: "welcome", group: "Entry & setup", label: "Welcome", job: "Promise in one beat", emoji: "👋" },
   { id: "age", group: "Entry & setup", label: "Age gate", job: "Trust without drag", emoji: "🎂" },
+  { id: "birthday", group: "Entry & setup", label: "Birthday", job: "Perks meet the seasons", emoji: "📅" },
   { id: "permissions", group: "Entry & setup", label: "Permissions", job: "Explain before asking", emoji: "🎥" },
   { id: "calibration", group: "Entry & setup", label: "Calibration", job: "Setup becomes play", emoji: "🧪" },
   { id: "home", group: "Play hub", label: "Home", job: "Instant ignition", emoji: "🏠" },
@@ -30,6 +32,7 @@ const screens = [
 ];
 
 const groups = [...new Set(screens.map((screen) => screen.group))];
+const screenIndex = (id: string) => screens.findIndex((screen) => screen.id === id);
 
 function Status() {
   return <div className="status"><span>9:41</span><span>● ●●</span></div>;
@@ -560,23 +563,24 @@ function AppScreen({ index, setIndex }: { index: number; setIndex: (value: numbe
   const next = () => setIndex(Math.min(index + 1, screens.length - 1));
   const id = screens[index].id;
   if (id === "loading") return <LoadingScreen next={next} />;
-  if (id === "welcome") return <WelcomeScreen next={next} onLogin={() => setIndex(5)} />;
+  if (id === "welcome") return <WelcomeScreen next={next} onLogin={() => setIndex(screenIndex("home"))} />;
   if (id === "age") return <AgeScreen next={next} />;
+  if (id === "birthday") return <BirthdayCalendarScreen next={next} />;
   if (id === "permissions") return <PermissionsScreen next={next} />;
   if (id === "calibration") return <CalibrationScreen next={next} />;
-  if (id === "home") return <HomeScreen next={() => setIndex(9)} />;
+  if (id === "home") return <HomeScreen next={() => setIndex(screenIndex("create"))} />;
   if (id === "daily") return <DailyScreen />;
   if (id === "friends") return <FriendsScreen />;
-  if (id === "join") return <JoinScreen next={() => setIndex(10)} />;
-  if (id === "create") return <CreateScreen next={() => setIndex(10)} />;
+  if (id === "join") return <JoinScreen next={() => setIndex(screenIndex("lobby"))} />;
+  if (id === "create") return <CreateScreen next={() => setIndex(screenIndex("lobby"))} />;
   if (id === "lobby") return <LobbyScreen next={next} />;
   if (id === "reveal") return <RevealScreen next={next} />;
   if (id === "countdown") return <CountdownScreen next={next} />;
   if (id === "live") return <LiveScreen next={next} />;
   if (id === "verification") return <VerificationScreen next={next} />;
-  if (id === "result") return <ResultScreen next={() => setIndex(17)} />;
+  if (id === "result") return <ResultScreen next={() => setIndex(screenIndex("highlight"))} />;
   if (id === "no-contest") return <NoContestScreen />;
-  if (id === "highlight") return <HighlightScreen restart={() => setIndex(5)} />;
+  if (id === "highlight") return <HighlightScreen restart={() => setIndex(screenIndex("home"))} />;
   if (id === "profile") return <ProfileScreen />;
   if (id === "settings") return <SettingsScreen />;
   return <SafetyScreen />;
@@ -603,7 +607,7 @@ export default function Home() {
     </header>
 
     <section className="hero">
-      <div><span className="eyebrow">Complete app layout · 21 screens</span><h1>Make the group chat playable.</h1><p>A full mobile product system from first launch to live competition, Highlights, progression, settings, and safety.</p></div>
+      <div><span className="eyebrow">Complete app layout · 22 screens</span><h1>Make the group chat playable.</h1><p>A full mobile product system from first launch to live competition, Highlights, progression, settings, and safety.</p></div>
       <aside><span>🗺️</span><h2>Every main page.</h2><p>Explore the app by system, jump to any screen, or walk the complete flow with the arrow controls.</p></aside>
     </section>
 
@@ -611,7 +615,7 @@ export default function Home() {
       <div className="prototype-copy">
         <span className="eyebrow dark">Interactive app atlas</span>
         <h2>The whole Havoc app.</h2>
-        <p>Twenty-one main screens grouped into five product systems. Every page has one emotional job and one obvious next action.</p>
+        <p>Twenty-two main screens grouped into five product systems. Every page has one emotional job and one obvious next action.</p>
         <nav className="screen-map" aria-label="Havoc screen map">
           {groups.map(group => <section key={group}><h3>{group}</h3><div>{screens.map((item, index) => item.group === group && <button key={item.id} className={step === index ? "selected" : ""} onClick={() => setStep(index)} aria-current={step === index ? "page" : undefined}><span>{item.emoji}</span><b>{item.label}</b><small>{item.job}</small></button>)}</div></section>)}
         </nav>
