@@ -14,6 +14,9 @@ Use this together with:
   accepted onboarding behavior.
 - [`05-prompt-history.md`](./05-prompt-history.md) for product decisions that
   should not be rediscovered.
+- [`07-cross-chat-havoc-evidence.md`](./07-cross-chat-havoc-evidence.md) for
+  the accepted, shipped, corrective, and rejected evidence gathered from every
+  `Improve emoji UI design` task.
 
 ## The prompt formula that works
 
@@ -79,6 +82,11 @@ These are the practical patterns behind iterations Evan approved:
 | Asset replacement | Use the new rocket, but keep the exact transition behavior | Changed one variable and froze every accepted interaction |
 | Camera-calibration media | Exact timestamps, exact spoken sentence, explicit silence, locked framing, and exact final expression | Turned a creative video request into a state-and-audio contract |
 | Small UI cleanup | Remove the green season pill and its dead CSS; keep all environmental and calendar behavior | Prevented a tiny request from becoming an unnecessary redesign |
+| Optical asset alignment | Center the visible alpha bounds, not the transparent media box | Fixed rockets, splash art, and plaque copy that were mathematically centered but visually off |
+| Confetti coverage | Emit from the moving cannon mouth, inherit velocity, accelerate output, and keep the slot visible until coverage | Produced physical motion and prevented a premature layer disappearance |
+| Interactive calibration | Generated video owns speech and expression; app state owns freeze, ice, scroll energy, cracks, and shatter | Kept the experience responsive and avoided baked-in fake UI |
+| Fake auth prototype | State that validation is intentionally permissive, name every route, and define the deterministic handoff | Made a complete clickable demo without implying production authentication |
+| Shared preview integration | Name the exact URL and branch, preserve newer commits, and verify that deployment | Prevented correct work from landing on an unseen preview branch |
 
 ## Rules learned from successful iterations
 
@@ -294,6 +302,94 @@ Before publishing:
 - Report branch, commit, PR, and deployment status.
 ```
 
+### 11. Center the visible subject, not its file box
+
+Transparent media often contains asymmetric padding. A centered `<img>` can
+still show an off-center rocket, controller, joystick, or logo.
+
+Prompt pattern:
+
+```text
+Measure the non-transparent subject bounds in the runtime asset. Center those
+visible bounds in the phone while preserving the approved scale. Report the
+visible center delta, not only the container coordinates.
+```
+
+Apply the same reasoning to embedded artwork. If a plaque or control is
+off-center inside a source image, align copy to that visible object rather
+than the viewport.
+
+### 12. Make important motion inspectable
+
+Do not approve a motion sequence from its initial and final screenshots alone.
+Request evidence at the beats where defects usually hide:
+
+- First visible frame.
+- Pre-impact frame.
+- Impact or peak-energy frame.
+- Full-coverage frame.
+- Final clean frame.
+
+For loops, inspect frame durations, duplicate frames, transparent edges, and
+first/last pose compatibility. A contact sheet is useful when a pause, seam,
+crop, or stray fragment cannot be diagnosed from playback.
+
+### 13. Specify the physics and the coverage threshold
+
+Particles need an emitter and inherited motion. A convincing cannon sequence
+defines:
+
+- The measured cannon-mouth origin.
+- Cannon velocity inherited by each particle.
+- Launch variation, drag, gravity, and rotation.
+- Emission-rate acceleration.
+- The coverage threshold before old UI disappears.
+- The clear-screen threshold before the next UI appears.
+
+Avoid perfect grids. Controlled irregularity—overlaps, varied rotation, mixed
+settling, and small uneven gaps—reads as physical while remaining art-directed.
+
+### 14. Keep generated footage narrower than the interactive product
+
+Use generated video for human performance, internal asset motion, or a
+non-interactive visual beat. Keep interface state and player-controlled motion
+in the application.
+
+For camera calibration:
+
+- Video owns the subject, exact speech, silence, expression, and held frame.
+- App state owns prompts, feedback, freeze, ice, cracks, shatter, and routing.
+- One user gesture starts audible playback.
+- Poster, video, and still use the same crop and scale.
+
+For prototypes, state what is deliberately fake. A permissive auth demo may
+advance with blank fields, but its prompt must say there is no real account,
+validation, persistence, or backend.
+
+### 15. Treat the requested preview as a dependency
+
+When the user names an existing Vercel link, first resolve which branch powers
+it. Before promoting a feature:
+
+1. Fetch the latest target branch.
+2. Preserve commits added after the feature branch was created.
+3. Re-run the full affected flow after integration.
+4. Push to the branch behind the requested URL.
+5. Wait for that exact deployment and verify it serves the change.
+
+A green feature-branch build does not prove the shared link was updated.
+
+### 16. Make original assets structurally original
+
+Changing only color does not make vendor artwork original. For bundled Havoc
+assets, create new silhouettes, proportions, control layouts, materials,
+lighting, and details from scratch while preserving only the generic object
+concept and Havoc’s established visual family.
+
+If the product intentionally uses a system emoji, store the Unicode character
+and let the platform render it at runtime. Do not bundle extracted vendor
+emoji art or ask an agent for a near-copy designed to avoid review.
+
 ## Copy-ready prompt templates
 
 Replace bracketed text and delete sections that do not apply.
@@ -502,6 +598,78 @@ paths, tests, and safe handoff base on the Issue. Keep the PR draft until Evan
 or Arjun explicitly approves a merge.
 ```
 
+### Template I — particle or coverage transition
+
+```text
+Implement [effect] as a physically sourced transition.
+
+Emitter:
+- Visible origin: [measured opening or contact point].
+- Source movement: [path, acceleration, sway].
+- Particles inherit [amount] of source velocity.
+
+Particle behavior:
+- Launch direction and spread: [values/description].
+- Gravity, drag, rotation, and settling: [behavior].
+- Emission rate changes from [start] to [peak].
+
+Layer contract:
+- Keep [outgoing UI] visible until [coverage threshold].
+- Remove it only after the screen is genuinely covered.
+- Clear every particle before [next screen] becomes interactive.
+
+Avoid a perfect grid or top-of-viewport emission. Capture the emitter frame,
+peak-density frame, full-coverage frame, and clean terminal frame.
+```
+
+### Template J — generated media plus native interaction
+
+```text
+Build [experience] using the supplied/generated media.
+
+Media owns only:
+- [speech, expression, internal flame, or other prerecorded movement]
+
+Application state owns:
+- [prompts, travel, freeze, gesture energy, cracks, shatter, navigation]
+
+Playback:
+- Start audible media from [explicit user gesture].
+- Use [poster] before playback and [still] after playback.
+- Keep crop, scale, and position identical across all three.
+
+Interaction:
+- Capture [input] only inside [region].
+- Ignore [noise threshold], throttle to [rate], and define completion at
+  [measurable state].
+
+Fallbacks:
+- Playback error, replay, skip, reduced motion, and navigation cleanup.
+
+Do not ask the generator to render interface text or player-controlled effects.
+```
+
+### Template K — integrate into an exact shared preview
+
+```text
+Promote [feature/commit/PR] to the branch powering [exact preview URL].
+
+Before integration:
+- Resolve the target branch and its latest commit.
+- Preserve every newer target-branch change.
+- Identify overlapping files and dependent PRs.
+
+After integration:
+- Run npm test.
+- Exercise [complete affected path].
+- Push without force.
+- Wait for the deployment attached to the target branch.
+- Open [exact preview URL] and verify [observable result].
+
+Report the feature commit, integration commit, target branch, PR, and final
+deployment status.
+```
+
 ## Frequent failure modes and the correction
 
 | Failure | Why it happens | Prompt correction |
@@ -519,6 +687,14 @@ or Arjun explicitly approves a merge.
 | Copy assumes existing friends | Product mode was underspecified | State that both friend parties and random matchmaking are core modes |
 | Agent work overlaps | Ownership is described as a broad goal | Claim exact screens and paths in an Issue and use an isolated worktree |
 | Generated media violates the ending | The final frame is not explicit | Describe the exact final frame and when the transition into it may begin |
+| Asset is mathematically centered but looks off | Transparent padding or the visible subject is asymmetric | Measure alpha bounds and align the visible center |
+| Confetti appears from the viewport | Particles are assigned to final screen positions instead of a moving emitter | Spawn at the measured cannon mouth and inherit source velocity |
+| Old UI vanishes before the transition covers it | Layer removal is timed instead of tied to coverage | Define a full-coverage threshold before hiding the outgoing UI |
+| Confetti looks tiled or too perfect | A regular grid controls final positions | Add controlled overlap, gaps, varied rotation, drag, and settling |
+| Audio fails on first playback | Browser autoplay rules were ignored | Begin audible playback from one explicit user gesture |
+| Video contains fake UI or non-interactive effects | The generator was asked to own application state | Limit media to performance and let the app own interface and interaction |
+| Correct feature is missing from the shared link | Work was pushed to a different branch preview | Resolve the exact URL-to-branch mapping and verify that deployment |
+| Recolored emoji still resembles vendor art | Only palette changed while defining structure stayed intact | Create a structurally original asset or use Unicode rendered by the platform |
 
 ## Review questions before saying “done”
 
@@ -535,5 +711,11 @@ Ask these in order:
 7. Were the exact phone layout, reduced-motion path, browser logs, and
    production build checked?
 8. Did the agent publish a traceable Issue, branch, commit, PR, and handoff?
+9. Was visible artwork aligned from its optical or alpha bounds rather than
+   only its container?
+10. Does generated media own only prerecorded performance while application
+    state owns the interactive response?
+11. If a shared preview was requested, was that exact URL verified after its
+    target branch finished deploying?
 
 If any answer is “no,” the task is not ready to merge.
