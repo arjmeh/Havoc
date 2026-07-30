@@ -11,9 +11,13 @@ Run `build` whenever the approved source art or motion references change.
 from __future__ import annotations
 
 import argparse
+from collections import deque
 import json
 import math
 from pathlib import Path
+from statistics import median
+import subprocess
+import tempfile
 from typing import Iterable, Sequence
 
 from PIL import Image, ImageChops, ImageDraw, ImageEnhance
@@ -91,6 +95,9 @@ def save_webp(
     durations: Sequence[int],
     *,
     loop: int = 0,
+    lossless: bool = True,
+    quality: int = 90,
+    method: int = 6,
 ) -> None:
     if not frames:
         raise ValueError(f"No frames supplied for {path}")
@@ -102,8 +109,9 @@ def save_webp(
         append_images=[frame.convert("RGBA") for frame in frames[1:]],
         duration=list(durations),
         loop=loop,
-        lossless=True,
-        method=6,
+        lossless=lossless,
+        quality=quality,
+        method=method,
     )
 
 
@@ -167,6 +175,21 @@ def extract_controller_flame_frame(frame: Image.Image) -> Image.Image:
     return apply_mask(frame, vertical_alpha_mask(frame.size, 222, 246))
 
 
+def fit_controller_flame(frame: Image.Image) -> Image.Image:
+    """Keep the fire inside the controller's top silhouette.
+
+    The preserved fire motion was authored for a wider legacy controller. A
+    stable whole-canvas horizontal squeeze keeps every frame centered without
+    introducing per-frame crop jitter.
+    """
+    rgba = frame.convert("RGBA")
+    target_width = round(rgba.width * 0.82)
+    resized = rgba.resize((target_width, rgba.height), Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", rgba.size, (0, 0, 0, 0))
+    canvas.alpha_composite(resized, ((rgba.width - target_width) // 2, 0))
+    return canvas
+
+
 def extract_rocket_flame_frame(frame: Image.Image) -> Image.Image:
     rgba = frame.convert("RGBA")
     source = rgba.load()
@@ -189,17 +212,46 @@ def extract_rocket_flame_frame(frame: Image.Image) -> Image.Image:
 
 def red_ball_metrics(frame: Image.Image) -> tuple[float, float, float]:
     rgba = frame.convert("RGBA")
-    points: list[tuple[int, int]] = []
+    candidates: set[tuple[int, int]] = set()
 
     for y in range(min(240, rgba.height)):
         for x in range(rgba.width):
             red, green, blue, alpha = rgba.getpixel((x, y))
             if alpha > 96 and red > 145 and red > green * 1.22 and red > blue * 1.22:
-                points.append((x, y))
+                candidates.add((x, y))
 
-    if not points:
+    if not candidates:
         return 180.0, 100.0, 1.0
 
+    # The reference contains both a red joystick ball and a red action button.
+    # Following the largest connected red region isolates the ball instead of
+    # averaging those two unrelated controls together.
+    components: list[list[tuple[int, int]]] = []
+    remaining = set(candidates)
+    while remaining:
+        start = remaining.pop()
+        queue = deque([start])
+        component = [start]
+        while queue:
+            point_x, point_y = queue.popleft()
+            for offset_x, offset_y in (
+                (-1, -1),
+                (0, -1),
+                (1, -1),
+                (-1, 0),
+                (1, 0),
+                (-1, 1),
+                (0, 1),
+                (1, 1),
+            ):
+                neighbor = (point_x + offset_x, point_y + offset_y)
+                if neighbor in remaining:
+                    remaining.remove(neighbor)
+                    queue.append(neighbor)
+                    component.append(neighbor)
+        components.append(component)
+
+    points = max(components, key=len)
     xs = [point[0] for point in points]
     ys = [point[1] for point in points]
     center_x = sum(xs) / len(xs)
@@ -227,6 +279,16 @@ def extract_joystick_motion(frames: Sequence[Image.Image], durations: Sequence[i
     return result
 
 
+def write_joystick_motion(legacy_joystick: Path) -> None:
+    joystick_frames, joystick_durations, _ = load_frames(legacy_joystick, 40)
+    motion = extract_joystick_motion(joystick_frames, joystick_durations)
+    MOTION_DIR.mkdir(parents=True, exist_ok=True)
+    (MOTION_DIR / "joystick-motion.json").write_text(
+        json.dumps(motion, indent=2),
+        encoding="utf-8",
+    )
+
+
 def extract_motion(legacy_public: Path) -> None:
     MOTION_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -251,14 +313,8 @@ def extract_motion(legacy_public: Path) -> None:
         loop=0,
     )
 
-    joystick_frames, joystick_durations, _ = load_frames(
+    write_joystick_motion(
         legacy_public / "havoc-joystick-transparent.webp",
-        40,
-    )
-    motion = extract_joystick_motion(joystick_frames, joystick_durations)
-    (MOTION_DIR / "joystick-motion.json").write_text(
-        json.dumps(motion, indent=2),
-        encoding="utf-8",
     )
 
     rocket_short, short_durations, _ = load_frames(
@@ -297,14 +353,14 @@ def build_controller() -> None:
     intro = []
     for flame in intro_flames:
         frame = Image.new("RGBA", (500, 500), (0, 0, 0, 0))
-        frame.alpha_composite(flame)
+        frame.alpha_composite(fit_controller_flame(flame))
         frame.alpha_composite(body_gif)
         intro.append(frame)
 
     loop = []
     for flame in loop_flames:
         frame = Image.new("RGBA", (500, 500), (0, 0, 0, 0))
-        frame.alpha_composite(flame)
+        frame.alpha_composite(fit_controller_flame(flame))
         frame.alpha_composite(body_gif)
         loop.append(frame)
 
@@ -400,9 +456,38 @@ def build_joystick() -> None:
     frames: list[Image.Image] = []
     durations: list[int] = []
 
+    source_center_x, source_center_y, _ = red_ball_metrics(moving)
+    source_angle = math.degrees(
+        math.atan2(source_center_x - pivot[0], pivot[1] - source_center_y)
+    )
+    straightening_candidates = (
+        moving.rotate(
+            source_angle,
+            resample=Image.Resampling.BICUBIC,
+            center=pivot,
+        ),
+        moving.rotate(
+            -source_angle,
+            resample=Image.Resampling.BICUBIC,
+            center=pivot,
+        ),
+    )
+    straight_moving = min(
+        straightening_candidates,
+        key=lambda candidate: abs(red_ball_metrics(candidate)[0] - pivot[0]),
+    )
+
+    # The legacy motion data's "center" leaned about fifteen degrees left.
+    # Normalize around the first resting beat, then snap every near-center
+    # return exactly vertical so each tilt reads as a complete movement.
+    resting_angle = median(float(step["angle"]) for step in motion[:6])
+
     for step in motion:
-        rotated = moving.rotate(
-            -float(step["angle"]),
+        motion_angle = float(step["angle"]) - resting_angle
+        if abs(motion_angle) < 1.75:
+            motion_angle = 0.0
+        rotated = straight_moving.rotate(
+            -motion_angle,
             resample=Image.Resampling.BICUBIC,
             center=pivot,
         )
@@ -516,32 +601,56 @@ def render_rocket_frames(reference_flames: Iterable[Image.Image]) -> list[Image.
     return output
 
 
-def build_rocket() -> None:
-    short_flames, short_durations, _ = load_frames(
-        MOTION_DIR / "rocket-flame-short.webp",
-        80,
-    )
-    long_flames, long_durations, _ = load_frames(
-        MOTION_DIR / "rocket-flame-long.webp",
-        31,
-    )
-    short_frames = render_rocket_frames(short_flames)
-    long_frames = render_rocket_frames(long_flames)
+def build_rocket_launch_video() -> None:
+    source = SOURCE_DIR / "rocket-launch-source.mp4"
+    with tempfile.TemporaryDirectory(prefix="havoc-rocket-") as temporary:
+        output_pattern = Path(temporary) / "frame-%03d.png"
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-i",
+                str(source),
+                "-t",
+                "1.125",
+                "-vf",
+                (
+                    "format=rgba,"
+                    "colorkey=0x000000:0.14:0.06,"
+                    "crop=980:1380:180:60,"
+                    "scale=383:539:flags=lanczos,"
+                    "pad=383:665:0:63:color=0x00000000"
+                ),
+                "-an",
+                "-vsync",
+                "0",
+                str(output_pattern),
+            ],
+            check=True,
+        )
+        frames = [
+            Image.open(path).convert("RGBA").copy()
+            for path in sorted(Path(temporary).glob("frame-*.png"))
+        ]
 
+    if not frames:
+        raise RuntimeError("ffmpeg did not render any rocket launch frames")
+
+    frame_duration = round(1000 / 24)
     save_webp(
-        short_frames,
+        frames,
         PUBLIC_DIR / "havoc-rocket-flame-launch.webp",
-        short_durations,
+        [frame_duration] * len(frames),
+        lossless=False,
+        quality=84,
+        method=4,
     )
-    save_webp(
-        long_frames,
-        PUBLIC_DIR / "havoc-rocket-launch.webp",
-        long_durations,
-    )
-    fit_canvas(short_frames[0], (343, 552)).save(
-        PUBLIC_DIR / "havoc-rocket-cutout.png",
-        optimize=True,
-    )
+
+
+def build_rocket() -> None:
+    build_rocket_launch_video()
 
 
 def build() -> None:
@@ -549,11 +658,10 @@ def build() -> None:
         SOURCE_DIR / "controller.png",
         SOURCE_DIR / "joystick.png",
         SOURCE_DIR / "rocket.png",
+        SOURCE_DIR / "rocket-launch-source.mp4",
         MOTION_DIR / "controller-flame-intro.gif",
         MOTION_DIR / "controller-flame-loop.gif",
         MOTION_DIR / "joystick-motion.json",
-        MOTION_DIR / "rocket-flame-short.webp",
-        MOTION_DIR / "rocket-flame-long.webp",
     )
     missing = [path for path in required if not path.exists()]
     if missing:
@@ -575,6 +683,14 @@ def parse_args() -> argparse.Namespace:
         default=PUBLIC_DIR,
         help="Directory containing the pre-replacement animated assets",
     )
+    extract_joystick = subparsers.add_parser("extract-joystick")
+    extract_joystick.add_argument(
+        "--legacy-joystick",
+        type=Path,
+        required=True,
+        help="Path to the pre-replacement animated joystick WebP",
+    )
+    subparsers.add_parser("build-rocket")
     subparsers.add_parser("build")
     return parser.parse_args()
 
@@ -583,6 +699,10 @@ def main() -> None:
     args = parse_args()
     if args.command == "extract-motion":
         extract_motion(args.legacy_public.resolve())
+    elif args.command == "extract-joystick":
+        write_joystick_motion(args.legacy_joystick.resolve())
+    elif args.command == "build-rocket":
+        build_rocket_launch_video()
     else:
         build()
 
