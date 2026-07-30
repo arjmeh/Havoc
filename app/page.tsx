@@ -2,9 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import dynamic from "next/dynamic";
 
 import { getAgeLine } from "./age-copy";
 import { BirthdayCalendarScreen } from "./birthday-calendar";
+
+const CalibrationLabScreen = dynamic(
+  () =>
+    import("./calibration-lab").then((module) => module.CalibrationLabScreen),
+  { ssr: false },
+);
 
 const screens = [
   { id: "loading", group: "Entry & setup", label: "Loading", job: "Brand ignition", emoji: "💥" },
@@ -14,6 +21,7 @@ const screens = [
   { id: "birthday", group: "Entry & setup", label: "Birthday", job: "Perks meet the seasons", emoji: "📅" },
   { id: "permissions", group: "Entry & setup", label: "Permissions", job: "Explain before asking", emoji: "🎥" },
   { id: "calibration", group: "Entry & setup", label: "Calibration", job: "Setup becomes play", emoji: "🧪" },
+  { id: "identity", group: "Entry & setup", label: "Havoc Identity", job: "Make the player recognizable", emoji: "🪪" },
   { id: "home", group: "Play hub", label: "Home", job: "Instant ignition", emoji: "🏠" },
   { id: "daily", group: "Play hub", label: "Daily Havoc", job: "Fresh challenge", emoji: "⚡" },
   { id: "friends", group: "Play hub", label: "Friends", job: "Social continuity", emoji: "🫂" },
@@ -735,12 +743,6 @@ function PermissionsScreen({ next }: { next: () => void }) {
   return <div className="screen form-screen"><Status /><span className="pill">Set up the fun</span><h2>Three permissions. Thirty games.</h2><p className="sub">We only ask when a game needs them.</p><div className="permission-list">{rows.map(([icon,title,copy], index) => <button key={title} onClick={() => setEnabled(items => items.map((item,i) => i === index ? !item : item))}><span>{icon}</span><div><b>{title}</b><small>{copy}</small></div><em className={enabled[index] ? "on" : ""}>{enabled[index] ? "ON" : "LATER"}</em></button>)}</div><button className="cta sticky" onClick={next}>Enable essentials</button></div>;
 }
 
-function CalibrationScreen({ next }: { next: () => void }) {
-  const [sample, setSample] = useState(0);
-  const tests = [["👀","Blink once"],["✋","Show a hand"],["😗","Copy the face"]];
-  return <div className="screen calibration-screen"><Status /><span className="pill cyan">30-second setup</span><h2>Calibration Lab</h2><p>Quick checks improve scoring as you play.</p><div className="calibration-orb">{tests[sample][0]}</div><div className="calibration-copy"><b>{tests[sample][1]}</b><small>{sample + 1} of {tests.length}</small></div><div className="progress-dots">{tests.map((_,i) => <i key={i} className={i <= sample ? "done" : ""} />)}</div><button className="cta" onClick={() => sample < tests.length - 1 ? setSample(sample + 1) : next()}>{sample < tests.length - 1 ? "Looks good" : "Finish setup"}</button><button className="text-button" onClick={next}>Skip for now</button></div>;
-}
-
 function HomeScreen({ next }: { next: () => void }) {
   return <div className="screen home-screen">
     <Status />
@@ -875,7 +877,8 @@ function AppScreen({ index, setIndex }: { index: number; setIndex: (value: numbe
   if (id === "age") return <AgeScreen next={next} />;
   if (id === "birthday") return <BirthdayCalendarScreen next={next} />;
   if (id === "permissions") return <PermissionsScreen next={next} />;
-  if (id === "calibration") return <CalibrationScreen next={next} />;
+  if (id === "calibration") return <CalibrationLabScreen next={next} />;
+  if (id === "identity") return <div className="screen identity-screen" aria-label="Havoc identity" />;
   if (id === "home") return <HomeScreen next={() => setIndex(screenIndex("create"))} />;
   if (id === "daily") return <DailyScreen />;
   if (id === "friends") return <FriendsScreen />;
@@ -912,7 +915,12 @@ export default function Home() {
       }
 
       const activeScreen = screens[step].id;
-      if (activeScreen === "age" || activeScreen === "birthday") return;
+      if (
+        activeScreen === "age" ||
+        activeScreen === "birthday" ||
+        activeScreen === "calibration" ||
+        activeScreen === "identity"
+      ) return;
 
       if (event.key === "ArrowRight") next();
       if (event.key === "ArrowLeft") previous();
@@ -928,7 +936,7 @@ export default function Home() {
     </header>
 
     <section className="hero">
-      <div><span className="eyebrow">Complete app layout · 23 screens</span><h1>Make the group chat playable.</h1><p>A full mobile product system from first launch to live competition, Highlights, progression, settings, and safety.</p></div>
+      <div><span className="eyebrow">Complete app layout · {screens.length} screens</span><h1>Make the group chat playable.</h1><p>A full mobile product system from first launch to live competition, Highlights, progression, settings, and safety.</p></div>
       <aside><span>🗺️</span><h2>Every main page.</h2><p>Explore the app by system, jump to any screen, or walk the complete flow with the arrow controls.</p></aside>
     </section>
 
@@ -936,7 +944,7 @@ export default function Home() {
       <div className="prototype-copy">
         <span className="eyebrow dark">Interactive app atlas</span>
         <h2>The whole Havoc app.</h2>
-        <p>Twenty-three main screens grouped into five product systems. Every page has one emotional job and one obvious next action.</p>
+        <p>{screens.length} main screens grouped into five product systems. Every page has one emotional job and one obvious next action.</p>
         <nav className="screen-map" aria-label="Havoc screen map">
           {groups.map(group => <section key={group}><h3>{group}</h3><div>{screens.map((item, index) => item.group === group && <button key={item.id} className={step === index ? "selected" : ""} onClick={() => setStep(index)} aria-current={step === index ? "page" : undefined}><span>{item.emoji}</span><b>{item.label}</b><small>{item.job}</small></button>)}</div></section>)}
         </nav>
