@@ -178,7 +178,7 @@ function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => voi
           src="/havoc-rocket-flame-launch.webp"
           alt=""
           width={383}
-          height={641}
+          height={665}
         />
       </span>
     </div>
