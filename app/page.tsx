@@ -908,10 +908,31 @@ function AppScreen({ index, setIndex }: { index: number; setIndex: (value: numbe
 
 export default function Home() {
   const [step, setStep] = useState(0);
+  const [reviewMode, setReviewMode] = useState(false);
   const next = () => setStep((value) => Math.min(value + 1, screens.length - 1));
   const previous = () => setStep((value) => Math.max(value - 1, 0));
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const canReview = process.env.NODE_ENV === "development";
+    const requestedReview = canReview && params.get("review") === "1";
+    setReviewMode(requestedReview);
+
+    if (canReview) {
+      const requestedScreen = params.get("screen");
+      const requestedIndex = requestedScreen ? screenIndex(requestedScreen) : -1;
+      if (requestedIndex >= 0) setStep(requestedIndex);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("havoc-app-body", !reviewMode);
+    return () => document.body.classList.remove("havoc-app-body");
+  }, [reviewMode]);
+
+  useEffect(() => {
+    if (!reviewMode) return;
+
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       if (
@@ -936,9 +957,21 @@ export default function Home() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [step]);
+  }, [reviewMode, step]);
 
-  return <main>
+  if (!reviewMode) {
+    return <main className="app-shell" aria-label="Havoc">
+      <div
+        className="app-viewport"
+        data-testid="havoc-app"
+        data-screen={screens[step].id}
+      >
+        <AppScreen index={step} setIndex={setStep} />
+      </div>
+    </main>;
+  }
+
+  return <main className="review-shell">
     <header className="site-header">
       <a className="brand" href="#prototype"><span>💥</span> HAVOC</a>
       <span className="header-chip">Friends in → game on ✦</span>

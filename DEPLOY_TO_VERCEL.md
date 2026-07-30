@@ -1,7 +1,20 @@
 # Deploy Havoc to Vercel
 
 The project is configured as a standard Next.js application. It does not
-require environment variables, databases, or custom build settings.
+require a database or custom build settings. Live Vapi voice is optional and
+must use only an existing Vapi balance.
+
+The shared preview branch is:
+
+```text
+agent/evan-3-havoc-splash-screen
+```
+
+Its stable public alias is:
+
+```text
+https://havoc-git-agent-evan-3-havoc-splash-screen-arjmehs-projects.vercel.app/
+```
 
 ## Validate before deployment
 
@@ -25,11 +38,21 @@ Both TypeScript validation and the production build must pass.
    - **Build Command:** automatic (`next build`)
    - **Output Directory:** automatic
    - **Install Command:** automatic
-   - **Environment Variables:** none required
+   - **Environment Variables:** none required for the complete local fallback
 5. Select **Deploy**.
 
 Vercel deploys the production branch, normally `main`, to production. Other
 branches and Pull Requests receive preview deployments.
+
+## Public access
+
+The stable branch alias must be anonymously accessible. In the Vercel project,
+disable Deployment Protection for this preview without enabling a paid
+feature. Verify in a signed-out or incognito browser that the URL returns the
+Havoc app instead of redirecting to `vercel.com/sso-api`.
+
+Never enable a paid plan, paid trial, automatic credit purchase, or paid
+deployment feature for this prototype.
 
 ## Repository ownership
 

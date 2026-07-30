@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fredoka, Geist } from "next/font/google";
 import "./globals.css";
 
@@ -26,23 +26,38 @@ export const metadata: Metadata = {
         : `https://${deploymentHost}`
       : "http://localhost:3000",
   ),
-  title: "Havoc — Complete Interactive App Layout",
-  description: "Explore 21 main screens across onboarding, parties, live games, Highlights, progression, settings, and safety.",
+  title: "Havoc — Your friends. Your chaos.",
+  description: "Turn any camera, reaction, and group chat into a game.",
   openGraph: {
     title: "Havoc — Make the group chat playable",
-    description: "Explore the complete 21-screen interactive app layout.",
+    description: "Turn any camera, reaction, and group chat into a game.",
     images: ["/og.png"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Havoc — Make the group chat playable",
-    description: "Explore the complete 21-screen interactive app layout.",
+    description: "Turn any camera, reaction, and group chat into a game.",
     images: ["/og.png"],
   },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Havoc",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#fffaf0",
 };
 
 export default function RootLayout({

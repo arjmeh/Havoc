@@ -1,7 +1,9 @@
-# Havoc interactive prototype
+# Havoc interactive app prototype
 
-An interactive, responsive 21-screen product prototype for Havoc, built with
-standard Next.js and ready for Vercel.
+An interactive, responsive mobile-first Havoc prototype built with standard
+Next.js and ready for Vercel. The production route renders the app itself;
+the former presentation atlas is available only in local development with
+`?review=1`.
 
 ## Requirements
 
@@ -15,7 +17,8 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open `http://localhost:3000` for the app. During local development only,
+`http://localhost:3000/?review=1` opens the internal screen atlas.
 
 ## Validate
 
@@ -37,7 +40,9 @@ For Git-connected deployment instructions, see
 
 ## Main editing files
 
-- `app/page.tsx` — screens, navigation, state, copy, and interactions
+- `app/page.tsx` — app routing, shared screens, and production presentation
+- `app/calibration-lab.tsx` — cinematic live-media calibration
+- `app/identity-onboarding.tsx` and `app/friends-onboarding.tsx` — social setup
 - `app/globals.css` — design tokens, responsive layout, and motion
 - `app/layout.tsx` — page metadata and social preview configuration
 - `public/` — favicon and social preview assets
