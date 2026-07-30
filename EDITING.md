@@ -17,7 +17,13 @@ Open the local URL printed in the terminal.
 
 - `app/page.tsx` — screens, copy, navigation, and interactions
 - `app/globals.css` — colors, typography, layout, motion, and responsive styles
-- `public/` — image and icon assets
+- `public/` — optimized runtime image and animation assets
+- `source-assets/` — original PRD, reference images, GIFs, and MP4 files
+- `docs/agent-prompts/` — reusable design, motion, ownership, and workflow prompts
+
+When changing visual media, preserve the original in `source-assets/` and write
+the optimized derivative to `public/`. Start agent-led changes with
+`docs/agent-prompts/README.md` and follow `AGENTS.md`.
 
 ## Verify changes
 

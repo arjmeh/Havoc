@@ -33,13 +33,156 @@ function Status() {
 }
 
 function LoadingScreen({ next }: { next: () => void }) {
-  return <button className="screen loading-screen" onClick={next} aria-label="Continue from loading screen">
-    <div className="loading-burst"><span>💥</span></div><b>HAVOC</b><p>Warming up the chaos…</p><div className="loading-track"><i /></div><small>Tap to continue</small>
+  const [phase, setPhase] = useState<"idle" | "igniting" | "complete">("idle");
+  const [flameSettled, setFlameSettled] = useState(false);
+
+  useEffect(() => {
+    const loopImage = new Image();
+    loopImage.src = "/havoc-controller-fire-loop-v8.gif";
+    const timer = window.setTimeout(() => setFlameSettled(true), 2130);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (phase !== "igniting") return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const completionDelay = reduceMotion ? 350 : 3100;
+    const completeTimer = window.setTimeout(() => setPhase("complete"), completionDelay);
+    return () => window.clearTimeout(completeTimer);
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "complete") return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const handoffTimer = window.setTimeout(next, reduceMotion ? 100 : 140);
+    return () => window.clearTimeout(handoffTimer);
+  }, [next, phase]);
+
+  const startIgnition = () => {
+    if (phase !== "idle") return;
+    setPhase("igniting");
+  };
+
+  const letters = ["H", "A", "V", "O", "C"];
+
+  return <button
+    type="button"
+    className={`screen loading-screen is-${phase}`}
+    onClick={startIgnition}
+    aria-label={phase === "idle" ? "Start Havoc opening animation" : "Havoc opening animation playing"}
+    aria-disabled={phase !== "idle"}
+  >
+    <span className="splash-mark">
+      <span className="splash-mark-core">
+        <img
+          className="splash-controller-gif"
+          src={flameSettled
+            ? "/havoc-controller-fire-loop-v8.gif"
+            : "/havoc-controller-fire-intro-v6.gif"}
+          alt=""
+          width={500}
+          height={500}
+        />
+      </span>
+      <span className="splash-shards" aria-hidden="true">
+        {Array.from({ length: 8 }, (_, index) => <span
+          className={`splash-shard splash-shard-${index + 1}`}
+          key={index}
+        >
+          <img
+            className="splash-shard-image"
+            src="/havoc-controller-fire-shatter.png"
+            alt=""
+            width={1254}
+            height={1254}
+          />
+        </span>)}
+      </span>
+    </span>
+    <span className="splash-wordmark" aria-label="HAVOC">
+      {letters.map((letter) => <span className="splash-letter" aria-hidden="true" key={letter}>
+        <span className="letter-piece letter-piece-top">{letter}</span>
+        <span className="letter-piece letter-piece-middle">{letter}</span>
+        <span className="letter-piece letter-piece-bottom">{letter}</span>
+      </span>)}
+    </span>
+    <span className="splash-tagline">Your friends. Your chaos.</span>
+    <small className="splash-hint">Tap to start</small>
+    <span className="splash-blackout" aria-hidden="true" />
+    <span className="splash-black-cover" aria-hidden="true" />
   </button>;
 }
 
-function WelcomeScreen({ next }: { next: () => void }) {
-  return <div className="screen welcome-screen"><Status /><span className="pill">Friends only · party mode</span><div className="welcome-faces">😎🤪😱</div><h2>Turn your group chat into a game show.</h2><p>Fast challenges. Live reactions. Instant revenge.</p><button className="cta" onClick={next}>Get started 💥</button><button className="text-button">I already have an account</button></div>;
+function WelcomeScreen({ next, onLogin }: { next: () => void; onLogin: () => void }) {
+  const [launching, setLaunching] = useState(false);
+
+  useEffect(() => {
+    const rocket = new Image();
+    rocket.src = "/havoc-rocket-flame-launch.webp";
+  }, []);
+
+  useEffect(() => {
+    if (!launching) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timer = window.setTimeout(next, reduceMotion ? 240 : 1120);
+    return () => window.clearTimeout(timer);
+  }, [launching, next]);
+
+  return <div
+    className={`screen welcome-screen${launching ? " is-launching" : ""}`}
+    aria-busy={launching}
+  >
+    <div className="welcome-joystick-stage" aria-hidden="true">
+      <img
+        className="welcome-joystick welcome-joystick-motion"
+        src="/havoc-joystick-transparent.webp"
+        alt=""
+        width={360}
+        height={480}
+      />
+      <img
+        className="welcome-joystick welcome-joystick-still"
+        src="/havoc-joystick-still.png"
+        alt=""
+        width={360}
+        height={480}
+      />
+    </div>
+    <div className="welcome-copy">
+      <h2>Set up your account.</h2>
+      <p>You&apos;ll need an account to continue—and to keep your progress, highlights, and wins.</p>
+    </div>
+    <div className="welcome-actions">
+      <button
+        className="welcome-primary"
+        onClick={() => setLaunching(true)}
+        disabled={launching}
+      >
+        Get started <span aria-hidden="true">🚀</span>
+      </button>
+      <button className="welcome-secondary" onClick={onLogin} disabled={launching}>
+        I already have an account
+      </button>
+    </div>
+    <div className="rocket-transition" aria-hidden="true">
+      <span className="rocket-divider-mask">
+        <span className="rocket-divider-edge" />
+        <span className="rocket-divider-surface" />
+      </span>
+      <span className="rocket-launch-track">
+        <img
+          className="rocket-launch rocket-launch-motion"
+          src="/havoc-rocket-flame-launch.webp"
+          alt=""
+          width={383}
+          height={665}
+        />
+      </span>
+    </div>
+  </div>;
 }
 
 function AgeScreen({ next }: { next: () => void }) {
@@ -179,7 +322,7 @@ function AppScreen({ index, setIndex }: { index: number; setIndex: (value: numbe
   const next = () => setIndex(Math.min(index + 1, screens.length - 1));
   const id = screens[index].id;
   if (id === "loading") return <LoadingScreen next={next} />;
-  if (id === "welcome") return <WelcomeScreen next={next} />;
+  if (id === "welcome") return <WelcomeScreen next={next} onLogin={() => setIndex(5)} />;
   if (id === "age") return <AgeScreen next={next} />;
   if (id === "permissions") return <PermissionsScreen next={next} />;
   if (id === "calibration") return <CalibrationScreen next={next} />;
