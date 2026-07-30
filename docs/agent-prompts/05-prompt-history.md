@@ -58,3 +58,35 @@ not a raw chat transcript.
 - CSS controls page movement; media assets control only their internal motion.
 - Reduced motion removes shake, crumble, rocket travel, and unnecessary loops.
 - `npm test` and a phone-width visual review are required before publishing.
+
+## Live calibration
+
+- Replace the prerecorded-only concept with a real front-camera and microphone
+  path while preserving a complete local fallback.
+- Use an energetic guide, live transcript, open-mouth interaction, freeze gun,
+  frozen portrait cube, physical shake, glass reveal, table zoom-out, purple
+  pour, orientation/drink interaction, and black handoff as one continuous
+  joke.
+- User and guide audio animate a waveform border that precisely follows the
+  media chamber.
+- Safari motion permission starts inside the initiating tap. Desktop users get
+  contained wheel, swipe, keyboard, and tap alternatives.
+- Vapi may use only an existing balance. No purchase, plan change, trial, or
+  automatic recharge is allowed.
+
+## Identity and friends
+
+- After calibration, let the player choose a fake-available username and an
+  original Havoc-styled face avatar.
+- Cover the broad Unicode face-expression set. Blur and lock a small group of
+  exclusive variants.
+- Follow with “Havoc is better with friends,” a muted three-emoji animation,
+  local friend search, invite-code reward copy, skip, and Home handoff.
+
+## Production presentation
+
+- Mobile and production previews show only the app.
+- The page atlas, side page buttons, device frame, and global previous/next
+  controls are local development tools available only with `?review=1`.
+- The stable Vercel branch alias must be anonymously accessible and must never
+  require Vercel login.

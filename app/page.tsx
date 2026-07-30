@@ -5,7 +5,13 @@ import type { CSSProperties } from "react";
 import dynamic from "next/dynamic";
 
 import { getAgeLine } from "./age-copy";
+import {
+  DEFAULT_HAVOC_AVATAR_ID,
+  HAVOC_AVATARS,
+} from "./avatar-catalog";
 import { BirthdayCalendarScreen } from "./birthday-calendar";
+import { FriendsOnboardingScreen } from "./friends-onboarding";
+import { IdentityOnboardingScreen } from "./identity-onboarding";
 
 const CalibrationLabScreen = dynamic(
   () =>
@@ -22,6 +28,7 @@ const screens = [
   { id: "permissions", group: "Entry & setup", label: "Permissions", job: "Explain before asking", emoji: "🎥" },
   { id: "calibration", group: "Entry & setup", label: "Calibration", job: "Setup becomes play", emoji: "🧪" },
   { id: "identity", group: "Entry & setup", label: "Havoc Identity", job: "Make the player recognizable", emoji: "🪪" },
+  { id: "friends-setup", group: "Entry & setup", label: "Find friends", job: "Bring the group with you", emoji: "🫂" },
   { id: "home", group: "Play hub", label: "Home", job: "Instant ignition", emoji: "🏠" },
   { id: "daily", group: "Play hub", label: "Daily Havoc", job: "Fresh challenge", emoji: "⚡" },
   { id: "friends", group: "Play hub", label: "Friends", job: "Social continuity", emoji: "🫂" },
@@ -887,7 +894,16 @@ function AppScreen({ index, setIndex }: { index: number; setIndex: (value: numbe
   );
   if (id === "permissions") return <PermissionsScreen next={next} />;
   if (id === "calibration") return <CalibrationLabScreen next={next} />;
-  if (id === "identity") return <div className="screen identity-screen" aria-label="Havoc identity" />;
+  if (id === "identity") return <IdentityOnboardingScreen
+    avatarCatalog={HAVOC_AVATARS}
+    initialProfile={{ avatarId: DEFAULT_HAVOC_AVATAR_ID }}
+    onComplete={() => setIndex(screenIndex("friends-setup"))}
+  />;
+  if (id === "friends-setup") return <FriendsOnboardingScreen
+    heroAnimationSrc="/havoc-friends-trio.webp"
+    heroPosterSrc="/havoc-friends-trio-still.webp"
+    onComplete={() => setIndex(screenIndex("home"))}
+  />;
   if (id === "home") return <HomeScreen next={() => setIndex(screenIndex("create"))} />;
   if (id === "daily") return <DailyScreen />;
   if (id === "friends") return <FriendsScreen />;
@@ -949,7 +965,8 @@ export default function Home() {
         activeScreen === "age" ||
         activeScreen === "birthday" ||
         activeScreen === "calibration" ||
-        activeScreen === "identity"
+        activeScreen === "identity" ||
+        activeScreen === "friends-setup"
       ) return;
 
       if (event.key === "ArrowRight") next();
