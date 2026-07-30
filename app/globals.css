@@ -1106,7 +1106,7 @@
 }
 
 .age-screen.is-sweeping .birthday-cake-stage {
-  transform: translate3d(-50%,-78%,0);
+  transform: translate3d(-50%,-65%,0);
   transition: transform 400ms cubic-bezier(.2,.8,.2,1);
 }
 
