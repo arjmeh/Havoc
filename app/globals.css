@@ -1288,29 +1288,29 @@
   isolation: isolate;
   overflow: hidden;
   padding: max(52px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
-  background: #f8f2ff;
+  background: #f7f2ff;
   color: var(--ink);
   animation: birthday-screen-arrive 320ms cubic-bezier(.16,1,.3,1) both;
 }
 
-.birthday-screen.season-winter {
+.winter-scene .season-sky {
   background:
     radial-gradient(circle at 7% 21%,#fff 0 5%,transparent 20%),
     linear-gradient(180deg,#e8f5ff 0%,#f7f2ff 52%,#fffaf0 100%);
 }
 
-.birthday-screen.season-spring {
+.spring-scene .season-sky {
   background:
     radial-gradient(circle at 12% 18%,#fff 0 7%,transparent 24%),
     linear-gradient(180deg,#dff8ff 0%,#f6f2ff 56%,#edffd9 100%);
 }
 
-.birthday-screen.season-summer {
+.summer-scene .season-sky {
   background:
     linear-gradient(180deg,#fff2a7 0%,#fff7d7 42%,#fffaf0 100%);
 }
 
-.birthday-screen.season-autumn {
+.autumn-scene .season-sky {
   background:
     radial-gradient(circle at 88% 12%,#ffd782 0 7%,transparent 26%),
     linear-gradient(180deg,#ffe2c2 0%,#fff4e5 47%,#f8f0ff 100%);
@@ -1628,11 +1628,50 @@
   pointer-events: none;
 }
 
+.season-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.season-sky {
+  position: absolute;
+  z-index: 0;
+  inset: -3%;
+  opacity: 0;
+  transform: scale(1.055);
+  transform-origin: 50% 55%;
+  transition:
+    opacity 640ms cubic-bezier(.45,0,.2,1),
+    transform 760ms cubic-bezier(.16,1,.3,1);
+  will-change: opacity,transform;
+}
+
+.season-layer.is-active .season-sky {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .season-particles {
   position: absolute;
   z-index: 1;
   inset: 0;
   overflow: hidden;
+  opacity: 0;
+  filter: blur(3px);
+  transform: scale(.985);
+  transition:
+    opacity 580ms cubic-bezier(.45,0,.2,1),
+    filter 520ms cubic-bezier(.45,0,.2,1),
+    transform 620ms cubic-bezier(.16,1,.3,1);
+  will-change: opacity,filter,transform;
+}
+
+.season-layer.is-active .season-particles {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
 }
 
 .season-particle {
@@ -1723,9 +1762,19 @@
   width: max(320%, 1200px);
   max-width: none;
   height: auto;
+  opacity: 0;
   filter: drop-shadow(0 -4px 6px #4c2a5314);
-  translate: -50% 0;
-  animation: season-ground-settle 420ms cubic-bezier(.16,1,.3,1) both;
+  transform: translate3d(-50%,16px,0) scale(1.035);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 640ms cubic-bezier(.45,0,.2,1),
+    transform 680ms cubic-bezier(.16,1,.3,1);
+  will-change: opacity,transform;
+}
+
+.season-layer.is-active .season-ground {
+  opacity: 1;
+  transform: translate3d(-50%,0,0) scale(1);
 }
 
 @keyframes birthday-screen-arrive {
@@ -1737,18 +1786,6 @@
   to {
     opacity: 1;
     translate: 0;
-  }
-}
-
-@keyframes season-ground-settle {
-  from {
-    opacity: 0;
-    translate: -50% 18px;
-  }
-
-  to {
-    opacity: 1;
-    translate: -50% 0;
   }
 }
 
@@ -1812,11 +1849,15 @@
   }
 
   .birthday-seasonal-scene .season-ground {
-    animation: none !important;
+    transition: none;
   }
 
   .birthday-seasonal-scene .season-particles {
     display: none;
+  }
+
+  .birthday-seasonal-scene .season-sky {
+    transition: none;
   }
 
   .calendar-paper {

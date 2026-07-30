@@ -50,6 +50,13 @@ const WEEKDAYS = [
 type Season = "winter" | "spring" | "summer" | "autumn";
 type FlipDirection = -1 | 1;
 
+const SEASONS: readonly Season[] = [
+  "winter",
+  "spring",
+  "summer",
+  "autumn",
+];
+
 type WheelGestureState = {
   direction: FlipDirection | null;
   flippedAt: number;
@@ -326,20 +333,27 @@ function CalendarPageLift({ direction, monthIndex }: CalendarFlipProps) {
   );
 }
 
-function SeasonalScene({ season }: { season: Season }) {
+function SeasonalLayer({
+  active,
+  season,
+}: {
+  active: boolean;
+  season: Season;
+}) {
   const particleCount = season === "winter" ? 11 : season === "autumn" ? 9 : 8;
   const particlePositions = [5, 15, 27, 39, 51, 63, 75, 87, 95, 21, 69];
 
   return (
     <div
-      className={`birthday-seasonal-scene ${season}-scene`}
+      className={`season-layer ${season}-scene${active ? " is-active" : ""}`}
       aria-hidden="true"
     >
+      <div className="season-sky" />
       <div className="season-particles">
         {Array.from({ length: particleCount }, (_, index) => (
           <span
             className="season-particle"
-            key={`${season}-${index}`}
+            key={index}
             style={
               {
                 "--particle-delay": `${-(index * 0.83 + (index % 3) * 0.41)}s`,
@@ -359,6 +373,20 @@ function SeasonalScene({ season }: { season: Season }) {
         width={1200}
         height={400}
       />
+    </div>
+  );
+}
+
+function SeasonalScene({ season }: { season: Season }) {
+  return (
+    <div className="birthday-seasonal-scene" aria-hidden="true">
+      {SEASONS.map((layerSeason) => (
+        <SeasonalLayer
+          active={layerSeason === season}
+          key={layerSeason}
+          season={layerSeason}
+        />
+      ))}
     </div>
   );
 }
