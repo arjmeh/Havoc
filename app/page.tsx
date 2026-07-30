@@ -192,10 +192,11 @@ const AGE_VALUES = Array.from({ length: 99 }, (_, index) => index + 1);
 
 function AgeScreen({ next }: { next: () => void }) {
   const [age, setAge] = useState(18);
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [poppingAge, setPoppingAge] = useState<number | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const readyRef = useRef(false);
   const settleTimerRef = useRef<number | null>(null);
+  const settledAgeRef = useRef(18);
 
   const scrollToAge = (nextAge: number, behavior: ScrollBehavior = "smooth") => {
     const safeAge = Math.max(1, Math.min(99, nextAge));
@@ -203,7 +204,6 @@ function AgeScreen({ next }: { next: () => void }) {
     const card = carousel?.querySelector<HTMLElement>(`[data-age="${safeAge}"]`);
 
     setAge(safeAge);
-    setHasInteracted(true);
 
     if (carousel && card) {
       const left = card.offsetLeft - (carousel.clientWidth - card.offsetWidth) / 2;
@@ -260,7 +260,6 @@ function AgeScreen({ next }: { next: () => void }) {
     const nextAge = Number(closest.dataset.age);
 
     if (nextAge !== age) setAge(nextAge);
-    setHasInteracted(true);
 
     if (settleTimerRef.current !== null) {
       window.clearTimeout(settleTimerRef.current);
@@ -268,6 +267,11 @@ function AgeScreen({ next }: { next: () => void }) {
     settleTimerRef.current = window.setTimeout(() => {
       const left = closest.offsetLeft - (carousel.clientWidth - closest.offsetWidth) / 2;
       carousel.scrollTo({ left, behavior: "smooth" });
+
+      if (nextAge !== settledAgeRef.current) {
+        settledAgeRef.current = nextAge;
+        setPoppingAge(nextAge);
+      }
     }, 90);
   };
 
@@ -290,13 +294,9 @@ function AgeScreen({ next }: { next: () => void }) {
 
   return <div className="screen age-screen">
     <Status />
-    <div className="age-topline">
-      <button className="back-link" aria-label="Go back">← Back</button>
-      <span className="pill">Your age</span>
-    </div>
     <div className="age-heading">
       <h2>How old are you?</h2>
-      <p>No fake birthdays. Once you confirm, this age is locked.</p>
+      <p>Double-check it—this can&apos;t be changed later.</p>
     </div>
     <div
       className="age-carousel"
@@ -313,7 +313,7 @@ function AgeScreen({ next }: { next: () => void }) {
     >
       {AGE_VALUES.map((value) => <button
         type="button"
-        className={`age-keycap${value === age ? " is-selected" : ""}`}
+        className={`age-keycap${value === age ? " is-selected" : ""}${value === poppingAge ? " is-popping" : ""}`}
         data-age={value}
         key={value}
         onClick={() => scrollToAge(value)}
@@ -325,18 +325,11 @@ function AgeScreen({ next }: { next: () => void }) {
       </button>)}
     </div>
     <div className="age-fact" aria-live="polite" aria-atomic="true">
-      <span>Age {age} says</span>
       <strong key={age}>{getAgeLine(age)}</strong>
     </div>
-    <div className="age-stepper" aria-label="Fine tune age">
-      <button type="button" onClick={() => scrollToAge(age - 1)} disabled={age === 1} aria-label="Previous age">−</button>
-      <span><b>{age}</b> years old</span>
-      <button type="button" onClick={() => scrollToAge(age + 1)} disabled={age === 99} aria-label="Next age">＋</button>
-    </div>
     <div className="age-confirm">
-      <small>{hasInteracted ? "Double-check it. This cannot be changed later." : "Slide the cards once to choose."}</small>
-      <button className="cta" onClick={next} disabled={!hasInteracted}>
-        {hasInteracted ? `Confirm age ${age}` : "Choose your age"}
+      <button className="cta" onClick={next} aria-label={`Confirm age ${age}`}>
+        Confirm
       </button>
     </div>
   </div>;
