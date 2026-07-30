@@ -1606,6 +1606,25 @@
   text-shadow: none;
 }
 
+.birthday-countdown-screen {
+  position: absolute;
+  z-index: 50;
+  inset: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: #fffef8;
+}
+
+.phone {
+  overflow-anchor: none;
+}
+
+.birthday-countdown-screen > div {
+  overflow: hidden;
+}
+
 .birthday-seasonal-scene {
   position: absolute;
   z-index: 0;

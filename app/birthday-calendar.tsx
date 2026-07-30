@@ -19,6 +19,8 @@ import type {
   PointerEvent as ReactPointerEvent,
 } from "react";
 
+import { BirthdayCountdownScreen } from "./birthday-countdown";
+
 const MONTHS = [
   "January",
   "February",
@@ -355,6 +357,10 @@ function SeasonalScene({ season }: { season: Season }) {
 export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   const [month, setMonth] = useState(0);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [confirmedBirthday, setConfirmedBirthday] = useState<{
+    day: number;
+    monthIndex: number;
+  } | null>(null);
   const [flip, setFlip] = useState<{
     direction: FlipDirection;
     id: number;
@@ -401,6 +407,11 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   };
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if ((event.target as HTMLElement).closest("button")) {
+      pointerStartRef.current = null;
+      return;
+    }
+
     pointerStartRef.current = event.clientY;
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -433,6 +444,8 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
   };
 
   useEffect(() => {
+    if (confirmedBirthday) return;
+
     const handleWindowCalendarKeys = (event: KeyboardEvent) => {
       if (event.defaultPrevented) return;
       const target = event.target as HTMLElement | null;
@@ -460,9 +473,10 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
     window.addEventListener("keydown", handleWindowCalendarKeys, true);
     return () =>
       window.removeEventListener("keydown", handleWindowCalendarKeys, true);
-  }, [reducedMotion]);
+  }, [confirmedBirthday, reducedMotion]);
 
   useEffect(() => {
+    if (confirmedBirthday) return;
     const calendar = calendarRef.current;
     if (!calendar) return;
 
@@ -500,133 +514,150 @@ export function BirthdayCalendarScreen({ next }: { next: () => void }) {
     });
     return () =>
       calendar.removeEventListener("wheel", handleCalendarWheel, true);
-  }, [reducedMotion]);
+  }, [confirmedBirthday, reducedMotion]);
 
   return (
-    <div className={`screen birthday-screen season-${season}`}>
-      <SeasonalScene season={season} />
+    <>
+      <div
+        className={`screen birthday-screen season-${season}`}
+        inert={confirmedBirthday ? true : undefined}
+      >
+        <SeasonalScene season={season} />
 
-      <div className="status">
-        <span>9:41</span>
-        <span>● ●●</span>
-      </div>
+        <div className="status">
+          <span>9:41</span>
+          <span>● ●●</span>
+        </div>
 
-      <header className="birthday-heading">
-        <h2>When&apos;s your birthday?</h2>
-        <p>
-          So we can line up future freebies, surprise drops, and a little
-          birthday chaos.
-        </p>
-      </header>
+        <header className="birthday-heading">
+          <h2>When&apos;s your birthday?</h2>
+          <p>
+            So we can line up future freebies, surprise drops, and a little
+            birthday chaos.
+          </p>
+        </header>
 
-      <div className="birthday-calendar-stage">
-        <section
-          className="tear-calendar"
-          ref={calendarRef}
-          aria-label={`Choose a birthday in ${MONTHS[month]}`}
-        >
-          <div className="calendar-binding">
-            <span className="calendar-ring ring-left" aria-hidden="true" />
-            <span className="calendar-ring ring-right" aria-hidden="true" />
-            <span className="calendar-binding-label">Havoc birthdays</span>
-          </div>
-
-          <div
-            className="calendar-paper"
-            style={{ "--calendar-drag": `${dragDistance}px` } as CSSProperties}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={() => {
-              pointerStartRef.current = null;
-              setDragDistance(0);
-            }}
-            onKeyDown={onCalendarKeyDown}
-            role="group"
-            tabIndex={0}
-            aria-label={`${MONTHS[month]} calendar. Swipe up or down, or use arrow keys, to change month.`}
+        <div className="birthday-calendar-stage">
+          <section
+            className="tear-calendar"
+            ref={calendarRef}
+            aria-label={`Choose a birthday in ${MONTHS[month]}`}
           >
-            <div className="calendar-month-row">
-              <h3>{MONTHS[month]}</h3>
-              <span>{season}</span>
-            </div>
-            <div className="calendar-weekdays" aria-hidden="true">
-              {WEEKDAYS.map(([short, full]) => (
-                <span key={full}>{short}</span>
-              ))}
-            </div>
-            <div className="calendar-days">
-              {cells.map((day, index) =>
-                day ? (
-                  <button
-                    type="button"
-                    className={selectedDay === day ? "is-selected" : ""}
-                    key={`${day}-${index}`}
-                    onClick={() => setSelectedDay(day)}
-                    aria-label={`${MONTHS[month]} ${day}`}
-                    aria-pressed={selectedDay === day}
-                  >
-                    {day}
-                  </button>
-                ) : (
-                  <span key={`blank-${index}`} aria-hidden="true" />
-                ),
-              )}
+            <div className="calendar-binding">
+              <span className="calendar-ring ring-left" aria-hidden="true" />
+              <span className="calendar-ring ring-right" aria-hidden="true" />
+              <span className="calendar-binding-label">Havoc birthdays</span>
             </div>
 
-            {flip ? (
-              <div className="calendar-flip-player" aria-hidden="true">
-                <Player
-                  key={flip.id}
-                  component={CalendarPageLift}
-                  inputProps={{
-                    direction: flip.direction,
-                    monthIndex: flip.monthIndex,
-                  }}
-                  durationInFrames={11}
-                  compositionWidth={640}
-                  compositionHeight={610}
-                  fps={30}
-                  autoPlay
-                  acknowledgeRemotionLicense
-                  controls={false}
-                  loop={false}
-                  clickToPlay={false}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                  }}
-                />
+            <div
+              className="calendar-paper"
+              style={{ "--calendar-drag": `${dragDistance}px` } as CSSProperties}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={() => {
+                pointerStartRef.current = null;
+                setDragDistance(0);
+              }}
+              onKeyDown={onCalendarKeyDown}
+              role="group"
+              tabIndex={0}
+              aria-label={`${MONTHS[month]} calendar. Swipe up or down, or use arrow keys, to change month.`}
+            >
+              <div className="calendar-month-row">
+                <h3>{MONTHS[month]}</h3>
+                <span>{season}</span>
               </div>
-            ) : null}
-          </div>
-        </section>
+              <div className="calendar-weekdays" aria-hidden="true">
+                {WEEKDAYS.map(([short, full]) => (
+                  <span key={full}>{short}</span>
+                ))}
+              </div>
+              <div className="calendar-days">
+                {cells.map((day, index) =>
+                  day ? (
+                    <button
+                      type="button"
+                      className={selectedDay === day ? "is-selected" : ""}
+                      key={`${day}-${index}`}
+                      onClick={() => setSelectedDay(day)}
+                      aria-label={`${MONTHS[month]} ${day}`}
+                      aria-pressed={selectedDay === day}
+                    >
+                      {day}
+                    </button>
+                  ) : (
+                    <span key={`blank-${index}`} aria-hidden="true" />
+                  ),
+                )}
+              </div>
 
-        <div className="calendar-swipe-hint" aria-hidden="true">
-          <span>Swipe to flip months</span>
+              {flip ? (
+                <div className="calendar-flip-player" aria-hidden="true">
+                  <Player
+                    key={flip.id}
+                    component={CalendarPageLift}
+                    inputProps={{
+                      direction: flip.direction,
+                      monthIndex: flip.monthIndex,
+                    }}
+                    durationInFrames={11}
+                    compositionWidth={640}
+                    compositionHeight={610}
+                    fps={30}
+                    autoPlay
+                    acknowledgeRemotionLicense
+                    controls={false}
+                    loop={false}
+                    clickToPlay={false}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  />
+                </div>
+              ) : null}
+            </div>
+          </section>
+
+          <div className="calendar-swipe-hint" aria-hidden="true">
+            <span>Swipe to flip months</span>
+          </div>
+        </div>
+
+        <div className="birthday-confirm">
+          <p aria-live="polite">
+            {selectedDay
+              ? `${MONTHS[month]} ${selectedDay} selected`
+              : "\u00a0"}
+          </p>
+          <button
+            type="button"
+            className="cta"
+            onClick={() => {
+              if (selectedDay === null) return;
+              (document.activeElement as HTMLElement | null)?.blur();
+              setConfirmedBirthday({ day: selectedDay, monthIndex: month });
+            }}
+            disabled={selectedDay === null}
+            aria-label={
+              selectedDay
+                ? `Confirm birthday ${MONTHS[month]} ${selectedDay}`
+                : "Choose a birthday before confirming"
+            }
+          >
+            Confirm
+          </button>
         </div>
       </div>
-
-      <div className="birthday-confirm">
-        <p aria-live="polite">
-          {selectedDay
-            ? `${MONTHS[month]} ${selectedDay} selected`
-            : "\u00a0"}
-        </p>
-        <button
-          type="button"
-          className="cta"
-          onClick={next}
-          disabled={selectedDay === null}
-          aria-label={
-            selectedDay
-              ? `Confirm birthday ${MONTHS[month]} ${selectedDay}`
-              : "Choose a birthday before confirming"
-          }
-        >
-          Confirm
-        </button>
-      </div>
-    </div>
+      {confirmedBirthday ? (
+        <BirthdayCountdownScreen
+          day={confirmedBirthday.day}
+          monthIndex={confirmedBirthday.monthIndex}
+          next={next}
+          reducedMotion={reducedMotion}
+        />
+      ) : null}
+    </>
   );
 }
