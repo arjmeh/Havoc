@@ -23,6 +23,7 @@ import type {
   PointerEvent as ReactPointerEvent,
 } from "react";
 
+import { BirthdayConfettiCanvas } from "./birthday-confetti-canvas";
 import { FAMOUS_BIRTHDAY_MATCHES } from "./famous-birthdays-data";
 
 const MONTHS = [
@@ -38,16 +39,6 @@ const MONTHS = [
   "October",
   "November",
   "December",
-] as const;
-
-const CONFETTI_COLORS = [
-  "#c9ff2f",
-  "#ef4b47",
-  "#7c3aed",
-  "#20d9df",
-  "#ffb51f",
-  "#ff7b70",
-  "#f5c84b",
 ] as const;
 
 const ENTRY_END_FRAME = 18;
@@ -253,7 +244,7 @@ function BirthdaySlotComposition({
   return (
     <AbsoluteFill
       style={{
-        overflow: "hidden",
+        overflow: "visible",
         background: frame >= 240 ? "transparent" : "#ffffff",
         color: "#17131f",
         fontFamily: "Arial, Helvetica, sans-serif",
@@ -528,17 +519,17 @@ function BirthdaySlotComposition({
                     frame,
                     [90, 100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224, 234],
                     [
-                      "-390px -190px",
-                      "-390px 0px",
-                      "390px 0px",
-                      "-390px 0px",
-                      "390px 0px",
-                      "-390px 0px",
-                      "390px 0px",
-                      "-390px 0px",
-                      "390px 0px",
-                      "-390px 0px",
-                      "390px 0px",
+                      "-750px -190px",
+                      "-750px 0px",
+                      "750px 0px",
+                      "-750px 0px",
+                      "750px 0px",
+                      "-750px 0px",
+                      "750px 0px",
+                      "-750px 0px",
+                      "750px 0px",
+                      "-750px 0px",
+                      "750px 0px",
                       "0px 0px",
                       "0px -240px",
                     ],
@@ -551,238 +542,10 @@ function BirthdaySlotComposition({
             }}
           />
 
-          {Array.from({ length: reducedMotion ? 3072 : 6144 }, (_, index) => {
-            // The square-root distribution deliberately increases the emission
-            // rate: a trickle at first, then a near-solid burst at full speed.
-            const particleCount = reducedMotion ? 3072 : 6144;
-            const particleColumns = reducedMotion ? 64 : 96;
-            const particleRows = particleCount / particleColumns;
-            const startFrame =
-              98 + 86 * Math.sqrt(index / (particleCount - 1));
-            const birthCannonX = reducedMotion
-              ? 0
-              : interpolate(
-                  startFrame,
-                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
-                  [-390, 390, -390, 390, -390, 390, -390, 390, -390, 390, 0],
-                  {
-                    easing: Easing.inOut(Easing.quad),
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                  },
-                );
-            const previousCannonX = reducedMotion
-              ? 0
-              : interpolate(
-                  startFrame - 1,
-                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
-                  [-390, 390, -390, 390, -390, 390, -390, 390, -390, 390, 0],
-                  {
-                    easing: Easing.inOut(Easing.quad),
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                  },
-                );
-            const nextCannonX = reducedMotion
-              ? 0
-              : interpolate(
-                  startFrame + 1,
-                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
-                  [-390, 390, -390, 390, -390, 390, -390, 390, -390, 390, 0],
-                  {
-                    easing: Easing.inOut(Easing.quad),
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                  },
-                );
-            const birthSwayDegrees = reducedMotion
-              ? 0
-              : interpolate(
-                  startFrame,
-                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
-                  [-6, 9, -11, 12, -13, 14, -15, 15, -14, 11, 0],
-                  {
-                    easing: Easing.inOut(Easing.quad),
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                  },
-                );
-            const birthSwayRadians = (birthSwayDegrees * Math.PI) / 180;
-            const mouthOffset = ((index * 47) % 33) - 16;
-            const sourceX =
-              320 +
-              birthCannonX -
-              Math.sin(birthSwayRadians) * 400 +
-              Math.cos(birthSwayRadians) * mouthOffset;
-            const sourceY =
-              -293 +
-              Math.cos(birthSwayRadians) * 400 +
-              Math.sin(birthSwayRadians) * mouthOffset;
-            const inheritedVelocity = Math.max(
-              -150,
-              Math.min(150, (nextCannonX - previousCannonX) * 2.2),
-            );
-            const spreadRadians =
-              ((((index * 37) % 101) / 100) - 0.5) * 0.9;
-            const launchRadians = birthSwayRadians + spreadRadians;
-            const launchDistance = 185 + (index % 11) * 11;
-            const controlX =
-              sourceX -
-              Math.sin(launchRadians) * launchDistance +
-              inheritedVelocity;
-            const controlY =
-              sourceY + Math.cos(launchRadians) * launchDistance;
-            const cellIndex = (index * 487) % particleCount;
-            const column = cellIndex % particleColumns;
-            const row = Math.floor(cellIndex / particleColumns);
-            const jitterX =
-              ((((index * 83) % 103) / 102) - 0.5) * 6;
-            const jitterY =
-              ((((index * 149) % 107) / 106) - 0.5) * 10;
-            const targetX = Math.max(
-              -38,
-              Math.min(
-                678,
-                -18 + (column / (particleColumns - 1)) * 676 + jitterX,
-              ),
-            );
-            const targetY = Math.max(
-              -38,
-              Math.min(
-                1393,
-                (row / (particleRows - 1)) * 1355 + jitterY,
-              ),
-            );
-            const settleFrame = Math.min(
-              222,
-              startFrame + 22 + (index % 10),
-            );
-            const flightProgress = interpolate(
-              frame,
-              [startFrame, settleFrame],
-              [0, 1],
-              {
-                easing: Easing.bezier(0.12, 0.72, 0.2, 1),
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-              },
-            );
-            const fallProgress = interpolate(
-              frame,
-              [242, 262],
-              [0, 1],
-              {
-                easing: Easing.in(Easing.quad),
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-              },
-            );
-            const inverseFlightProgress = 1 - flightProgress;
-            const flutter =
-              Math.sin((frame - startFrame) * 0.58 + index * 1.73) *
-              (1 - flightProgress) *
-              (12 + (index % 5) * 3);
-            const flightX =
-              inverseFlightProgress *
-                inverseFlightProgress *
-                sourceX +
-              2 *
-                inverseFlightProgress *
-                flightProgress *
-                controlX +
-              flightProgress * flightProgress * targetX +
-              flutter;
-            const flightY =
-              inverseFlightProgress *
-                inverseFlightProgress *
-                sourceY +
-              2 *
-                inverseFlightProgress *
-                flightProgress *
-                controlY +
-              flightProgress * flightProgress * targetY +
-              Math.sin(flightProgress * Math.PI) *
-                (90 + (index % 9) * 12);
-            const fallDrift = ((index * 31) % 180) - 90;
-            const entranceOpacity = interpolate(
-              frame,
-              [startFrame, startFrame + 2],
-              [0, 1],
-              {
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-              },
-            );
-            const exitOpacity = interpolate(
-              fallProgress,
-              [0, 0.82, 1],
-              [1, 1, 0],
-              {
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-              },
-            );
-            const pieceWidth =
-              index % 11 === 0
-                ? 18
-                : index % 5 === 0
-                  ? 16
-                  : index % 3 === 0
-                    ? 14
-                    : 12;
-            const pieceHeight =
-              index % 13 === 0
-                ? 28
-                : index % 7 === 0
-                  ? 25
-                  : index % 3 === 0
-                    ? 22
-                    : 19;
-
-            return (
-              <span
-                key={index}
-                style={{
-                  position: "absolute",
-                  zIndex: 30 + (index % 3),
-                  top: 0,
-                  left: 0,
-                  width: pieceWidth,
-                  height: pieceHeight,
-                  border: "1px solid rgba(23,19,31,.38)",
-                  borderRadius:
-                    index % 5 === 0
-                      ? 999
-                      : index % 4 === 0
-                        ? 8
-                        : 3,
-                  background:
-                    CONFETTI_COLORS[index % CONFETTI_COLORS.length],
-                  opacity: entranceOpacity * exitOpacity,
-                  rotate: `${
-                    (index % 2 === 0 ? 1 : -1) *
-                      (360 + index * 17) *
-                      flightProgress +
-                    Math.sin((frame - startFrame) * 0.42 + index) *
-                      28 *
-                      (1 - flightProgress) +
-                    720 * fallProgress
-                  }deg`,
-                  translate: reducedMotion
-                    ? `${targetX}px ${targetY}px`
-                    : `${
-                        flightX + fallDrift * fallProgress
-                      }px ${
-                        flightY +
-                        (1450 + ((index * 53) % 420)) * fallProgress
-                      }px`,
-                  willChange: "translate, rotate, opacity",
-                }}
-              />
-            );
-          })}
         </>
       ) : null}
+
+      <BirthdayConfettiCanvas frame={frame} reducedMotion={reducedMotion} />
 
       <div
         style={{
@@ -854,6 +617,7 @@ export function BirthdayCountdownScreen({
       stopAnimation();
       playerRef.current?.seekTo(fromFrame);
       const startedAt = window.performance.now();
+      let lastFrame = fromFrame;
 
       const tick = (now: number) => {
         const progress = Math.min(1, (now - startedAt) / durationMs);
@@ -863,7 +627,10 @@ export function BirthdayCountdownScreen({
             extrapolateRight: "clamp",
           }),
         );
-        playerRef.current?.seekTo(frame);
+        if (frame !== lastFrame) {
+          playerRef.current?.seekTo(frame);
+          lastFrame = frame;
+        }
 
         if (progress < 1) {
           animationFrameRef.current = window.requestAnimationFrame(tick);
@@ -989,6 +756,7 @@ export function BirthdayCountdownScreen({
           controls={false}
           loop={false}
           clickToPlay={false}
+          overflowVisible
           style={{
             position: "absolute",
             inset: 0,
