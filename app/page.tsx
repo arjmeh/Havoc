@@ -922,11 +922,100 @@ function AppScreen({ index, setIndex }: { index: number; setIndex: (value: numbe
   return <SafetyScreen />;
 }
 
+function DesktopScreenNavigator({
+  index,
+  onSelect,
+}: {
+  index: number;
+  onSelect: (value: number) => void;
+}) {
+  const activeScreen = screens[index];
+  const activeButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    activeButtonRef.current?.scrollIntoView({ block: "nearest" });
+  }, [index]);
+
+  return <aside className="desktop-screen-nav" aria-label="Prototype screen navigation">
+    <div className="desktop-screen-nav__header">
+      <span className="desktop-screen-nav__mark" aria-hidden="true">💥</span>
+      <div>
+        <small>Desktop test mode</small>
+        <strong>Jump anywhere</strong>
+      </div>
+      <span className="desktop-screen-nav__count">
+        {String(index + 1).padStart(2, "0")} / {screens.length}
+      </span>
+    </div>
+
+    <div className="desktop-screen-nav__current" aria-live="polite">
+      <span aria-hidden="true">{activeScreen.emoji}</span>
+      <div>
+        <small>Now testing</small>
+        <strong>{activeScreen.label}</strong>
+        <p>{activeScreen.job}</p>
+      </div>
+    </div>
+
+    <nav className="desktop-screen-nav__list" aria-label="All prototype screens">
+      {groups.map((group) => <section key={group}>
+        <h2>{group}</h2>
+        <div>
+          {screens.map((screen, screenNumber) => screen.group === group && (
+            <button
+              type="button"
+              key={screen.id}
+              ref={screenNumber === index ? activeButtonRef : undefined}
+              className={screenNumber === index ? "is-active" : ""}
+              onClick={() => onSelect(screenNumber)}
+              aria-current={screenNumber === index ? "page" : undefined}
+              title={`${screen.label}: ${screen.job}`}
+            >
+              <span aria-hidden="true">{screen.emoji}</span>
+              <b>{screen.label}</b>
+              <small>{screen.job}</small>
+            </button>
+          ))}
+        </div>
+      </section>)}
+    </nav>
+
+    <div className="desktop-screen-nav__controls">
+      <button
+        type="button"
+        onClick={() => onSelect(index - 1)}
+        disabled={index === 0}
+        aria-label="Previous prototype screen"
+      >
+        ←
+        <span>Previous</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => onSelect(index + 1)}
+        disabled={index === screens.length - 1}
+        aria-label="Next prototype screen"
+      >
+        <span>Next</span>
+        →
+      </button>
+    </div>
+  </aside>;
+}
+
 export default function Home() {
   const [step, setStep] = useState(0);
   const [reviewMode, setReviewMode] = useState(false);
   const next = () => setStep((value) => Math.min(value + 1, screens.length - 1));
   const previous = () => setStep((value) => Math.max(value - 1, 0));
+  const selectScreen = (value: number) => {
+    const nextIndex = Math.max(0, Math.min(value, screens.length - 1));
+    setStep(nextIndex);
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("screen", screens[nextIndex].id);
+    window.history.replaceState({}, "", url);
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -934,11 +1023,9 @@ export default function Home() {
     const requestedReview = canReview && params.get("review") === "1";
     setReviewMode(requestedReview);
 
-    if (canReview) {
-      const requestedScreen = params.get("screen");
-      const requestedIndex = requestedScreen ? screenIndex(requestedScreen) : -1;
-      if (requestedIndex >= 0) setStep(requestedIndex);
-    }
+    const requestedScreen = params.get("screen");
+    const requestedIndex = requestedScreen ? screenIndex(requestedScreen) : -1;
+    if (requestedIndex >= 0) setStep(requestedIndex);
   }, []);
 
   useEffect(() => {
@@ -977,7 +1064,8 @@ export default function Home() {
   }, [reviewMode, step]);
 
   if (!reviewMode) {
-    return <main className="app-shell" aria-label="Havoc">
+    return <main className="app-shell app-shell--with-test-nav" aria-label="Havoc">
+      <DesktopScreenNavigator index={step} onSelect={selectScreen} />
       <div
         className="app-viewport"
         data-testid="havoc-app"

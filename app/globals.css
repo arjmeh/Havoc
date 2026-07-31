@@ -2566,6 +2566,278 @@
   padding-left: max(22px, env(safe-area-inset-left));
 }
 
+.desktop-screen-nav {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .app-shell--with-test-nav {
+    grid-template-columns: minmax(250px, 292px) minmax(320px, 430px);
+    gap: clamp(24px, 4vw, 58px);
+    padding: 24px;
+  }
+
+  .app-shell--with-test-nav .app-viewport {
+    height: min(932px, calc(100dvh - 48px));
+  }
+
+  .desktop-screen-nav {
+    display: flex;
+    width: 100%;
+    max-height: min(884px, calc(100dvh - 48px));
+    flex-direction: column;
+    align-self: center;
+    overflow: hidden;
+    border: 2px solid #ffffff1f;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 12% 0, #7048ff45, transparent 28%),
+      linear-gradient(165deg, #211b2a, #121015 62%);
+    box-shadow: 0 24px 80px #0008, inset 0 1px 0 #ffffff1c;
+    color: #fff;
+  }
+
+  .desktop-screen-nav__header {
+    display: grid;
+    grid-template-columns: 42px 1fr auto;
+    align-items: center;
+    gap: 11px;
+    padding: 17px 17px 14px;
+    border-bottom: 1px solid #ffffff18;
+  }
+
+  .desktop-screen-nav__mark {
+    display: grid;
+    width: 42px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 2px solid #0b0911;
+    border-radius: 14px 10px 16px 11px;
+    background: var(--lime);
+    box-shadow: 3px 4px 0 #0b0911;
+    font-size: 20px;
+    transform: rotate(-4deg);
+  }
+
+  .desktop-screen-nav__header small,
+  .desktop-screen-nav__header strong,
+  .desktop-screen-nav__current small,
+  .desktop-screen-nav__current strong {
+    display: block;
+  }
+
+  .desktop-screen-nav__header small {
+    color: #c9c0d3;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .desktop-screen-nav__header strong {
+    margin-top: 2px;
+    font-size: 16px;
+    letter-spacing: -.025em;
+  }
+
+  .desktop-screen-nav__count {
+    padding: 6px 8px;
+    border: 1px solid #ffffff24;
+    border-radius: 999px;
+    background: #ffffff0d;
+    color: var(--lime);
+    font-size: 10px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .desktop-screen-nav__current {
+    display: grid;
+    grid-template-columns: 43px 1fr;
+    align-items: center;
+    gap: 11px;
+    margin: 13px 13px 9px;
+    padding: 12px;
+    border: 1px solid #ffffff24;
+    border-radius: 18px;
+    background: #ffffff0e;
+    box-shadow: inset 0 1px 0 #ffffff14;
+  }
+
+  .desktop-screen-nav__current > span {
+    display: grid;
+    width: 43px;
+    aspect-ratio: 1;
+    place-items: center;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 6px 18px #0004;
+    font-size: 24px;
+  }
+
+  .desktop-screen-nav__current small {
+    color: var(--lime);
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .desktop-screen-nav__current strong {
+    margin-top: 2px;
+    font-size: 18px;
+    letter-spacing: -.025em;
+  }
+
+  .desktop-screen-nav__current p {
+    margin: 2px 0 0;
+    overflow: hidden;
+    color: #bdb4c8;
+    font-size: 10px;
+    font-weight: 650;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .desktop-screen-nav__list {
+    display: grid;
+    min-height: 0;
+    gap: 15px;
+    padding: 5px 13px 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: #7048ff #ffffff0d;
+    scrollbar-width: thin;
+  }
+
+  .desktop-screen-nav__list section {
+    display: grid;
+    gap: 7px;
+  }
+
+  .desktop-screen-nav__list h2 {
+    margin: 0;
+    color: #8e8499;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+
+  .desktop-screen-nav__list section > div {
+    display: grid;
+    gap: 5px;
+  }
+
+  .desktop-screen-nav__list button {
+    display: grid;
+    width: 100%;
+    min-height: 48px;
+    grid-template-columns: 32px 1fr;
+    grid-template-rows: auto auto;
+    align-items: center;
+    gap: 0 9px;
+    padding: 7px 10px;
+    border: 1px solid transparent;
+    border-radius: 13px;
+    background: transparent;
+    color: #e8e3ed;
+    text-align: left;
+    cursor: pointer;
+    transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+  }
+
+  .desktop-screen-nav__list button:hover {
+    border-color: #ffffff24;
+    background: #ffffff0d;
+    transform: translateX(2px);
+  }
+
+  .desktop-screen-nav__list button.is-active {
+    border-color: #d8ff75;
+    background: var(--lime);
+    box-shadow: 3px 4px 0 #000;
+    color: #0b0911;
+    transform: translate(-1px,-1px);
+  }
+
+  .desktop-screen-nav__list button > span {
+    grid-row: 1 / 3;
+    font-size: 21px;
+    text-align: center;
+  }
+
+  .desktop-screen-nav__list button b {
+    align-self: end;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 1.15;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .desktop-screen-nav__list button small {
+    align-self: start;
+    overflow: hidden;
+    color: #998fa4;
+    font-size: 9px;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .desktop-screen-nav__list button.is-active small {
+    color: #4d5730;
+  }
+
+  .desktop-screen-nav__list button:focus-visible,
+  .desktop-screen-nav__controls button:focus-visible {
+    outline: 3px solid #35dff4;
+    outline-offset: 2px;
+  }
+
+  .desktop-screen-nav__controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 12px 13px 14px;
+    border-top: 1px solid #ffffff18;
+    background: #0f0d12e8;
+  }
+
+  .desktop-screen-nav__controls button {
+    display: flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid #ffffff24;
+    border-radius: 13px;
+    background: #ffffff0d;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 850;
+    cursor: pointer;
+    transition: background 180ms ease, transform 180ms ease;
+  }
+
+  .desktop-screen-nav__controls button:last-child {
+    border-color: #d8ff75;
+    background: var(--lime);
+    color: #0b0911;
+  }
+
+  .desktop-screen-nav__controls button:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  .desktop-screen-nav__controls button:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+  }
+}
+
 @media (max-width: 600px) {
   html,
   .havoc-app-body {
