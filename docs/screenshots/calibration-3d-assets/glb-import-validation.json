@@ -1,0 +1,81 @@
+{
+  "blenderVersion": "5.2.0 LTS",
+  "models": [
+    {
+      "file": "glass-tumbler.glb",
+      "meshObjects": 6,
+      "materials": [
+        "Glass base tint",
+        "Glass body",
+        "Glass edge",
+        "Glass studio highlight"
+      ],
+      "boundsMin": [
+        -1.42,
+        -1.42,
+        -1.461
+      ],
+      "boundsMax": [
+        1.42,
+        1.42,
+        1.615
+      ],
+      "extent": [
+        2.84,
+        2.84,
+        3.076
+      ]
+    },
+    {
+      "file": "ice-face-cube-shell.glb",
+      "meshObjects": 30,
+      "materials": [
+        "Ice body",
+        "Ice bubbles",
+        "Ice crack",
+        "Ice facet",
+        "Ice frost"
+      ],
+      "boundsMin": [
+        -1.48,
+        -0.58,
+        -1.48
+      ],
+      "boundsMax": [
+        1.48,
+        0.45,
+        1.48
+      ],
+      "extent": [
+        2.96,
+        1.03,
+        2.96
+      ]
+    },
+    {
+      "file": "ice-cube-field.glb",
+      "meshObjects": 36,
+      "materials": [
+        "Field ice body",
+        "Field ice bubbles",
+        "Field ice crack",
+        "Field ice facet"
+      ],
+      "boundsMin": [
+        -1.48,
+        -0.586,
+        -1.48
+      ],
+      "boundsMax": [
+        1.48,
+        0.45,
+        1.48
+      ],
+      "extent": [
+        2.96,
+        1.036,
+        2.96
+      ]
+    }
+  ]
+}

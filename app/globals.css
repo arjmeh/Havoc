@@ -2550,6 +2550,8 @@
 }
 
 .app-viewport {
+  --device-test-pitch: 0deg;
+  --device-test-roll: 0deg;
   position: relative;
   width: min(100%, 430px);
   height: 100dvh;
@@ -2558,6 +2560,30 @@
   isolation: isolate;
   background: #fffaf0;
   box-shadow: 0 0 72px #0008;
+  transform:
+    perspective(1400px)
+    rotateY(var(--device-test-roll))
+    rotateZ(var(--device-test-pitch));
+  transform-origin: center;
+  transition:
+    transform 90ms linear,
+    box-shadow 180ms ease;
+  will-change: transform;
+}
+
+.app-viewport[data-device-tilted="true"] {
+  box-shadow:
+    0 28px 90px #000b,
+    0 0 0 1px #ffffff14;
+}
+
+.app-device-stage {
+  position: relative;
+  display: grid;
+  width: min(100%, 430px);
+  height: 100dvh;
+  max-height: 932px;
+  place-items: center;
 }
 
 .app-viewport > .screen {
@@ -2578,6 +2604,10 @@
   }
 
   .app-shell--with-test-nav .app-viewport {
+    height: min(932px, calc(100dvh - 48px));
+  }
+
+  .app-shell--with-test-nav .app-device-stage {
     height: min(932px, calc(100dvh - 48px));
   }
 
@@ -2847,6 +2877,7 @@
   }
 
   .app-shell,
+  .app-device-stage,
   .app-viewport {
     width: 100%;
     height: 100dvh;
@@ -2855,6 +2886,23 @@
 
   .app-viewport {
     box-shadow: none;
+    transform: none;
+  }
+}
+
+@media (max-width: 900px) and (max-height: 700px) and (orientation: landscape) {
+  .app-device-stage:has(.app-viewport[data-screen="calibration"]),
+  .app-viewport[data-screen="calibration"] {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-viewport {
+    transition-duration: .01ms;
   }
 }
 

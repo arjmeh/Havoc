@@ -628,6 +628,7 @@ export function BirthdayCalendarScreen({
         className={`screen birthday-screen season-${season}`}
         ref={birthdayScreenRef}
         inert={confirmedBirthday ? true : undefined}
+        aria-hidden={confirmedBirthday ? "true" : undefined}
       >
         <SeasonalScene season={season} />
 

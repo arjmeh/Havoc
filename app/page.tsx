@@ -10,6 +10,7 @@ import {
   HAVOC_AVATARS,
 } from "./avatar-catalog";
 import { BirthdayCalendarScreen } from "./birthday-calendar";
+import { DesktopDeviceTester } from "./desktop-device-tester";
 import { FriendsOnboardingScreen } from "./friends-onboarding";
 import { IdentityOnboardingScreen } from "./identity-onboarding";
 
@@ -1006,6 +1007,7 @@ function DesktopScreenNavigator({
 export default function Home() {
   const [step, setStep] = useState(0);
   const [reviewMode, setReviewMode] = useState(false);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
   const next = () => setStep((value) => Math.min(value + 1, screens.length - 1));
   const previous = () => setStep((value) => Math.max(value - 1, 0));
   const selectScreen = (value: number) => {
@@ -1066,12 +1068,19 @@ export default function Home() {
   if (!reviewMode) {
     return <main className="app-shell app-shell--with-test-nav" aria-label="Havoc">
       <DesktopScreenNavigator index={step} onSelect={selectScreen} />
-      <div
-        className="app-viewport"
-        data-testid="havoc-app"
-        data-screen={screens[step].id}
-      >
-        <AppScreen index={step} setIndex={setStep} />
+      <div className="app-device-stage">
+        <div
+          className="app-viewport"
+          data-testid="havoc-app"
+          data-screen={screens[step].id}
+          ref={viewportRef}
+        >
+          <AppScreen index={step} setIndex={setStep} />
+        </div>
+        <DesktopDeviceTester
+          screenId={screens[step].id}
+          viewportRef={viewportRef}
+        />
       </div>
     </main>;
   }

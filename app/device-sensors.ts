@@ -28,10 +28,17 @@ export type OrientationSample = {
   timestamp: number;
 };
 
+export type DeviceTiltSample = {
+  pitch: number;
+  roll: number;
+  timestamp: number;
+};
+
 export type CalibrationGestureCallbacks = {
   onInversion: () => void;
   onShake: (direction: number, strength: number) => void;
   onStatus?: (status: SensorRuntimeStatus) => void;
+  onTilt?: (sample: DeviceTiltSample) => void;
 };
 
 type PermissionRequestConstructor = {
@@ -371,6 +378,18 @@ export class DeviceSensorRuntime {
 
   private onOrientation = (event: DeviceOrientationEvent) => {
     this.markEvent();
+    if (
+      typeof event.beta === "number" &&
+      Number.isFinite(event.beta) &&
+      typeof event.gamma === "number" &&
+      Number.isFinite(event.gamma)
+    ) {
+      this.callbacks.onTilt?.({
+        pitch: clamp(event.beta, -180, 180),
+        roll: clamp(event.gamma, -90, 90),
+        timestamp: performance.now(),
+      });
+    }
     this.detector.ingestOrientation({
       beta: event.beta,
       gamma: event.gamma,

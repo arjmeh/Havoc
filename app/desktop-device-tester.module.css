@@ -1,0 +1,123 @@
+.tester {
+  position: absolute;
+  z-index: 80;
+  right: -74px;
+  bottom: 26px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.control {
+  position: relative;
+  display: grid;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: visible;
+  border: 1px solid #ffffff35;
+  border-radius: 50%;
+  outline: 0;
+  background:
+    radial-gradient(circle at 35% 27%, #ffffff2d, transparent 32%),
+    linear-gradient(145deg, #30263c, #131017);
+  box-shadow:
+    0 12px 30px #0008,
+    inset 0 1px 0 #ffffff28;
+  color: #f8f5ff;
+  cursor: grab;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.control:hover,
+.control:focus-visible {
+  border-color: #c8ff37;
+  box-shadow:
+    0 0 0 4px #c8ff3721,
+    0 12px 30px #0008,
+    inset 0 1px 0 #ffffff28;
+  color: #c8ff37;
+  transform: translateY(-2px);
+}
+
+.control:active {
+  cursor: grabbing;
+  transform: translateY(0) scale(0.96);
+}
+
+.orbit {
+  position: absolute;
+  inset: 4px;
+  border: 1px solid #ffffff1f;
+  border-radius: 50%;
+  transition: transform 80ms linear;
+}
+
+.orbit i {
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border: 1px solid #0b0911;
+  border-radius: 50%;
+  background: #c8ff37;
+  box-shadow: 0 0 10px #c8ff377a;
+  transform: translateX(-50%);
+}
+
+.tooltip {
+  position: absolute;
+  right: 64px;
+  display: grid;
+  width: 188px;
+  padding: 10px 12px;
+  border: 1px solid #ffffff26;
+  border-radius: 13px;
+  background: #131017ed;
+  box-shadow: 0 12px 30px #0008;
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  text-align: right;
+  transform: translateX(8px);
+  transition:
+    opacity 160ms ease,
+    transform 180ms ease;
+}
+
+.tester[data-engaged="true"] .tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.tooltip strong {
+  font-size: 11px;
+  letter-spacing: -0.01em;
+}
+
+.tooltip small {
+  margin-top: 2px;
+  color: #bdb4c8;
+  font-size: 9px;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+@media (min-width: 901px) {
+  .tester {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .control,
+  .orbit,
+  .tooltip {
+    transition-duration: 0.01ms;
+  }
+}

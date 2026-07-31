@@ -62,8 +62,16 @@ export type ShakeImpulse = {
   sequence: number;
 };
 
+export type CalibrationDevicePose = {
+  pitch: number;
+  roll: number;
+  velocity: number;
+  sequence: number;
+};
+
 export type CalibrationEffectsProps = {
   audioLevels: { current: CalibrationAudioLevels };
+  devicePose: CalibrationDevicePose;
   freezeFrame: string | null;
   impulse: ShakeImpulse;
   onFallback: () => void;
@@ -102,7 +110,13 @@ type SceneRuntime = {
   phaseSeen: CalibrationPhase;
 };
 
-const ICE_SHELL_URL = "/havoc-calibration-ice-shell-v2.png";
+const ICE_SHELL_URL =
+  "/calibration-models/ice-face-cube-shell-front.webp";
+const GLASS_FRONT_URL =
+  "/calibration-models/glass-tumbler-front.webp";
+const GLASS_QUARTER_URL =
+  "/calibration-models/glass-tumbler-three-quarter.webp";
+const FIELD_ICE_URL = "/calibration-models/ice-cube-field.webp";
 const LIQUID_POOL_SIZE = 34;
 const SHARD_COUNT = 18;
 const FIXED_STEP = 1000 / 60;
@@ -226,6 +240,7 @@ const buildCrack = (
 
 export function CalibrationEffects({
   audioLevels,
+  devicePose,
   freezeFrame,
   impulse,
   onFallback,
@@ -238,6 +253,7 @@ export function CalibrationEffects({
   const hostRef = useRef<HTMLDivElement | null>(null);
   const runtimeRef = useRef<SceneRuntime | null>(null);
   const phaseRef = useRef(phase);
+  const devicePoseRef = useRef(devicePose);
   const impulseRef = useRef(impulse);
   const tickRef = useRef(onTick);
   const fallbackRef = useRef(onFallback);
@@ -247,6 +263,7 @@ export function CalibrationEffects({
   const freezeFrameRef = useRef(freezeFrame);
 
   phaseRef.current = phase;
+  devicePoseRef.current = devicePose;
   impulseRef.current = impulse;
   tickRef.current = onTick;
   fallbackRef.current = onFallback;
@@ -321,8 +338,21 @@ export function CalibrationEffects({
       host.appendChild(app.canvas);
 
       let shellTexture: Texture;
+      let glassFrontTexture: Texture;
+      let glassQuarterTexture: Texture;
+      let fieldIceTexture: Texture;
       try {
-        shellTexture = await Assets.load<Texture>(ICE_SHELL_URL);
+        [
+          shellTexture,
+          glassFrontTexture,
+          glassQuarterTexture,
+          fieldIceTexture,
+        ] = await Promise.all([
+          Assets.load<Texture>(ICE_SHELL_URL),
+          Assets.load<Texture>(GLASS_FRONT_URL),
+          Assets.load<Texture>(GLASS_QUARTER_URL),
+          Assets.load<Texture>(FIELD_ICE_URL),
+        ]);
       } catch {
         app.destroy(
           { removeView: true, releaseGlobalResources: true },
@@ -359,53 +389,53 @@ export function CalibrationEffects({
         sortableChildren: true,
       });
       const userGlass = new Container({ label: "user-glass" });
+      const userGlassShell = new Container({ label: "user-glass-shell" });
       const userGlassShadow = new Graphics()
         .ellipse(0, 132, 98, 22)
-        .fill({ color: 0x2b0007, alpha: 0.28 });
+        .fill({ color: 0x090613, alpha: 0.34 });
       const userLiquidMask = new Graphics()
         .poly([-73, -104, 73, -104, 59, 108, -59, 108])
         .fill(0xffffff);
-      const userLiquid = new Graphics()
-        .rect(-76, -216, 152, 220)
-        .fill({ color: 0x6c36ff, alpha: 0.96 })
-        .rect(-62, -216, 22, 220)
-        .fill({ color: 0xc29cff, alpha: 0.22 })
-        .ellipse(0, -208, 70, 12)
-        .fill({ color: 0xd0b6ff, alpha: 0.5 });
-      userLiquid.position.y = 108;
-      userLiquid.pivot.y = 0;
+      const userLiquid = new Graphics({ label: "screen-container-liquid" });
       userLiquid.mask = userLiquidMask;
       const userGlassBody = new Graphics()
         .poly([-86, -118, 86, -118, 68, 128, -68, 128])
-        .fill({ color: 0xffffff, alpha: 0.1 })
-        .stroke({ color: 0xffffff, width: 6, alpha: 0.9, join: "round" })
+        .fill({ color: 0xdff8ff, alpha: 0.075 })
+        .stroke({ color: 0xffffff, width: 5, alpha: 0.92, join: "round" })
         .poly([-75, -105, 75, -105, 59, 112, -59, 112])
-        .stroke({ color: 0xffd9e1, width: 2, alpha: 0.5, join: "round" });
+        .stroke({ color: 0xbcecff, width: 1.5, alpha: 0.42, join: "round" });
       const userGlassRim = new Graphics()
         .ellipse(0, -118, 86, 19)
-        .fill({ color: 0xfff8fa, alpha: 0.13 })
+        .fill({ color: 0xe8fbff, alpha: 0.1 })
         .stroke({ color: 0xffffff, width: 4, alpha: 0.95 })
         .ellipse(0, -114, 70, 11)
-        .stroke({ color: 0xffb6c5, width: 1.5, alpha: 0.68 });
+        .stroke({ color: 0xb5ecff, width: 1.5, alpha: 0.68 });
       const userGlassShine = new Graphics()
         .moveTo(-67, -91)
         .bezierCurveTo(-63, -28, -59, 37, -52, 82)
         .stroke({ color: 0xffffff, width: 9, alpha: 0.28, cap: "round" })
         .moveTo(53, -85)
         .bezierCurveTo(49, -42, 46, 12, 41, 39)
-        .stroke({ color: 0xffffff, width: 3, alpha: 0.17, cap: "round" });
-      userGlass.addChild(
+          .stroke({ color: 0xffffff, width: 3, alpha: 0.17, cap: "round" });
+      const userGlassModel = new Sprite({
+        texture: glassFrontTexture,
+        anchor: 0.5,
+      });
+      userGlassModel.width = 264;
+      userGlassModel.height = 264;
+      userGlassModel.alpha = 0.96;
+      userGlassShell.addChild(
         userGlassShadow,
-        userLiquidMask,
-        userLiquid,
+        userGlassModel,
         userGlassBody,
         userGlassRim,
         userGlassShine,
       );
+      userGlass.addChild(userLiquidMask, userLiquid, userGlassShell);
       userGlass.zIndex = 4;
       partyWorld.addChild(userGlass);
 
-      const companionGlasses = Array.from({ length: 8 }, (_, index) => {
+      const companionGlasses = Array.from({ length: 63 }, (_, index) => {
         const palette = [
           0xffcf3b,
           0x2ee5cf,
@@ -417,51 +447,47 @@ export function CalibrationEffects({
           0xef54df,
         ];
         const glass = new Container({ label: `companion-glass-${index}` });
+        const color = palette[index % palette.length];
         const shadow = new Graphics()
           .ellipse(0, 68, 54, 12)
-          .fill({ color: 0x360009, alpha: 0.24 });
+          .fill({ color: 0x090613, alpha: 0.28 });
         const fill = new Graphics()
           .poly([-41, -39, 41, -39, 33, 57, -33, 57])
-          .fill({ color: palette[index], alpha: 0.84 })
+          .fill({ color, alpha: 0.86 })
           .ellipse(0, -38, 40, 8)
           .fill({ color: 0xffffff, alpha: 0.18 });
-        const shell = new Graphics()
-          .poly([-48, -60, 48, -60, 39, 68, -39, 68])
-          .fill({ color: 0xffffff, alpha: 0.08 })
-          .stroke({ color: 0xffffff, width: 4, alpha: 0.82, join: "round" });
-        const rim = new Graphics()
-          .ellipse(0, -50, 42, 10)
-          .fill({ color: 0xffffff, alpha: 0.1 })
-          .stroke({ color: 0xffffff, width: 3, alpha: 0.84 });
+        const shell = new Sprite({
+          texture: glassQuarterTexture,
+          anchor: 0.5,
+        });
+        shell.width = 148;
+        shell.height = 148;
+        shell.alpha = 0.94;
         const emoji = new Text({
-          text: ["😈", "🤪", "🥶", "👽", "🤠", "🥳", "😎", "🤖"][index],
-          style: { fontSize: 30 },
+          text: ["😈", "🤪", "🥶", "👽", "🤠", "🥳", "😎", "🤖"][
+            index % 8
+          ],
+          style: { fontSize: 27 },
         });
         emoji.anchor.set(0.5);
         emoji.position.y = 6;
-        glass.addChild(shadow, fill, shell, rim, emoji);
-        glass.scale.set(0.76 + (index % 3) * 0.08);
-        glass.rotation = ((index % 2) * 2 - 1) * (0.035 + index * 0.006);
-        glass.zIndex = index % 2 ? 2 : 1;
+        emoji.alpha = index % 4 === 0 ? 0.84 : 0.22;
+        glass.addChild(shadow, fill, shell, emoji);
         partyWorld.addChild(glass);
         return glass;
       });
 
       const iceRainGroup = new Container({ label: "ice-rain" });
       iceRainGroup.zIndex = 5;
-      const iceRainCubes = Array.from({ length: 24 }, (_, index) => {
-        const cube = new Graphics()
-          .roundRect(-13, -13, 26, 26, 7)
-          .fill({
-            color: index % 3 === 0 ? 0xd8fbff : 0x9eeeff,
-            alpha: 0.7,
-          })
-          .stroke({ color: 0xffffff, width: 2, alpha: 0.92 })
-          .poly([-10, -8, 8, -11, 3, -2])
-          .fill({ color: 0xffffff, alpha: 0.26 })
-          .moveTo(-7, -7)
-          .lineTo(7, 7)
-          .stroke({ color: 0xffffff, width: 1, alpha: 0.36 });
+      const iceRainCubes = Array.from({ length: 10 }, (_, index) => {
+        const cube = new Sprite({
+          texture: fieldIceTexture,
+          anchor: 0.5,
+        });
+        const size = 44 + (index % 3) * 4;
+        cube.width = size;
+        cube.height = size;
+        cube.alpha = 0.92;
         cube.visible = false;
         cube.zIndex = 6;
         iceRainGroup.addChild(cube);
@@ -568,8 +594,6 @@ export function CalibrationEffects({
       metaballContainer.filters = [liquidBlur, liquidThreshold];
       const liquidRibbon = new Graphics({ label: "liquid-ribbon" });
       const liquidSplash = new Graphics({ label: "liquid-splash" });
-      liquidRibbon.blendMode = "screen";
-      liquidSplash.blendMode = "screen";
       liquidLayer.addChild(metaballContainer, liquidRibbon, liquidSplash);
 
       const liquidParticles: LiquidParticle[] = particles.map((particle) => ({
@@ -739,8 +763,9 @@ export function CalibrationEffects({
       let sceneWidth = width;
       let sceneHeight = height;
       let centerX = width / 2;
-      let centerY = Math.min(height * 0.42, 340);
-      let chamberRadius = clamp(width * 0.355, 126, 141);
+      let chamberRadius = clamp(width * 0.39, 143, 158);
+      let centerY =
+        clamp(height * 0.22, 172, 186) + chamberRadius;
       let orbBody: MatterBody | null = null;
       let iceBody: MatterBody | null = null;
       let boundaries: MatterBody[] = [];
@@ -749,6 +774,8 @@ export function CalibrationEffects({
       let pendingSize = { height, width };
       let resizePending = true;
       let accumulator = 0;
+      let renderedLiquidLevel = 0;
+      let renderedLiquidTilt = 0;
 
       const clearBoundaries = () => {
         boundaries.forEach((body) => Composite.remove(engine.world, body));
@@ -758,79 +785,96 @@ export function CalibrationEffects({
       const rebuildStaticScene = () => {
         sceneWidth = Math.max(pendingSize.width, 1);
         sceneHeight = Math.max(pendingSize.height, 1);
-        centerX = sceneWidth / 2;
-        centerY = Math.min(sceneHeight * 0.42, 340);
-        chamberRadius = clamp(sceneWidth * 0.355, 126, 141);
+        const hostRectangle = host.getBoundingClientRect();
+        const labElement = host.closest("[data-phase]") as HTMLElement | null;
+        const chamberElement =
+          labElement?.querySelector("video")?.parentElement ?? null;
+        const chamberRectangle = chamberElement?.getBoundingClientRect();
+        const compactLandscape =
+          sceneHeight < 700 && sceneWidth > sceneHeight;
+        if (
+          chamberRectangle &&
+          chamberRectangle.width > 1 &&
+          chamberRectangle.height > 1
+        ) {
+          chamberRadius = chamberRectangle.width / 2;
+          centerX =
+            chamberRectangle.left - hostRectangle.left + chamberRadius;
+          centerY =
+            chamberRectangle.top - hostRectangle.top + chamberRadius;
+        } else if (compactLandscape) {
+          const chamberSize = Math.min(sceneHeight * 0.67, 252);
+          chamberRadius = chamberSize / 2;
+          centerX = sceneWidth * 0.2;
+          centerY = 70 + chamberRadius;
+        } else {
+          chamberRadius = clamp(sceneWidth * 0.39, 143, 158);
+          centerX = sceneWidth / 2;
+          centerY =
+            clamp(sceneHeight * 0.22, 172, 186) + chamberRadius;
+        }
         app.renderer.resize(sceneWidth, sceneHeight);
 
         tableBackdrop
           .clear()
           .rect(0, 0, sceneWidth, sceneHeight)
-          .fill({ color: 0x5c0718, alpha: 1 })
+          .fill({ color: 0xf5f1ff, alpha: 1 })
           .ellipse(
             sceneWidth * 0.5,
-            sceneHeight * 0.58,
-            sceneWidth * 0.92,
-            sceneHeight * 0.47,
+            sceneHeight * 0.08,
+            sceneWidth * 0.94,
+            sceneHeight * 0.42,
           )
-          .fill({ color: 0xc62843, alpha: 1 })
+          .fill({ color: 0xd7ceff, alpha: 0.82 })
           .ellipse(
+            sceneWidth * 0.18,
+            sceneHeight * 0.34,
             sceneWidth * 0.5,
-            sceneHeight * 0.51,
+            sceneHeight * 0.28,
+          )
+          .fill({ color: 0xc5f7ff, alpha: 0.34 })
+          .ellipse(
             sceneWidth * 0.86,
-            sceneHeight * 0.38,
+            sceneHeight * 0.42,
+            sceneWidth * 0.48,
+            sceneHeight * 0.3,
           )
-          .fill({ color: 0xdf3653, alpha: 0.58 })
-          .ellipse(
-            sceneWidth * 0.5,
-            sceneHeight * 0.5,
-            sceneWidth * 0.83,
-            sceneHeight * 0.35,
-          )
-          .stroke({ color: 0xff8297, width: 3, alpha: 0.36 })
-          .rect(0, sceneHeight * 0.78, sceneWidth, sceneHeight * 0.22)
-          .fill({ color: 0x450511, alpha: 0.42 });
+          .fill({ color: 0xffd8e3, alpha: 0.26 })
+          .rect(0, sceneHeight * 0.6, sceneWidth, sceneHeight * 0.4)
+          .fill({ color: 0xffffff, alpha: 0.5 });
         tableGlow
           .clear()
           .ellipse(
             sceneWidth * 0.5,
-            sceneHeight * 0.45,
-            sceneWidth * 0.64,
-            sceneHeight * 0.18,
+            sceneHeight * 0.57,
+            sceneWidth * 0.78,
+            sceneHeight * 0.16,
           )
-          .fill({ color: 0xff8ca0, alpha: 0.22 })
+          .fill({ color: 0xffffff, alpha: 0.58 })
           .ellipse(
-            sceneWidth * 0.28,
-            sceneHeight * 0.28,
-            sceneWidth * 0.28,
+            sceneWidth * 0.5,
+            sceneHeight * 0.26,
+            sceneWidth * 0.52,
             sceneHeight * 0.08,
           )
-          .fill({ color: 0xffbdc8, alpha: 0.09 })
-          .moveTo(0, sceneHeight * 0.55)
-          .bezierCurveTo(
-            sceneWidth * 0.27,
-            sceneHeight * 0.49,
-            sceneWidth * 0.73,
-            sceneHeight * 0.49,
-            sceneWidth,
-            sceneHeight * 0.55,
-          )
-          .stroke({ color: 0xff718b, width: 2, alpha: 0.24 });
-        partyWorld.position.set(sceneWidth / 2, sceneHeight * 0.57);
-        userGlass.position.set(0, 0);
-        const companionPositions = [
-          [-210, -122],
-          [208, -132],
-          [-236, 95],
-          [234, 112],
-          [-124, -238],
-          [128, -244],
-          [-326, -4],
-          [326, 8],
-        ];
+          .fill({ color: 0xffffff, alpha: 0.5 });
+        partyWorld.position.set(sceneWidth / 2, sceneHeight * 0.56);
+        userGlass.position.set(0, 34);
+        userGlass.zIndex = 100;
         companionGlasses.forEach((glass, index) => {
-          const [x, y] = companionPositions[index];
+          const row = Math.floor(index / 9);
+          const column = index % 9;
+          const depth = (row + 1) / 7;
+          const spacing = 38 + depth * 34;
+          let x = (column - 4) * spacing + ((row % 2) - 0.5) * 24;
+          if (column === 4 && row >= 4) x += row % 2 ? -64 : 64;
+          const y = -316 + row * 68 + (column % 3) * 4;
+          const scale = 0.28 + depth * 0.5;
           glass.position.set(x, y);
+          glass.scale.set(scale);
+          glass.rotation =
+            ((index % 5) - 2) * 0.009 + Math.sin(index * 1.7) * 0.008;
+          glass.zIndex = row + 1;
         });
 
         chamberMask
@@ -844,15 +888,15 @@ export function CalibrationEffects({
           .stroke({ color: 0xd8d3df, width: 1.2, alpha: 0.7 });
         auraRed
           .clear()
-          .circle(centerX, centerY, chamberRadius + 9)
+          .circle(centerX, centerY, chamberRadius - 1)
           .stroke({ color: 0xff385d, width: 4, alpha: 0.92 });
         auraGreen
           .clear()
-          .circle(centerX, centerY, chamberRadius + 9)
+          .circle(centerX, centerY, chamberRadius - 1)
           .stroke({ color: 0x34df91, width: 4, alpha: 0.96 });
         auraBlue
           .clear()
-          .circle(centerX, centerY, chamberRadius + 10)
+          .circle(centerX, centerY, chamberRadius - 1)
           .stroke({ color: 0x8b7ca6, width: 1.2, alpha: 0.3 });
         metaballContainer.filterArea = new Rectangle(
           centerX - chamberRadius - 70,
@@ -957,30 +1001,30 @@ export function CalibrationEffects({
           .circle(centerX, beamEndY, 47)
           .stroke({ color: 0x62ebff, width: 4, alpha: 0.74 });
 
-        const portraitSize = clamp(sceneWidth * 0.61, 228, 254);
+        const portraitSize = clamp(sceneWidth * 0.43, 152, 178);
         faceMask
           .clear()
-          .circle(0, 0, portraitSize * 0.47)
+          .circle(0, 0, portraitSize * 0.33)
           .fill(0xffffff);
-        faceSprite.width = portraitSize;
-        faceSprite.height = portraitSize;
-        shellSprite.width = portraitSize * 1.18;
-        shellSprite.height = portraitSize * 1.18;
+        faceSprite.width = portraitSize * 0.74;
+        faceSprite.height = portraitSize * 0.74;
+        shellSprite.width = portraitSize * 1.62;
+        shellSprite.height = portraitSize * 1.62;
         iceGlow
           .clear()
           .roundRect(
-            -portraitSize * 0.57,
-            -portraitSize * 0.57,
-            portraitSize * 1.14,
-            portraitSize * 1.14,
-            42,
+            -portraitSize * 0.51,
+            -portraitSize * 0.51,
+            portraitSize * 1.02,
+            portraitSize * 1.02,
+            34,
           )
           .fill({ color: 0x56dcff, alpha: 0.16 })
           .stroke({ color: 0xffffff, width: 2.2, alpha: 0.82 });
         frostGraphic.clear();
         for (let index = 0; index < 18; index += 1) {
           const angle = (Math.PI * 2 * index) / 18;
-          const radius = portraitSize * (0.43 + (index % 3) * 0.025);
+          const radius = portraitSize * (0.37 + (index % 3) * 0.022);
           drawCrystal(
             frostGraphic,
             Math.cos(angle) * radius,
@@ -1047,10 +1091,10 @@ export function CalibrationEffects({
         const cycle = nextLiquidIndex % 5;
         Body.setPosition(item.body, {
           x: storyPour
-            ? centerX + Math.min(sceneWidth * 0.3, 116) + cycle * 1.2
+            ? centerX + Math.min(sceneWidth * 0.42, 142) + cycle * 1.2
             : centerX + chamberRadius * 0.53 + cycle * 1.8,
           y: storyPour
-            ? 72 - (cycle % 2) * 7
+            ? Math.min(sceneHeight * 0.29, 230) - (cycle % 2) * 7
             : centerY - chamberRadius - 78 - (cycle % 2) * 6,
         });
         Body.setVelocity(item.body, {
@@ -1108,10 +1152,11 @@ export function CalibrationEffects({
           );
           const liquidAlpha = 1 - fadeProgress;
           const sway = Math.sin(time * 0.015) * 4;
-          const pourX = centerX + Math.min(sceneWidth * 0.3, 116);
-          const pourY = 92;
+          const pourX = centerX + Math.min(sceneWidth * 0.42, 142);
+          const pourY = Math.min(sceneHeight * 0.29, 230);
           const contactX = centerX + sway * 0.18;
-          const contactY = sceneHeight * 0.57 - 72;
+          const contactY =
+            partyWorld.position.y + (userGlass.y - 104) * 0.6;
           const ripple = 10 + Math.abs(Math.sin(time * 0.014)) * 13;
 
           liquidRibbon
@@ -1191,6 +1236,62 @@ export function CalibrationEffects({
           }
           return;
         }
+
+        if (phaseRef.current === "drain") {
+          const drainProgress = easeOutCubic(
+            clamp(runtime.phaseElapsed / 1780, 0, 1),
+          );
+          const pose = devicePoseRef.current;
+          const streamX =
+            centerX +
+            clamp(pose.roll / 90, -1, 1) * sceneWidth * 0.2 +
+            Math.sin(time * 0.014) * 5;
+          const streamWidth = 30 * (1 - drainProgress * 0.48);
+          liquidRibbon
+            .moveTo(streamX, sceneHeight - 126)
+            .bezierCurveTo(
+              streamX - 8,
+              sceneHeight - 72,
+              streamX + 12,
+              sceneHeight - 28,
+              streamX + 2,
+              sceneHeight + 28,
+            )
+            .stroke({
+              alpha: 0.88 * (1 - clamp((drainProgress - 0.72) / 0.28, 0, 1)),
+              cap: "round",
+              color: 0x6435ff,
+              width: streamWidth,
+            })
+            .moveTo(streamX - 5, sceneHeight - 124)
+            .bezierCurveTo(
+              streamX - 10,
+              sceneHeight - 70,
+              streamX + 5,
+              sceneHeight - 30,
+              streamX - 2,
+              sceneHeight + 24,
+            )
+            .stroke({
+              alpha: 0.62 * (1 - drainProgress),
+              cap: "round",
+              color: 0xe4d7ff,
+              width: 5,
+            });
+          for (let index = 0; index < 5; index += 1) {
+            const fall = (drainProgress * 1.7 + index * 0.19) % 1;
+            liquidSplash
+              .circle(
+                streamX + Math.sin(index * 1.8 + time * 0.006) * 16,
+                sceneHeight - 90 + fall * 150,
+                3 + (index % 2) * 2,
+              )
+              .fill({
+                color: index % 2 ? 0xb58cff : 0x6435ff,
+                alpha: 0.58 * (1 - drainProgress),
+              });
+          }
+        }
       };
 
       const resetIce = () => {
@@ -1215,7 +1316,7 @@ export function CalibrationEffects({
           Composite.remove(engine.world, orbBody);
           orbBody = null;
         }
-        const size = clamp(sceneWidth * 0.67, 250, 282);
+        const size = clamp(sceneWidth * 0.44, 158, 186);
         iceBody = Bodies.rectangle(centerX, centerY, size, size, {
           chamfer: { radius: 38 },
           friction: 0.06,
@@ -1481,7 +1582,7 @@ export function CalibrationEffects({
               Math.sin(time * 0.0047 - index * 1.31) * 0.38;
             const radius =
               chamberRadius +
-              9 +
+              0.5 +
               waveform * envelope * (1.3 + motionLevel * 13);
             const x = centerX + Math.cos(angle) * radius;
             const y = centerY + Math.sin(angle) * radius;
@@ -1520,7 +1621,8 @@ export function CalibrationEffects({
         tableBackdrop.visible = active;
         tableGlow.visible = active;
         if (!active) {
-          userLiquid.scale.y = 0.001;
+          userLiquid.clear();
+          userGlassShell.alpha = 0;
           iceRainCubes.forEach((cube) => {
             cube.visible = false;
           });
@@ -1529,9 +1631,10 @@ export function CalibrationEffects({
 
         const elapsed = runtime.phaseElapsed;
         const zoom = clamp(zoomProgressRef.current, 0, 1);
+        const pose = devicePoseRef.current;
         const returnProgress =
           currentPhase === "return-phone"
-            ? easeOutCubic(clamp(elapsed / 880, 0, 1))
+            ? easeOutCubic(clamp(elapsed / 1180, 0, 1))
             : [
                   "drink-prompt",
                   "drink",
@@ -1542,16 +1645,18 @@ export function CalibrationEffects({
               : 0;
         const reveal =
           currentPhase === "zoom"
-            ? zoom
-            : ["pour", "return-phone"].includes(currentPhase)
-              ? 1 - returnProgress
-              : 0;
-        const tableAlpha = clamp(reveal * 1.18, 0, 1);
-        tableBackdrop.alpha = tableAlpha;
-        tableGlow.alpha = tableAlpha;
+            ? easeOutCubic(zoom)
+            : currentPhase === "pour"
+              ? 1
+              : currentPhase === "return-phone"
+                ? 1 - returnProgress
+                : 0;
+        const fieldAlpha = clamp((reveal - 0.18) / 0.72, 0, 1);
+        tableBackdrop.alpha = fieldAlpha;
+        tableGlow.alpha = fieldAlpha;
 
-        const wideScale = 0.78;
-        const phoneScale = 2.08;
+        const wideScale = 0.6;
+        const phoneScale = 3.45;
         const worldScale =
           currentPhase === "zoom"
             ? phoneScale + (wideScale - phoneScale) * easeOutCubic(zoom)
@@ -1561,70 +1666,121 @@ export function CalibrationEffects({
                 ? wideScale + (phoneScale - wideScale) * returnProgress
                 : phoneScale;
         partyWorld.scale.set(worldScale);
-        partyWorld.rotation =
-          currentPhase === "drain"
-            ? easeOutCubic(clamp(elapsed / 1250, 0, 1)) * Math.PI
-            : currentPhase === "drink-finish"
-              ? Math.PI
-              : 0;
+        partyWorld.rotation = clamp(-pose.roll / 720, -0.08, 0.08);
         partyWorld.alpha =
           currentPhase === "drink-finish"
             ? 1 - clamp((elapsed - 2380) / 720, 0, 1)
             : 1;
 
+        userGlassShell.alpha =
+          currentPhase === "zoom"
+            ? clamp((zoom - 0.08) / 0.24, 0, 1)
+            : currentPhase === "pour"
+              ? 1
+              : currentPhase === "return-phone"
+                ? 1 - returnProgress
+                : 0;
+
         companionGlasses.forEach((glass, index) => {
-          glass.alpha = tableAlpha;
+          const row = Math.floor(index / 9);
+          const threshold = 0.14 + (6 - row) * 0.085;
+          glass.alpha =
+            clamp((reveal - threshold) / 0.2, 0, 1) * fieldAlpha;
           glass.scale.y =
             glass.scale.x *
-            (1 + Math.sin(time * 0.0014 + index) * 0.008);
+            (1 + Math.sin(time * 0.0012 + index * 0.7) * 0.006);
         });
 
-        const pourFill =
+        const targetLiquidLevel =
           currentPhase === "pour"
-            ? easeOutCubic(clamp((elapsed - 420) / 2700, 0, 1)) * 0.74
-            : [
-                  "return-phone",
-                  "drink-prompt",
-                  "drink",
-                ].includes(currentPhase)
-              ? 0.74
+            ? easeOutCubic(clamp((elapsed - 460) / 2550, 0, 1)) * 0.78
+            : ["return-phone", "drink-prompt", "drink"].includes(currentPhase)
+              ? 0.78
               : currentPhase === "drain"
-                ? 0.74 * (1 - easeOutCubic(clamp(elapsed / 1850, 0, 1)))
+                ? 0.78 * (1 - easeOutCubic(clamp(elapsed / 1780, 0, 1)))
                 : 0;
-        userLiquid.scale.y = Math.max(pourFill, 0.001);
-        userLiquid.alpha =
-          0.88 + Math.sin(time * 0.007) * 0.08;
+        renderedLiquidLevel +=
+          (targetLiquidLevel - renderedLiquidLevel) *
+          (currentPhase === "drain" ? 0.12 : 0.075);
+        const targetTilt = clamp(
+          pose.roll / 115 + Math.sin((pose.pitch * Math.PI) / 180) * 0.32,
+          -0.55,
+          0.55,
+        );
+        renderedLiquidTilt +=
+          (targetTilt - renderedLiquidTilt) *
+          clamp(0.08 + pose.velocity * 0.006, 0.08, 0.3);
+
+        userLiquid.clear();
+        if (renderedLiquidLevel > 0.004) {
+          const surfaceY = 108 - renderedLiquidLevel * 218;
+          const wave = reducedMotionRef.current
+            ? 0
+            : Math.sin(time * 0.007) * (2.2 + pose.velocity * 0.06);
+          const leftY = surfaceY - renderedLiquidTilt * 58 + wave;
+          const rightY = surfaceY + renderedLiquidTilt * 58 - wave;
+          userLiquid
+            .poly([-75, leftY, 75, rightY, 59, 110, -59, 110])
+            .fill({ color: 0x6435ff, alpha: 0.94 })
+            .poly([
+              -63,
+              leftY + 8,
+              -42,
+              leftY + 11,
+              -32,
+              104,
+              -52,
+              108,
+            ])
+            .fill({ color: 0xc5a4ff, alpha: 0.22 })
+            .moveTo(-73, leftY)
+            .bezierCurveTo(
+              -32,
+              leftY - 4 - wave,
+              31,
+              rightY + 4 + wave,
+              73,
+              rightY,
+            )
+            .stroke({
+              color: 0xe1d2ff,
+              width: 4,
+              alpha: 0.76,
+              cap: "round",
+            });
+        }
 
         iceRainCubes.forEach((cube, index) => {
-          const column = index % 5;
-          const row = Math.floor(index / 5);
+          const column = index % 3;
+          const row = Math.floor(index / 3);
           const settleX =
-            (column - 2) * 27 + Math.sin(index * 2.17) * 7;
-          const settleY = -82 + row * 35 + (index % 3) * 3;
+            (column - 1) * 46 +
+            Math.sin(index * 2.17) * 4 +
+            renderedLiquidTilt * (14 + row * 2);
+          const settleY = -30 + row * 30 + (index % 3) * 2;
           const fallProgress =
             currentPhase === "ice-rain"
-              ? easeOutCubic(
-                  clamp((elapsed - index * 54) / 920, 0, 1),
-                )
+              ? easeOutCubic(clamp((elapsed - index * 48) / 980, 0, 1))
               : 1;
           cube.visible = fallProgress > 0;
           cube.position.set(
-            settleX + Math.sin(time * 0.004 + index) * 1.2,
+            settleX + Math.sin(time * 0.003 + index) * 1.2,
             -470 + (settleY + 470) * fallProgress,
           );
           cube.rotation =
             index * 0.47 +
-            (1 - fallProgress) * 4.2 +
-            Math.sin(time * 0.001 + index) * 0.08;
+            (1 - fallProgress) * 3.8 +
+            renderedLiquidTilt * 0.26;
           const drainProgress =
             currentPhase === "drain"
-              ? easeOutCubic(clamp((elapsed - 280) / 1600, 0, 1))
+              ? easeOutCubic(clamp((elapsed - 190) / 1680, 0, 1))
               : currentPhase === "drink-finish"
                 ? 1
                 : 0;
           if (drainProgress > 0) {
-            cube.y += drainProgress * (170 + (index % 4) * 28);
-            cube.alpha = 1 - clamp((drainProgress - 0.62) / 0.38, 0, 1);
+            cube.y += drainProgress * (190 + (index % 4) * 34);
+            cube.x += renderedLiquidTilt * drainProgress * 80;
+            cube.alpha = 1 - clamp((drainProgress - 0.66) / 0.34, 0, 1);
           } else {
             cube.alpha = 0.92;
           }
@@ -1637,10 +1793,12 @@ export function CalibrationEffects({
             : 1;
         iceGroup.position.set(
           partyWorld.position.x,
-          partyWorld.position.y + 18 * worldScale,
+          partyWorld.position.y +
+            (userGlass.y + 18 + renderedLiquidTilt * 18) * worldScale,
         );
-        iceGroup.scale.set(worldScale * 0.5);
-        iceGroup.rotation = partyWorld.rotation;
+        iceGroup.scale.set(worldScale * 0.19);
+        iceGroup.rotation =
+          partyWorld.rotation + renderedLiquidTilt * 0.18;
         shellSprite.alpha = 1;
         frostGraphic.alpha = 0.92;
         bubbleGraphic.alpha = 0.7;
@@ -1662,7 +1820,7 @@ export function CalibrationEffects({
         const freezing = currentPhase === "freeze";
         beamGroup.visible = freezing;
         if (freezing) {
-          const progress = clamp(runtime.phaseElapsed / 3000, 0, 1);
+          const progress = clamp(runtime.phaseElapsed / 1500, 0, 1);
           const flicker =
             0.82 +
             Math.sin(time * 0.075) * 0.1 +
@@ -1688,6 +1846,7 @@ export function CalibrationEffects({
           iceGroup.rotation =
             Math.sin(time * (0.019 + progress * 0.028)) *
             (0.004 + progress * 0.018);
+          iceGroup.scale.set(1.48 - easeOutCubic(progress) * 0.48);
           shellSprite.alpha = easeOutCubic(progress);
           frostGraphic.alpha = clamp(progress * 1.34, 0, 0.94);
           bubbleGraphic.alpha = clamp((progress - 0.16) * 1.6, 0, 0.72);
@@ -1700,6 +1859,7 @@ export function CalibrationEffects({
           iceGroup.alpha = 1;
           iceGroup.position.copyFrom(iceBody.position);
           iceGroup.rotation = iceBody.angle;
+          iceGroup.scale.set(1);
           shellSprite.alpha = 1;
           frostGraphic.alpha = 0.92;
           bubbleGraphic.alpha = 0.7;
@@ -1716,7 +1876,7 @@ export function CalibrationEffects({
             sprite.alpha = 0;
             return;
           }
-          const progress = clamp(runtime.phaseElapsed / 3000, 0, 1);
+          const progress = clamp(runtime.phaseElapsed / 1500, 0, 1);
           const angle = index * 2.14 + time * 0.0015;
           const distance =
             chamberRadius * (1.18 - progress * 0.72) +
@@ -1892,7 +2052,12 @@ export function CalibrationEffects({
         displacementTexture.destroy(true);
         frostTexture.destroy(true);
         runtimeRef.current = null;
-        void Assets.unload(ICE_SHELL_URL).catch(() => undefined);
+        void Promise.allSettled([
+          Assets.unload(ICE_SHELL_URL),
+          Assets.unload(GLASS_FRONT_URL),
+          Assets.unload(GLASS_QUARTER_URL),
+          Assets.unload(FIELD_ICE_URL),
+        ]);
         app.destroy(
           { removeView: true, releaseGlobalResources: true },
           { children: true, texture: false, textureSource: false },
