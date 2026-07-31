@@ -1603,7 +1603,7 @@
   width: 100%;
   height: 100%;
   padding: 0;
-  background: #fffef8;
+  background: #fff;
 }
 
 .birthday-transition-backdrop {
@@ -1647,23 +1647,22 @@
 
 .birthday-slot-remotion-player {
   top: 0 !important;
-  right: auto !important;
+  right: 0 !important;
   bottom: 0 !important;
-  left: 50% !important;
-  width: auto !important;
+  left: 0 !important;
+  width: 100% !important;
   height: 100% !important;
-  aspect-ratio: 640 / 1355;
-  transform: translateX(-50%);
+  aspect-ratio: auto;
+  transform: none;
 }
 
 .birthday-slot-lever {
-  --lever-pull: 0px;
   position: absolute;
   z-index: 60;
-  top: 38%;
-  right: -1.5%;
-  width: 23%;
-  height: 32%;
+  top: 18%;
+  right: 0;
+  width: 32%;
+  height: 40%;
   padding: 0;
   border: 0;
   outline: 0;
@@ -1689,70 +1688,22 @@
   outline: 0;
 }
 
-.birthday-slot-lever:focus-visible .slot-lever-knob {
-  outline: 4px solid #20d9df;
-  outline-offset: 3px;
-}
-
-.slot-lever-base,
-.slot-lever-stem,
-.slot-lever-knob {
+.birthday-slot-lever:focus-visible::after {
+  content: "";
   position: absolute;
-  display: block;
+  top: 48%;
+  right: 4%;
+  width: 56%;
+  aspect-ratio: 1;
+  border: 4px solid #20d9df;
+  border-radius: 50%;
   pointer-events: none;
-}
-
-.slot-lever-base {
-  top: 51%;
-  left: 1%;
-  width: 48%;
-  aspect-ratio: 1;
-  border: 3px solid var(--ink);
-  border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%,#fff2a0 0 8%,#f5c84b 25%,#bd7721 73%);
-  box-shadow:
-    inset 0 4px 5px #fff1a5a8,
-    inset 0 -6px 8px #7f421d77,
-    2px 3px 0 var(--ink);
-}
-
-.slot-lever-stem {
-  z-index: 2;
-  top: 17%;
-  left: 20%;
-  width: 17%;
-  height: 46%;
-  border: 2px solid var(--ink);
-  border-radius: 99px;
-  background: linear-gradient(90deg,#b96f1d,#ffe780 42%,#db962f 72%);
-  box-shadow: inset 2px 0 2px #fff7a59e;
-  transform: translateY(var(--lever-pull));
-  transition: transform 140ms cubic-bezier(.16,1,.3,1);
-}
-
-.slot-lever-knob {
-  z-index: 3;
-  top: 0;
-  left: 0;
-  width: 58%;
-  aspect-ratio: 1;
-  border: 3px solid var(--ink);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 34% 25%,#ffb1a5 0 7%,transparent 23%),
-    linear-gradient(150deg,#ff7b70,#ef4b47 56%,#b72331);
-  box-shadow:
-    inset 0 5px 7px #ffd0c477,
-    inset 0 -8px 11px #7e152a66,
-    3px 4px 0 var(--ink);
-  transform: translateY(var(--lever-pull));
-  transition: transform 140ms cubic-bezier(.16,1,.3,1);
 }
 
 .slot-lever-cue {
   position: absolute;
-  top: 4%;
-  right: 105%;
+  top: 15%;
+  right: 88%;
   display: grid;
   min-width: 86px;
   justify-items: end;

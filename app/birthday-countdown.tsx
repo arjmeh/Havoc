@@ -67,6 +67,7 @@ type BirthdaySlotProps = {
   day: number;
   daysUntil: number;
   famousName: string;
+  leverPull: number;
   monthIndex: number;
   reducedMotion: boolean;
 };
@@ -220,6 +221,7 @@ function BirthdaySlotComposition({
   day,
   daysUntil,
   famousName,
+  leverPull,
   monthIndex,
   reducedMotion,
 }: BirthdaySlotProps) {
@@ -252,10 +254,7 @@ function BirthdaySlotComposition({
     <AbsoluteFill
       style={{
         overflow: "hidden",
-        background:
-          frame >= 240
-            ? "transparent"
-            : "radial-gradient(circle at 11% 7%,rgba(201,255,47,.58),transparent 24%),radial-gradient(circle at 92% 17%,rgba(124,58,237,.24),transparent 27%),linear-gradient(180deg,#fffef8 0%,#fff2e7 62%,#eee5ff 100%)",
+        background: frame >= 240 ? "transparent" : "#ffffff",
         color: "#17131f",
         fontFamily: "Arial, Helvetica, sans-serif",
       }}
@@ -267,6 +266,7 @@ function BirthdaySlotComposition({
           zIndex: 2,
           inset: 0,
           opacity: machineOpacity,
+          transformOrigin: "50% 100%",
           scale: reducedMotion
             ? 1
             : interpolate(frame, [0, 14, 18], [0.94, 1.012, 1], {
@@ -295,13 +295,40 @@ function BirthdaySlotComposition({
             left: 15,
             width: 610,
             height: 1285,
-            // The draggable CSS lever covers the artwork's arm before launch.
-            // Reveal the artwork's real arm for the celebration so it remains
-            // attached to the machine and can be buried by the confetti layer.
-            clipPath:
-              frame >= CELEBRATION_START_FRAME
-                ? "polygon(0 0,100% 0,100% 90.35%,0 90.35%)"
-                : "polygon(0 0,87% 0,87% 90.35%,0 90.35%)",
+            clipPath: "polygon(0 0,86.2% 0,86.2% 90.35%,0 90.35%)",
+          }}
+        />
+
+        <CanvasImage
+          name="Slot lever base"
+          src={staticFile("havoc-birthday-slot-machine.png")}
+          width={864}
+          height={1821}
+          style={{
+            position: "absolute",
+            zIndex: 5,
+            top: 195,
+            left: 15,
+            width: 610,
+            height: 1285,
+            clipPath: "polygon(85.5% 35%,100% 35%,100% 46%,85.5% 46%)",
+          }}
+        />
+
+        <CanvasImage
+          name="Pullable slot lever"
+          src={staticFile("havoc-birthday-slot-machine.png")}
+          width={864}
+          height={1821}
+          style={{
+            position: "absolute",
+            zIndex: 6,
+            top: 195,
+            left: 15,
+            width: 610,
+            height: 1285,
+            clipPath: "polygon(85.5% 20.5%,100% 20.5%,100% 37%,85.5% 37%)",
+            translate: `0px ${leverPull * 1.45}px`,
           }}
         />
 
@@ -501,17 +528,17 @@ function BirthdaySlotComposition({
                     frame,
                     [90, 100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224, 234],
                     [
-                      "-340px -190px",
-                      "-340px 0px",
-                      "340px 0px",
-                      "-340px 0px",
-                      "340px 0px",
-                      "-340px 0px",
-                      "340px 0px",
-                      "-340px 0px",
-                      "340px 0px",
-                      "-340px 0px",
-                      "340px 0px",
+                      "-390px -190px",
+                      "-390px 0px",
+                      "390px 0px",
+                      "-390px 0px",
+                      "390px 0px",
+                      "-390px 0px",
+                      "390px 0px",
+                      "-390px 0px",
+                      "390px 0px",
+                      "-390px 0px",
+                      "390px 0px",
                       "0px 0px",
                       "0px -240px",
                     ],
@@ -524,20 +551,20 @@ function BirthdaySlotComposition({
             }}
           />
 
-          {Array.from({ length: reducedMotion ? 2160 : 4096 }, (_, index) => {
+          {Array.from({ length: reducedMotion ? 3072 : 6144 }, (_, index) => {
             // The square-root distribution deliberately increases the emission
             // rate: a trickle at first, then a near-solid burst at full speed.
-            const particleCount = reducedMotion ? 2160 : 4096;
-            const particleColumns = reducedMotion ? 40 : 64;
+            const particleCount = reducedMotion ? 3072 : 6144;
+            const particleColumns = reducedMotion ? 64 : 96;
             const particleRows = particleCount / particleColumns;
             const startFrame =
-              102 + 112 * Math.sqrt(index / (particleCount - 1));
+              98 + 86 * Math.sqrt(index / (particleCount - 1));
             const birthCannonX = reducedMotion
               ? 0
               : interpolate(
                   startFrame,
                   [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
-                  [-340, 340, -340, 340, -340, 340, -340, 340, -340, 340, 0],
+                  [-390, 390, -390, 390, -390, 390, -390, 390, -390, 390, 0],
                   {
                     easing: Easing.inOut(Easing.quad),
                     extrapolateLeft: "clamp",
@@ -549,7 +576,7 @@ function BirthdaySlotComposition({
               : interpolate(
                   startFrame - 1,
                   [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
-                  [-340, 340, -340, 340, -340, 340, -340, 340, -340, 340, 0],
+                  [-390, 390, -390, 390, -390, 390, -390, 390, -390, 390, 0],
                   {
                     easing: Easing.inOut(Easing.quad),
                     extrapolateLeft: "clamp",
@@ -561,7 +588,7 @@ function BirthdaySlotComposition({
               : interpolate(
                   startFrame + 1,
                   [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
-                  [-340, 340, -340, 340, -340, 340, -340, 340, -340, 340, 0],
+                  [-390, 390, -390, 390, -390, 390, -390, 390, -390, 390, 0],
                   {
                     easing: Easing.inOut(Easing.quad),
                     extrapolateLeft: "clamp",
@@ -613,10 +640,10 @@ function BirthdaySlotComposition({
             const jitterY =
               ((((index * 149) % 107) / 106) - 0.5) * 10;
             const targetX = Math.max(
-              -30,
+              -38,
               Math.min(
-                670,
-                (column / (particleColumns - 1)) * 640 + jitterX,
+                678,
+                -18 + (column / (particleColumns - 1)) * 676 + jitterX,
               ),
             );
             const targetY = Math.max(
@@ -627,8 +654,8 @@ function BirthdaySlotComposition({
               ),
             );
             const settleFrame = Math.min(
-              231,
-              startFrame + 28 + (index % 12),
+              222,
+              startFrame + 22 + (index % 10),
             );
             const flightProgress = interpolate(
               frame,
@@ -697,20 +724,20 @@ function BirthdaySlotComposition({
             );
             const pieceWidth =
               index % 11 === 0
-                ? 28
+                ? 18
                 : index % 5 === 0
-                  ? 24
+                  ? 16
                   : index % 3 === 0
-                    ? 22
-                    : 20;
+                    ? 14
+                    : 12;
             const pieceHeight =
               index % 13 === 0
-                ? 42
+                ? 28
                 : index % 7 === 0
-                  ? 38
+                  ? 25
                   : index % 3 === 0
-                    ? 34
-                    : 32;
+                    ? 22
+                    : 19;
 
             return (
               <span
@@ -762,7 +789,7 @@ function BirthdaySlotComposition({
           position: "absolute",
           zIndex: 1,
           inset: 0,
-          background: "#fffef8",
+          background: "#ffffff",
           opacity: interpolate(
             frame,
             [232, 239, 240, 242],
@@ -891,10 +918,6 @@ export function BirthdayCountdownScreen({
   useEffect(() => {
     playFrames(0, ENTRY_END_FRAME, reducedMotion ? 90 : 480, () => {
       setPhase("ready");
-      window.setTimeout(
-        () => leverButtonRef.current?.focus({ preventScroll: true }),
-        30,
-      );
     });
     return stopAnimation;
   }, [playFrames, reducedMotion, stopAnimation]);
@@ -953,6 +976,7 @@ export function BirthdayCountdownScreen({
             day,
             daysUntil,
             famousName,
+            leverPull,
             monthIndex,
             reducedMotion,
           }}
@@ -998,12 +1022,8 @@ export function BirthdayCountdownScreen({
             event.currentTarget.releasePointerCapture(event.pointerId);
           }
         }}
-        style={{ "--lever-pull": `${leverPull}px` } as React.CSSProperties}
         aria-label="Pull the lever to reveal days until your birthday"
       >
-        <span className="slot-lever-base" aria-hidden="true" />
-        <span className="slot-lever-stem" aria-hidden="true" />
-        <span className="slot-lever-knob" aria-hidden="true" />
         {phase === "ready" ? (
           <span
             className="slot-lever-cue"
