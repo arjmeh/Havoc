@@ -126,17 +126,26 @@ Every physical input has a desktop/accessibility equivalent:
 In a non-production build, append:
 
 ```text
-?calibrationSensors=synthetic
+?calibrationSensors=synthetic&calibrationMedia=demo
 ```
 
 The page then emits deterministic alternating shake samples and a held
-inversion sample, and advances the zoom adapter. Shake samples are spaced at
-realistic 120 ms intervals so UI debouncing is exercised. This flag is ignored
-in production.
+inversion sample, advances the two voice gates and zoom adapter, and keeps the
+bundled media source instead of opening a camera permission sheet. Shake
+samples are spaced at realistic 120 ms intervals so UI debouncing is
+exercised. Both flags are ignored in production.
 
-For a desktop containment audit, add `&calibrationDrink=manual`; development
-still synthesizes shake and zoom, but leaves the final drink waiting for wheel,
-swipe, tap, or keyboard input. This flag is also inert in production.
+For desktop containment audits, append one or more manual holds:
+
+```text
+&calibrationShake=manual&calibrationZoom=manual&calibrationDrink=manual
+```
+
+Each development-only hold disables both the synthetic gesture and that
+phase's accessibility timeout. This leaves the requested phase waiting for
+real wheel, keyboard, tap, touch, pinch, or motion input. Remove a hold after
+auditing that phase so the deterministic sequence can continue. These flags
+are inert in production.
 
 ## Deterministic story chain
 

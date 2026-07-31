@@ -73,6 +73,52 @@ declare global {
 const clamp = (value: number, minimum: number, maximum: number) =>
   Math.min(Math.max(value, minimum), maximum);
 
+const EXPECTED_MEDIAPIPE_INIT_LOGS = [
+  "face_landmarker_graph.cc:180",
+  "gl_context.cc:1119",
+  "Created TensorFlow Lite XNNPACK delegate for CPU",
+  "inference_feedback_manager.cc:121",
+];
+
+const isExpectedMediaPipeInitLog = (parts: unknown[]) => {
+  const message = parts.map((part) => String(part)).join(" ");
+  return EXPECTED_MEDIAPIPE_INIT_LOGS.some((token) => message.includes(token));
+};
+
+let mediaPipeLogFilterDepth = 0;
+let unfilteredConsoleWarn: typeof console.warn | null = null;
+let unfilteredConsoleError: typeof console.error | null = null;
+
+const installMediaPipeLogFilter = () => {
+  mediaPipeLogFilterDepth += 1;
+  if (mediaPipeLogFilterDepth === 1) {
+    unfilteredConsoleWarn = console.warn;
+    unfilteredConsoleError = console.error;
+    console.warn = (...parts: unknown[]) => {
+      if (!isExpectedMediaPipeInitLog(parts)) {
+        unfilteredConsoleWarn?.(...parts);
+      }
+    };
+    console.error = (...parts: unknown[]) => {
+      if (!isExpectedMediaPipeInitLog(parts)) {
+        unfilteredConsoleError?.(...parts);
+      }
+    };
+  }
+
+  let restored = false;
+  return () => {
+    if (restored) return;
+    restored = true;
+    mediaPipeLogFilterDepth = Math.max(0, mediaPipeLogFilterDepth - 1);
+    if (mediaPipeLogFilterDepth !== 0) return;
+    if (unfilteredConsoleWarn) console.warn = unfilteredConsoleWarn;
+    if (unfilteredConsoleError) console.error = unfilteredConsoleError;
+    unfilteredConsoleWarn = null;
+    unfilteredConsoleError = null;
+  };
+};
+
 const PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY?.trim() ?? "";
 const ASSISTANT_ID =
   process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID?.trim() ?? "";
@@ -116,6 +162,7 @@ export class CalibrationFaceRuntime {
   private landmarker: FaceLandmarker | null = null;
   private lastInferenceAt = 0;
   private lastVideoTime = -1;
+  private restoreLogFilter: (() => void) | null = null;
   private video: HTMLVideoElement | null = null;
 
   public constructor(callbacks: CalibrationFaceCallbacks) {
@@ -126,6 +173,8 @@ export class CalibrationFaceRuntime {
     if (this.disposed) return false;
     this.callbacks.onMode?.("loading");
     this.video = video;
+    this.restoreLogFilter?.();
+    this.restoreLogFilter = installMediaPipeLogFilter();
     try {
       const { FaceLandmarker, FilesetResolver } = await import(
         "@mediapipe/tasks-vision"
@@ -155,6 +204,8 @@ export class CalibrationFaceRuntime {
       this.frame = window.requestAnimationFrame(this.sample);
       return true;
     } catch {
+      this.restoreLogFilter?.();
+      this.restoreLogFilter = null;
       this.callbacks.onMode?.("fallback");
       return false;
     }
@@ -167,6 +218,8 @@ export class CalibrationFaceRuntime {
     this.frame = 0;
     this.landmarker?.close();
     this.landmarker = null;
+    this.restoreLogFilter?.();
+    this.restoreLogFilter = null;
     this.video = null;
   }
 
@@ -216,6 +269,7 @@ export class CalibrationBrowserRuntime {
   private userLevel = 0;
   private userNoiseFloor = 0.012;
   private userSpeechFrames = 0;
+  private userVoiceArmAt = 0;
   private userVoiceArmed = false;
   private userVoiceDelivered = false;
   private vapi: Vapi | null = null;
@@ -228,7 +282,10 @@ export class CalibrationBrowserRuntime {
     this.callbacks = callbacks;
   }
 
-  public async startMedia(video: HTMLVideoElement): Promise<CalibrationMediaMode> {
+  public async startMedia(
+    video: HTMLVideoElement,
+    shouldAdoptStream: () => boolean = () => true,
+  ): Promise<CalibrationMediaMode> {
     if (this.disposed) return "idle";
     if (!navigator.mediaDevices?.getUserMedia) {
       throw new Error("Live camera and microphone require HTTPS.");
@@ -250,9 +307,12 @@ export class CalibrationBrowserRuntime {
       },
     });
 
-    if (this.disposed) {
+    // Permission sheets can stay open long enough for the authored sequence to
+    // reach expression capture. Never swap a late camera stream underneath an
+    // in-progress capture; keep the already-playing privacy-safe source stable.
+    if (this.disposed || !shouldAdoptStream()) {
       stream.getTracks().forEach((track) => track.stop());
-      return "idle";
+      return this.disposed ? "idle" : "prerecorded";
     }
 
     this.mediaStream = stream;
@@ -316,6 +376,7 @@ export class CalibrationBrowserRuntime {
 
   public armVoiceCapture(): void {
     this.userVoiceArmed = true;
+    this.userVoiceArmAt = performance.now();
     this.userVoiceDelivered = false;
     this.userSpeechFrames = 0;
     this.startRecognition();
@@ -323,6 +384,7 @@ export class CalibrationBrowserRuntime {
 
   public disarmVoiceCapture(): void {
     this.userVoiceArmed = false;
+    this.userVoiceArmAt = 0;
     this.userSpeechFrames = 0;
     this.stopRecognition();
   }
@@ -417,10 +479,11 @@ export class CalibrationBrowserRuntime {
           this.userNoiseFloor * 0.988 + Math.min(rms, 0.04) * 0.012;
         this.userSpeechFrames = 0;
       } else if (
-        this.userLevel > Math.max(0.1, this.userNoiseFloor * 4.2)
+        performance.now() - this.userVoiceArmAt >= 800 &&
+        this.userLevel > Math.max(0.24, this.userNoiseFloor * 5)
       ) {
         this.userSpeechFrames += 1;
-        if (this.userSpeechFrames >= 4 && !this.userVoiceDelivered) {
+        if (this.userSpeechFrames >= 8 && !this.userVoiceDelivered) {
           this.userVoiceDelivered = true;
           this.callbacks.onUserVoice?.();
         }
@@ -488,7 +551,12 @@ export class CalibrationBrowserRuntime {
       recognition.interimResults = true;
       recognition.lang = "en-US";
       recognition.onresult = (event) => {
-        if (this.browserAgentSpeaking) return;
+        if (
+          this.browserAgentSpeaking ||
+          performance.now() - this.userVoiceArmAt < 650
+        ) {
+          return;
+        }
         let transcript = "";
         let final = false;
         const start = event.resultIndex ?? 0;
@@ -564,7 +632,8 @@ export class CalibrationBrowserRuntime {
         this.userVoiceArmed &&
         !this.userVoiceDelivered &&
         this.vapiAgentLevel < 0.12 &&
-        this.userLevel > 0.12
+        performance.now() - this.userVoiceArmAt >= 800 &&
+        this.userLevel > 0.28
       ) {
         this.userVoiceDelivered = true;
         this.callbacks.onUserVoice?.();

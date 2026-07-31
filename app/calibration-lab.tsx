@@ -310,9 +310,11 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
   }, [transitionTo]);
 
   const finishMouthCapture = useCallback(
-    (video: HTMLVideoElement) => {
-      const frame = captureMouthFrame(video, mediaMode === "live");
-      if (frame) setFreezeFrame(frame);
+    (video: HTMLVideoElement, useFallbackPortrait = false) => {
+      const frame = useFallbackPortrait
+        ? null
+        : captureMouthFrame(video, mediaMode === "live");
+      setFreezeFrame(frame ?? "/havoc-calibration-freeze.jpg");
       faceRuntimeRef.current?.dispose();
       faceRuntimeRef.current = null;
       frameCapturePendingRef.current = false;
@@ -420,7 +422,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
             );
             if (video) {
               frameCapturePendingRef.current = true;
-              finishMouthCapture(video);
+              finishMouthCapture(video, true);
             } else {
               transitionTo("expression-success");
             }
@@ -445,7 +447,10 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
             return;
           }
           frameCapturePendingRef.current = true;
-          finishMouthCapture(video);
+          finishMouthCapture(
+            video,
+            faceModeRef.current === "fallback" && mediaMode === "live",
+          );
         }
         return;
       }
@@ -459,7 +464,16 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
         };
         cue("muscle", 1700, "Come on—put some muscle into it.");
         cue("challenge", 3350, "That’s all you’ve got?");
-        if (elapsed >= 5000 && phaseRef.current === "break") {
+        const holdForManualShake =
+          process.env.NODE_ENV !== "production" &&
+          new URLSearchParams(window.location.search).get(
+            "calibrationShake",
+          ) === "manual";
+        if (
+          !holdForManualShake &&
+          elapsed >= 5000 &&
+          phaseRef.current === "break"
+        ) {
           runtimeRef.current?.say(
             "Yeah, this isn’t breaking. New plan.",
           );
@@ -470,7 +484,16 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
       }
 
       if (currentPhase === "zoom") {
-        if (elapsed >= 6500 && phaseRef.current === "zoom") {
+        const holdForManualZoom =
+          process.env.NODE_ENV !== "production" &&
+          new URLSearchParams(window.location.search).get(
+            "calibrationZoom",
+          ) === "manual";
+        if (
+          !holdForManualZoom &&
+          elapsed >= 6500 &&
+          phaseRef.current === "zoom"
+        ) {
           zoomProgressRef.current = 1;
           setZoomProgress(1);
           runtimeRef.current?.say("There it is. Let’s get a drink.");
@@ -481,7 +504,16 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
       }
 
       if (currentPhase === "drink") {
-        if (elapsed >= 6500 && phaseRef.current === "drink") {
+        const holdForManualDrink =
+          process.env.NODE_ENV !== "production" &&
+          new URLSearchParams(window.location.search).get(
+            "calibrationDrink",
+          ) === "manual";
+        if (
+          !holdForManualDrink &&
+          elapsed >= 6500 &&
+          phaseRef.current === "drink"
+        ) {
           runtimeRef.current?.say(
             "Desktop mode—I’ll tip the glass for you. Bottoms up.",
           );
@@ -599,9 +631,14 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
     if (phase === "scan") {
       voiceHeardRef.current = false;
       setTypedPhrase("");
-      runtime.armVoiceCapture();
       setAnnouncement("Hey—can you hear me?");
       runtime.say("Hey—can you hear me?");
+      const armTimer = window.setTimeout(() => {
+        if (phaseRef.current !== "scan") return;
+        runtime.armVoiceCapture();
+        setAnnouncement("Your turn—say anything.");
+      }, 1150);
+      syntheticTimersRef.current.push(armTimer);
     } else if (phase === "scan-exit") {
       runtime.disarmVoiceCapture();
       setAnnouncement("Okay, we’ll save this for later.");
@@ -747,7 +784,23 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
       new URLSearchParams(window.location.search).get("calibrationSensors") ===
         "synthetic"
     ) {
-      if (phase === "break") {
+      if (phase === "scan") {
+        const timer = window.setTimeout(() => {
+          voiceHeardRef.current = true;
+        }, 1650);
+        syntheticTimersRef.current.push(timer);
+      } else if (phase === "voice") {
+        const timer = window.setTimeout(() => {
+          setTypedPhrase(SPOKEN_PHRASE);
+          voiceHeardRef.current = true;
+        }, 720);
+        syntheticTimersRef.current.push(timer);
+      } else if (
+        phase === "break" &&
+        new URLSearchParams(window.location.search).get(
+          "calibrationShake",
+        ) !== "manual"
+      ) {
         for (let index = 0; index < 12; index += 1) {
           const timer = window.setTimeout(
             () => sensorRuntimeRef.current?.synthetic.shake(1),
@@ -755,7 +808,12 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
           );
           syntheticTimersRef.current.push(timer);
         }
-      } else if (phase === "zoom") {
+      } else if (
+        phase === "zoom" &&
+        new URLSearchParams(window.location.search).get(
+          "calibrationZoom",
+        ) !== "manual"
+      ) {
         const timer = window.setTimeout(() => acceptZoom(1), 520);
         syntheticTimersRef.current.push(timer);
       } else if (
@@ -839,7 +897,23 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
     // Both permission requests are invoked synchronously inside this click.
     // Do not insert an await above them: iOS requires transient activation.
     const sensorPermission = requestCalibrationSensorPermissions();
-    const mediaAttempt = runtime.startMedia(video);
+    const forceDemoMedia =
+      process.env.NODE_ENV !== "production" &&
+      new URLSearchParams(window.location.search).get("calibrationMedia") ===
+        "demo";
+    const mediaAttempt = forceDemoMedia
+      ? Promise.resolve<CalibrationMediaMode>("prerecorded")
+      : runtime.startMedia(video, () =>
+          [
+            "scan",
+            "scan-exit",
+            "face-hold",
+            "voice-prompt",
+            "voice",
+            "voice-hold",
+            "voice-success",
+          ].includes(phaseRef.current),
+        );
     const voiceAttempt = runtime.startVoiceAgent();
     transitionTo("scan");
 

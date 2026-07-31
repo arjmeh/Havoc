@@ -129,9 +129,9 @@
 .heroFlask {
   position: absolute;
   z-index: 8;
-  top: 22px;
+  top: calc(clamp(184px, 24.8%, 202px) + 24px);
   left: 50%;
-  width: clamp(240px, 69vw, 266px);
+  width: clamp(170px, 52vw, 205px);
   aspect-ratio: 1;
   transform: translateX(-50%);
   transform-origin: 52% 78%;
@@ -719,10 +719,6 @@
 @media (max-width: 380px) {
   .copyLayer {
     top: 520px;
-  }
-
-  .heroFlask {
-    top: 25px;
   }
 }
 

@@ -47,9 +47,26 @@ branches and Pull Requests receive preview deployments.
 ## Public access
 
 The stable branch alias must be anonymously accessible. In the Vercel project,
-disable Deployment Protection for this preview without enabling a paid
-feature. Verify in a signed-out or incognito browser that the URL returns the
-Havoc app instead of redirecting to `vercel.com/sso-api`.
+open **Settings → Deployment Protection** and set the project protection scope
+to **None**. This is a settings change, not a paid feature. Standard Protection
+still protects generated preview and branch aliases—including the stable alias
+above—so a successful build alone does not make that URL public.
+
+This setting requires access to the `arjmehs-projects/havoc` Vercel project. A
+GitHub collaborator who is not also a Vercel project member cannot change it.
+The Vercel owner or a member with Deployment Protection permission must make
+the change. A Vercel shareable link is a useful temporary review fallback, but
+it appends a secret query parameter and therefore does not make the exact base
+URL anonymously public.
+
+After changing the setting, verify in a signed-out or incognito browser that
+the exact URL returns the Havoc app instead of redirecting to
+`vercel.com/sso-api`.
+
+References:
+
+- [Vercel Deployment Protection](https://vercel.com/docs/deployment-protection)
+- [Vercel protection bypass methods](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection)
 
 Never enable a paid plan, paid trial, automatic credit purchase, or paid
 deployment feature for this prototype.
