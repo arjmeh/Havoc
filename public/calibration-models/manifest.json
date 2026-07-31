@@ -1,0 +1,39 @@
+{
+  "generator": "Blender 5.2 LTS / procedural Havoc-authored geometry",
+  "license": "Original project asset; no third-party geometry or textures.",
+  "units": "Blender meters (runtime may normalize)",
+  "assets": {
+    "glass-tumbler": {
+      "model": "/calibration-models/glass-tumbler.glb",
+      "sprites": [
+        "/calibration-models/glass-tumbler-front.webp",
+        "/calibration-models/glass-tumbler-three-quarter.webp",
+        "/calibration-models/glass-tumbler-top.webp"
+      ],
+      "liquidBounds": {
+        "bottomRadius": 0.98,
+        "topRadius": 1.25,
+        "bottomZ": -1.24,
+        "maxZ": 1.32
+      }
+    },
+    "face-cube-shell": {
+      "model": "/calibration-models/ice-face-cube-shell.glb",
+      "sprites": [
+        "/calibration-models/ice-face-cube-shell-front.webp",
+        "/calibration-models/ice-face-cube-shell-three-quarter.webp"
+      ],
+      "portraitWindow": {
+        "width": 2.06,
+        "height": 2.06,
+        "planeY": -0.485
+      }
+    },
+    "field-ice-cube": {
+      "model": "/calibration-models/ice-cube-field.glb",
+      "sprites": [
+        "/calibration-models/ice-cube-field.webp"
+      ]
+    }
+  }
+}

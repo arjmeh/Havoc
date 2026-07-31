@@ -1,0 +1,164 @@
+{
+  "pngMasters": [
+    {
+      "file": "glass-tumbler-front.png",
+      "dimensions": [
+        768,
+        768
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "visibleBounds": [
+        132,
+        86,
+        636,
+        653
+      ],
+      "bytes": 808050
+    },
+    {
+      "file": "glass-tumbler-three-quarter.png",
+      "dimensions": [
+        768,
+        768
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "visibleBounds": [
+        156,
+        67,
+        612,
+        665
+      ],
+      "bytes": 762494
+    },
+    {
+      "file": "glass-tumbler-top.png",
+      "dimensions": [
+        768,
+        768
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "visibleBounds": [
+        151,
+        67,
+        617,
+        713
+      ],
+      "bytes": 804043
+    },
+    {
+      "file": "ice-face-cube-shell-front.png",
+      "dimensions": [
+        768,
+        768
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "visibleBounds": [
+        115,
+        115,
+        653,
+        653
+      ],
+      "bytes": 815592
+    },
+    {
+      "file": "ice-face-cube-shell-three-quarter.png",
+      "dimensions": [
+        768,
+        768
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "visibleBounds": [
+        146,
+        112,
+        611,
+        656
+      ],
+      "bytes": 646601
+    },
+    {
+      "file": "ice-cube-field.png",
+      "dimensions": [
+        768,
+        768
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "visibleBounds": [
+        145,
+        111,
+        612,
+        657
+      ],
+      "bytes": 665491
+    }
+  ],
+  "runtimeWebP": [
+    {
+      "file": "glass-tumbler-front.webp",
+      "bytes": 278172,
+      "maxMeanChannelDelta": 1.368
+    },
+    {
+      "file": "glass-tumbler-three-quarter.webp",
+      "bytes": 259170,
+      "maxMeanChannelDelta": 1.215
+    },
+    {
+      "file": "glass-tumbler-top.webp",
+      "bytes": 277068,
+      "maxMeanChannelDelta": 1.197
+    },
+    {
+      "file": "ice-face-cube-shell-front.webp",
+      "bytes": 290328,
+      "maxMeanChannelDelta": 1.731
+    },
+    {
+      "file": "ice-face-cube-shell-three-quarter.webp",
+      "bytes": 219260,
+      "maxMeanChannelDelta": 1.322
+    },
+    {
+      "file": "ice-cube-field.webp",
+      "bytes": 235116,
+      "maxMeanChannelDelta": 1.479
+    }
+  ],
+  "models": [
+    {
+      "file": "glass-tumbler.glb",
+      "bytes": 896244,
+      "magic": "glTF"
+    },
+    {
+      "file": "ice-face-cube-shell.glb",
+      "bytes": 429940,
+      "magic": "glTF"
+    },
+    {
+      "file": "ice-cube-field.glb",
+      "bytes": 353324,
+      "magic": "glTF"
+    }
+  ],
+  "contactSheet": "docs/screenshots/calibration-3d-assets/havoc-calibration-3d-kit-contact-sheet.jpg",
+  "faceCubeComposite": "docs/screenshots/calibration-3d-assets/havoc-face-cube-composite.jpg",
+  "glassFieldConcept": "docs/screenshots/calibration-3d-assets/havoc-infinite-glass-field-concept.jpg"
+}
