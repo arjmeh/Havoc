@@ -284,66 +284,87 @@
 }
 
 .lab[data-phase="scan"] .cameraVideo,
-.lab[data-phase="scan-exit"] .cameraVideo {
+.lab[data-phase="scan-exit"] .cameraVideo,
+.lab[data-playback="paused"] .cameraVideo {
   opacity: 0;
 }
 
 .startButton {
   position: absolute;
   z-index: 20;
-  inset: 0;
+  top: calc(clamp(172px, 22%, 186px) + var(--chamber-size) + 24px);
+  left: 50%;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 7px;
-  width: 100%;
-  height: 100%;
-  padding: 0 24px 21px;
-  border: 0;
-  border-radius: 50%;
-  outline: none;
-  background: transparent;
+  width: min(330px, calc(100% - 38px));
+  min-height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 9px 8px 17px;
+  border: 1px solid var(--ink);
+  border-radius: 18px;
+  outline: 0;
+  background: var(--lime);
   color: var(--ink);
+  box-shadow:
+    0 6px 0 var(--ink),
+    0 16px 32px #23142f1c;
+  transform: translateX(-50%);
   cursor: pointer;
+  text-align: left;
+  transition:
+    box-shadow 150ms ease,
+    transform 150ms ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .startButton span {
-  padding: 9px 12px;
-  border: 1px solid var(--ink);
-  border-radius: 999px;
-  background: #ffffffec;
-  box-shadow: 0 4px 0 var(--ink);
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.startButton b {
+  font-size: 14px;
+  font-weight: 950;
+  letter-spacing: -0.025em;
+}
+
+.startButton small {
+  overflow: hidden;
+  font-size: 9px;
+  font-weight: 720;
+  line-height: 1.2;
+  opacity: 0.68;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .startButton i {
   display: grid;
-  width: 34px;
+  width: 38px;
+  flex: 0 0 auto;
   aspect-ratio: 1;
   place-items: center;
   border: 1px solid var(--ink);
   border-radius: 50%;
-  background: var(--lime);
-  box-shadow: 0 4px 0 var(--ink);
-  font-size: 16px;
+  background: var(--ink);
+  color: #ffffff;
+  font-size: 18px;
   font-style: normal;
   font-weight: 900;
 }
 
-.startButton:active span,
-.startButton:active i {
-  box-shadow: 0 1px 0 var(--ink);
-  transform: translateY(3px);
+.startButton:active {
+  box-shadow:
+    0 2px 0 var(--ink),
+    0 9px 20px #23142f18;
+  transform: translate(-50%, 4px);
 }
 
 .startButton:focus-visible {
-  box-shadow:
-    inset 0 0 0 4px #ffffff,
-    inset 0 0 0 8px var(--purple);
+  outline: 3px solid var(--purple);
+  outline-offset: 4px;
 }
 
 .scanLine {
@@ -592,87 +613,12 @@
   visibility: hidden;
 }
 
-.cubeTapTarget {
-  position: absolute;
-  z-index: 24;
-  bottom: max(68px, calc(env(safe-area-inset-bottom) + 56px));
-  left: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  min-width: 154px;
-  min-height: 50px;
-  padding: 0 13px 0 18px;
-  border: 1px solid var(--ink);
-  border-radius: 999px;
-  outline: none;
-  background: var(--lime);
-  color: var(--ink);
-  box-shadow:
-    0 6px 0 var(--ink),
-    0 13px 30px #21172c26;
-  transform: translateX(-50%);
-  cursor: pointer;
-  touch-action: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.cubeTapTarget span {
-  font-size: 11px;
-  font-weight: 950;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-}
-
-.cubeTapTarget i {
-  display: grid;
-  width: 30px;
-  aspect-ratio: 1;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--ink);
-  color: #ffffff;
-  font-size: 17px;
-  font-style: normal;
-  font-weight: 900;
-}
-
-.cubeTapTarget:active {
-  box-shadow: 0 2px 0 var(--ink);
-  transform: translate(-50%, 4px);
-}
-
-.cubeTapTarget:focus-visible {
-  outline: 3px solid #ffffff;
-  outline-offset: 3px;
-}
-
-.retryButton {
-  position: absolute;
-  z-index: 31;
-  right: 50%;
-  bottom: 74px;
-  min-height: 48px;
-  padding: 0 18px;
-  border: 1px solid var(--ink);
-  border-radius: 99px;
-  background: var(--ink);
-  color: #ffffff;
-  box-shadow: 0 6px 0 var(--coral);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  transform: translateX(50%);
-  cursor: pointer;
-}
-
 .fallbackIce {
   position: absolute;
   z-index: 7;
   top: clamp(172px, 22%, 186px);
   left: 50%;
-  width: var(--chamber-size);
+  width: min(48vw, 184px);
   aspect-ratio: 1;
   transform: translateX(-50%);
 }
@@ -688,7 +634,7 @@
 }
 
 .fallbackFace {
-  padding: 24px;
+  padding: 18px;
   border-radius: 50%;
 }
 

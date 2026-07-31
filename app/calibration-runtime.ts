@@ -3,6 +3,8 @@
 import type { FaceLandmarker } from "@mediapipe/tasks-vision";
 import type Vapi from "@vapi-ai/web";
 
+import { resolveCalibrationGuideClip } from "./calibration-guide-audio";
+
 export type CalibrationVoiceMode =
   | "vapi"
   | "browser"
@@ -261,6 +263,8 @@ export class CalibrationBrowserRuntime {
   private audioFrame = 0;
   private browserAgentSpeaking = false;
   private disposed = false;
+  private guideAudio: HTMLAudioElement | null = null;
+  private guidePulseFrame = 0;
   private mediaStream: MediaStream | null = null;
   private recognition: SpeechRecognitionLike | null = null;
   private recognitionRestartTimer: number | null = null;
@@ -392,10 +396,17 @@ export class CalibrationBrowserRuntime {
   public say(message: string): void {
     if (this.disposed || !message.trim()) return;
     if (this.vapiActive && this.vapi) {
+      this.stopGuideAudio();
       this.vapi.say(message, false, false, true);
       return;
     }
+    if (this.playGuideAudio(message)) return;
     this.speakInBrowser(message);
+  }
+
+  public unlockGuideAudio(message: string): void {
+    if (this.disposed || !message.trim()) return;
+    if (!this.playGuideAudio(message)) this.speakInBrowser(message);
   }
 
   public async dispose(): Promise<void> {
@@ -409,6 +420,7 @@ export class CalibrationBrowserRuntime {
       this.recognitionRestartTimer = null;
     }
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    this.stopGuideAudio();
 
     if (this.audioFrame) window.cancelAnimationFrame(this.audioFrame);
     this.audioFrame = 0;
@@ -505,6 +517,89 @@ export class CalibrationBrowserRuntime {
 
   private hasBrowserSpeech(): boolean {
     return "speechSynthesis" in window;
+  }
+
+  private playGuideAudio(message: string): boolean {
+    const source = resolveCalibrationGuideClip(message);
+    if (!source) return false;
+
+    this.stopGuideAudio();
+    const audio = new Audio(source);
+    this.guideAudio = audio;
+    audio.preload = "auto";
+    audio.volume = 0.98;
+
+    const stopSpeaking = () => {
+      if (this.guideAudio !== audio) return;
+      this.browserAgentSpeaking = false;
+      this.callbacks.onAgentSpeaking?.(false);
+      this.callbacks.onAudioLevel?.("agent", 0);
+      if (this.guidePulseFrame) {
+        window.cancelAnimationFrame(this.guidePulseFrame);
+        this.guidePulseFrame = 0;
+      }
+    };
+
+    const pulse = () => {
+      if (
+        this.disposed ||
+        this.guideAudio !== audio ||
+        audio.paused ||
+        audio.ended
+      ) {
+        stopSpeaking();
+        return;
+      }
+      const time = performance.now();
+      const level =
+        0.38 +
+        Math.abs(Math.sin(time * 0.017)) * 0.34 +
+        Math.abs(Math.sin(time * 0.041)) * 0.18;
+      this.callbacks.onAudioLevel?.("agent", clamp(level, 0, 1));
+      this.guidePulseFrame = window.requestAnimationFrame(pulse);
+    };
+
+    audio.onplay = () => {
+      if (this.guideAudio !== audio) return;
+      this.browserAgentSpeaking = true;
+      this.callbacks.onAgentSpeaking?.(true);
+      this.guidePulseFrame = window.requestAnimationFrame(pulse);
+    };
+    audio.onended = stopSpeaking;
+    audio.onpause = stopSpeaking;
+    audio.onerror = () => {
+      stopSpeaking();
+      if (!this.disposed) this.speakInBrowser(message);
+    };
+    void audio.play().catch(() => {
+      if (this.guideAudio !== audio || this.disposed) return;
+      stopSpeaking();
+      this.speakInBrowser(message);
+    });
+    return true;
+  }
+
+  private stopGuideAudio(): void {
+    if (this.guidePulseFrame) {
+      window.cancelAnimationFrame(this.guidePulseFrame);
+      this.guidePulseFrame = 0;
+    }
+    const audio = this.guideAudio;
+    this.guideAudio = null;
+    if (audio) {
+      audio.onplay = null;
+      audio.onended = null;
+      audio.onpause = null;
+      audio.onerror = null;
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+    }
+    if (this.browserAgentSpeaking) {
+      this.browserAgentSpeaking = false;
+      this.callbacks.onAgentSpeaking?.(false);
+    }
+    this.callbacks.onAudioLevel?.("agent", 0);
   }
 
   private speakInBrowser(message: string): void {
