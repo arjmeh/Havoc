@@ -234,7 +234,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
     "Camera preview and motion stay local. Voice is optional.",
   );
   const [announcement, setAnnouncement] = useState(
-    "Tap the flask. I promise this only gets a little weird.",
+    "Godfrey’s online. Start whenever you’re ready.",
   );
 
   nextRef.current = next;
@@ -828,7 +828,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
       runtime.say("Zoom out for me, would ya?");
       setAnnouncement("Zoom out for me, would ya?");
     } else if (phase === "zoom") {
-      setAnnouncement("Pinch, scroll, tap, or press minus to zoom out.");
+      setAnnouncement("Pinch, scroll, or press minus to zoom out.");
     } else if (phase === "pour") {
       runtime.say("There it is. Let’s get a drink.");
       setAnnouncement("Pouring something extremely classified.");
@@ -1431,7 +1431,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
         >
           <span>
             <b>Start calibration</b>
-            <small>Camera, voice, and motion stay on this device</small>
+            <small>Camera + voice + motion stay on-device</small>
           </span>
           <i aria-hidden="true">→</i>
         </button>

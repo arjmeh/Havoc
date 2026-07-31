@@ -896,7 +896,7 @@
 
 @media (max-width: 380px) {
   .lab {
-    --chamber-size: clamp(276px, 78vw, 294px);
+    --chamber-size: clamp(214px, 82vw, 294px);
   }
 
   .guideCard {
@@ -920,6 +920,20 @@
 
   .stepCount {
     font-size: 8px;
+  }
+
+  .startButton {
+    min-height: 64px;
+  }
+
+  .startButton small {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .liveBadge {
+    display: none;
   }
 }
 
@@ -959,6 +973,24 @@
     top: 184px;
     right: 34px;
     left: 55%;
+  }
+
+  .startButton {
+    top: auto;
+    right: 24px;
+    bottom: 26px;
+    left: 55%;
+    width: auto;
+    min-height: 54px;
+    transform: none;
+  }
+
+  .startButton small {
+    white-space: normal;
+  }
+
+  .startButton:active {
+    transform: translateY(4px);
   }
 
   .gunRig {
