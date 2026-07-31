@@ -524,8 +524,8 @@ export class CalibrationBrowserRuntime {
       ) ?? voices.find((voice) => voice.lang.startsWith("en"));
     if (preferredVoice) utterance.voice = preferredVoice;
     utterance.lang = "en-US";
-    utterance.pitch = 0.96;
-    utterance.rate = 1.08;
+    utterance.pitch = 1.03;
+    utterance.rate = 1.12;
     utterance.volume = 0.92;
     utterance.onstart = () => {
       this.browserAgentSpeaking = true;

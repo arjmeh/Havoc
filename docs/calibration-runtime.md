@@ -147,6 +147,25 @@ real wheel, keyboard, tap, touch, pinch, or motion input. Remove a hold after
 auditing that phase so the deterministic sequence can continue. These flags
 are inert in production.
 
+For fast visual review of later beats in a local development build, append a
+single authored phase:
+
+```text
+&calibrationPreview=freeze
+&calibrationPreview=break
+&calibrationPreview=zoom
+&calibrationPreview=pour
+&calibrationPreview=drink
+```
+
+The preview adapter loads the bundled camera portrait and enters that phase
+without a permission prompt. It is development-only and inert in production.
+Use it for responsive screenshots and visual regression checks; use the full
+synthetic chain to validate timing, cleanup, and handoffs.
+
+Append `&calibrationReducedMotion=1` to force the reduced-motion path during a
+local QA pass. Production always follows the operating-system preference.
+
 ## Deterministic story chain
 
 The local state machine owns the complete payoff and never depends on an LLM
@@ -156,17 +175,20 @@ response arriving on time:
 2. Voice calibration waits for speech; live-camera expression calibration uses
    local `jawOpen` scores and freezes the captured portrait after a sufficient
    held expression.
-3. The front-facing toy blaster fires from its muzzle and drops the portrait
+3. Godfrey keeps the authored personality beats—“First thing in your head. No
+   thinking,” “Loud, clear, slightly concerning,” and “This next bit is
+   probably safe”—without giving the optional voice agent control of timing.
+4. The front-facing toy blaster fires from its muzzle and drops the portrait
    inside the ice cube.
-4. Shake attempts add cracks; success or timeout both continue to the same
+5. Shake attempts add cracks; success or timeout both continue to the same
    authored ice-rain beat.
-5. Ice fills the phone-shaped glass. The contained zoom gesture smoothly
+6. Ice fills the phone-shaped glass. The contained zoom gesture smoothly
    reveals that it is one glass among many on a large red table.
-6. The flask returns, tips from its mouth, and pours a highlighted purple
-   stream into the user's glass.
-7. The view returns to the phone. Physical inversion or a desktop fallback
+7. The flask returns, tips from its mouth, and pours a highlighted purple
+   stream with contact ripples and droplets into the user's glass.
+8. The view returns to the phone. Physical inversion or a desktop fallback
    rotates the glass, drains the liquid, and carries the ice naturally.
-8. Godfrey lands “Okay, all done. Drinking yourself… pretty weird.” before the
+9. Godfrey lands “Okay, all done. Drinking yourself… pretty weird.” before the
    fragment-free black handoff.
 
 Vapi and browser speech only deliver the locked cues. Phase timing, transcripts,

@@ -44,24 +44,24 @@ const REQUIRED_REVERSALS = 10;
 const SPOKEN_PHRASE = "Havoc’s about to get interesting.";
 
 const PHASE_DURATION_MS: Partial<Record<CalibrationPhase, number>> = {
-  "scan-exit": 1250,
-  "face-hold": 3200,
-  "voice-prompt": 3000,
+  "scan-exit": 1050,
+  "face-hold": 2500,
+  "voice-prompt": 2200,
   "voice-hold": 140,
-  "voice-success": 1750,
-  "expression-prompt": 4000,
+  "voice-success": 1450,
+  "expression-prompt": 3100,
   expression: 2450,
-  "expression-success": 1450,
-  charge: 2700,
-  freeze: 1900,
-  drop: 950,
-  "ice-rain": 2100,
-  "zoom-prompt": 2350,
+  "expression-success": 1200,
+  charge: 2100,
+  freeze: 1650,
+  drop: 820,
+  "ice-rain": 1900,
+  "zoom-prompt": 1850,
   pour: 3900,
-  "return-phone": 950,
-  "drink-prompt": 2700,
+  "return-phone": 820,
+  "drink-prompt": 2200,
   drain: 2200,
-  "drink-finish": 3200,
+  "drink-finish": 2800,
   shatter: 900,
   blackout: 540,
 };
@@ -86,6 +86,23 @@ const NEXT_PHASE: Partial<Record<CalibrationPhase, CalibrationPhase>> = {
   "drink-finish": "blackout",
   shatter: "blackout",
 };
+
+const CALIBRATION_PREVIEW_PHASES = new Set<CalibrationPhase>([
+  "charge",
+  "freeze",
+  "drop",
+  "break",
+  "ice-rain",
+  "zoom-prompt",
+  "zoom",
+  "pour",
+  "return-phone",
+  "drink-prompt",
+  "drink",
+  "drain",
+  "drink-finish",
+  "shatter",
+]);
 
 const playQuietly = (audio: HTMLAudioElement | null, volume: number) => {
   if (!audio) return;
@@ -204,7 +221,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
     "Camera preview and motion stay local. Voice is optional.",
   );
   const [announcement, setAnnouncement] = useState(
-    "Calibration Lab. Tap the reaction chamber to start.",
+    "Tap the flask. I promise this only gets a little weird.",
   );
 
   nextRef.current = next;
@@ -241,11 +258,14 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
 
       if (lastDirectionRef.current === 0) {
         lastDirectionRef.current = normalizedDirection;
+        reversalCountRef.current = 1;
+        setReversalCount(1);
         setShakeImpulse((current) => ({
           direction: normalizedDirection,
-          progress: 0,
+          progress: 1 / REQUIRED_REVERSALS,
           sequence: current.sequence + 1,
         }));
+        setAnnouncement(`1 of ${REQUIRED_REVERSALS} shake gestures complete.`);
         return;
       }
 
@@ -268,9 +288,9 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
       }
       if (nextCount === REQUIRED_REVERSALS) {
         runtimeRef.current?.say(
-          "Okay, that is definitely not breaking. New plan.",
+          "Nope. Unbreakable. Fine—if you can’t leave the ice, I’m bringing the ice to you.",
         );
-        setAnnouncement("New plan. Filling the glass.");
+        setAnnouncement("Unbreakable. Fine—I’m bringing the ice to you.");
         transitionTo("ice-rain");
         return;
       }
@@ -296,7 +316,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
           : `Zoomed out ${Math.round(nextProgress * 100)} percent.`,
       );
       if (nextProgress < 0.98) return;
-      runtimeRef.current?.say("There it is. Let’s get a drink.");
+      runtimeRef.current?.say("Look at that—a whole party. Let’s get you a drink.");
       transitionTo("pour");
     },
     [transitionTo],
@@ -311,6 +331,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
 
   const finishMouthCapture = useCallback(
     (video: HTMLVideoElement, useFallbackPortrait = false) => {
+      video.pause();
       const frame = useFallbackPortrait
         ? null
         : captureMouthFrame(video, mediaMode === "live");
@@ -462,8 +483,8 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
           runtimeRef.current?.say(line);
           setAnnouncement(line);
         };
-        cue("muscle", 1700, "Come on—put some muscle into it.");
-        cue("challenge", 3350, "That’s all you’ve got?");
+        cue("muscle", 1450, "Come on—put some muscle into it.");
+        cue("challenge", 3000, "That’s all you’ve got?");
         const holdForManualShake =
           process.env.NODE_ENV !== "production" &&
           new URLSearchParams(window.location.search).get(
@@ -471,13 +492,13 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
           ) === "manual";
         if (
           !holdForManualShake &&
-          elapsed >= 5000 &&
+          elapsed >= 5400 &&
           phaseRef.current === "break"
         ) {
           runtimeRef.current?.say(
-            "Yeah, this isn’t breaking. New plan.",
+            "Nope. Unbreakable. Fine—if you can’t leave the ice, I’m bringing the ice to you.",
           );
-          setAnnouncement("New plan. Filling the glass.");
+          setAnnouncement("Unbreakable. Fine—I’m bringing the ice to you.");
           transitionTo("ice-rain");
         }
         return;
@@ -496,7 +517,9 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
         ) {
           zoomProgressRef.current = 1;
           setZoomProgress(1);
-          runtimeRef.current?.say("There it is. Let’s get a drink.");
+          runtimeRef.current?.say(
+            "Look at that—a whole party. Let’s get you a drink.",
+          );
           setAnnouncement("Table revealed.");
           transitionTo("pour");
         }
@@ -564,7 +587,13 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
     const mediaQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
-    const syncReducedMotion = () => setReducedMotion(mediaQuery.matches);
+    const forcedReducedMotion =
+      process.env.NODE_ENV !== "production" &&
+      new URLSearchParams(window.location.search).get(
+        "calibrationReducedMotion",
+      ) === "1";
+    const syncReducedMotion = () =>
+      setReducedMotion(mediaQuery.matches || forcedReducedMotion);
     syncReducedMotion();
     mediaQuery.addEventListener("change", syncReducedMotion);
 
@@ -632,7 +661,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
       voiceHeardRef.current = false;
       setTypedPhrase("");
       setAnnouncement("Hey—can you hear me?");
-      runtime.say("Hey—can you hear me?");
+      runtime.say("Hey? Can you hear me?");
       const armTimer = window.setTimeout(() => {
         if (phaseRef.current !== "scan") return;
         runtime.armVoiceCapture();
@@ -645,17 +674,17 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
       runtime.say("Okay, we’ll save this for later.");
     } else if (phase === "face-hold") {
       setAnnouncement(
-        "Cool, there you are. Let’s do a ridiculously quick calibration.",
+        "Oh, there you are. Perfect. Let’s make sure Havoc can keep up with you.",
       );
       runtime.say(
-        "Cool, there you are. Let’s do a ridiculously quick calibration.",
+        "Oh, there you are. Perfect. Let’s make sure Havoc can keep up with you.",
       );
     } else if (phase === "voice-prompt") {
       setAnnouncement(
-        "Say literally anything—the first thing that comes to mind.",
+        "First thing in your head. No thinking.",
       );
       runtime.say(
-        "Say literally anything—the first thing that comes to mind.",
+        "First thing in your head. No thinking.",
       );
     } else if (phase === "voice") {
       voiceHeardRef.current = false;
@@ -664,8 +693,8 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
       setAnnouncement("Listening.");
     } else if (phase === "voice-success") {
       runtime.disarmVoiceCapture();
-      runtime.say("Heck yeah. Havoc can hear you.");
-      setAnnouncement("Heck yeah. Havoc can hear you.");
+      runtime.say("Heck yeah. Loud, clear, slightly concerning.");
+      setAnnouncement("Loud, clear, slightly concerning.");
     } else if (phase === "expression-prompt") {
       faceRuntimeRef.current?.dispose();
       faceRuntimeRef.current = null;
@@ -718,10 +747,10 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
         setFaceMode("fallback");
       }
       runtime.say(
-        "Okay, open your mouth. This local game-face check powers some of our games.",
+        "Now give me your most unhinged game face. Mouth open. This powers a lot of our games.",
       );
       setAnnouncement(
-        "Open your mouth for on-device facial-expression calibration.",
+        "Give me your most unhinged game face. Mouth open.",
       );
     } else if (phase === "expression") {
       setAnnouncement("Open wide.");
@@ -735,8 +764,8 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
         setAnnouncement("Perfect. Hold that.");
       }
     } else if (phase === "charge") {
-      runtime.say("I’m sorry—I have to test one more thing.");
-      setAnnouncement("One more test.");
+      runtime.say("Perfect. Don’t move. This next bit is probably safe.");
+      setAnnouncement("Don’t move. This is probably safe.");
       playQuietly(audioRef.current.charge, 0.18);
     } else if (phase === "freeze") {
       runtime.say("FREEZE GUN!");
@@ -745,26 +774,28 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
     } else if (phase === "drop") {
       setAnnouncement("Frozen portrait dropping.");
     } else if (phase === "break") {
-      runtime.say("Crack the cube to free yourself. Shake your phone.");
-      setAnnouncement("Shake your phone to crack the cube.");
+      runtime.say(
+        "Okay, small problem. You’re an ice cube. Shake your phone like you mean it.",
+      );
+      setAnnouncement("You’re an ice cube. Shake your phone like you mean it.");
     } else if (phase === "ice-rain") {
-      runtime.say("Okay. Ice delivery!");
-      setAnnouncement("Ice is filling the glass.");
+      runtime.say("Fine. If you can’t leave the ice, I’m bringing the ice to you.");
+      setAnnouncement("Ice delivery.");
     } else if (phase === "zoom-prompt") {
-      runtime.say("Zoom out for me, would ya?");
-      setAnnouncement("Zoom out to reveal the room.");
+      runtime.say("Zoom out. Trust me.");
+      setAnnouncement("Zoom out. Trust me.");
     } else if (phase === "zoom") {
-      setAnnouncement("Pinch, scroll, drag, or press minus to zoom out.");
+      setAnnouncement("Pinch, scroll, tap, or press minus to zoom out.");
     } else if (phase === "pour") {
-      runtime.say("There we go. Let’s make you something interesting.");
-      setAnnouncement("Pouring the secret purple mix.");
+      runtime.say("Look at that—a whole party. Let’s get you a drink.");
+      setAnnouncement("Pouring something extremely classified.");
     } else if (phase === "return-phone") {
       setAnnouncement("Returning to your glass.");
     } else if (phase === "drink-prompt") {
       runtime.say(
-        "Go ahead—flip your phone upside down and drink the secret juice.",
+        "Flip your phone and drink the secret juice. Yes, you are in the glass.",
       );
-      setAnnouncement("Flip the phone upside down to drink.");
+      setAnnouncement("Flip your phone and drink the secret juice.");
     } else if (phase === "drink") {
       setAnnouncement("Turn the phone upside down.");
     } else if (phase === "drain") {
@@ -849,6 +880,29 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
     frame = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frame);
   }, [effectsFailed, onEngineTick]);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    const requested = new URLSearchParams(window.location.search).get(
+      "calibrationPreview",
+    ) as CalibrationPhase | null;
+    if (!requested || !CALIBRATION_PREVIEW_PHASES.has(requested)) return;
+    const video = videoRef.current;
+    if (!video) return;
+    video.pause();
+    video.srcObject = null;
+    video.src = "/havoc-calibration-demo.mp4";
+    video.muted = true;
+    video.loop = true;
+    setMediaMode("prerecorded");
+    setFreezeFrame("/havoc-calibration-freeze.jpg");
+    if (requested === "zoom") {
+      zoomProgressRef.current = 0.62;
+      setZoomProgress(0.62);
+    }
+    const timer = window.setTimeout(() => transitionTo(requested), 120);
+    return () => window.clearTimeout(timer);
+  }, [transitionTo]);
 
   const startLab = useCallback(() => {
     if (phaseRef.current !== "idle") return;
@@ -1099,7 +1153,19 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
     if (!video) return;
     if (hidden) {
       video.pause();
-    } else if (phaseRef.current !== "idle") {
+    } else if (
+      [
+        "scan",
+        "scan-exit",
+        "face-hold",
+        "voice-prompt",
+        "voice",
+        "voice-hold",
+        "voice-success",
+        "expression-prompt",
+        "expression",
+      ].includes(phaseRef.current)
+    ) {
       void video.play().catch(() => setPlayError(true));
     }
   }, []);
@@ -1162,6 +1228,37 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
               ? 1
               : 0;
   const sensorReady = sensorStatus === "healthy";
+  const stepIndex = [
+    "idle",
+    "scan",
+    "scan-exit",
+    "face-hold",
+    "voice-prompt",
+    "voice",
+    "voice-hold",
+    "voice-success",
+  ].includes(phase)
+    ? 0
+    : ["expression-prompt", "expression", "expression-success"].includes(phase)
+      ? 1
+      : ["charge", "freeze", "drop", "break"].includes(phase)
+        ? 2
+        : [
+              "ice-rain",
+              "zoom-prompt",
+              "zoom",
+              "pour",
+              "return-phone",
+            ].includes(phase)
+          ? 3
+          : 4;
+  const stepLabel = [
+    "Sound check",
+    "Game face",
+    "Movement",
+    "Party trick",
+    "Last sip",
+  ][stepIndex];
 
   return (
     <div
@@ -1174,6 +1271,25 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
       data-sensors={sensorStatus}
       ref={stageRef}
     >
+      <header className={styles.labHeader}>
+        <div>
+          <span className={styles.brand}>HAVOC</span>
+          <span className={styles.sectionName}>Calibration lab</span>
+        </div>
+        <span className={styles.stepCount}>
+          {stepIndex + 1} / 5 · {stepLabel}
+        </span>
+        <div className={styles.progressRail} aria-hidden="true">
+          {Array.from({ length: 5 }, (_, index) => (
+            <i
+              key={index}
+              data-active={index === stepIndex ? "true" : "false"}
+              data-complete={index < stepIndex ? "true" : "false"}
+            />
+          ))}
+        </div>
+      </header>
+
       <div className={styles.effectsHost} aria-hidden="true">
         <CalibrationEffects
           audioLevels={audioLevelsRef}
@@ -1190,8 +1306,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
 
       {effectsFailed && phase === "idle" && (
         <div className={styles.fallbackOrbit} aria-hidden="true">
-          <span>CALIBRATION LAB</span>
-          <span>TAP TO START</span>
+          <span>GODFREY IS READY</span>
         </div>
       )}
 
@@ -1218,7 +1333,10 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
             className={styles.startButton}
             onClick={startLab}
             aria-label="Start live Calibration Lab"
-          />
+          >
+            <span>Tap to wake Godfrey</span>
+            <i aria-hidden="true">↗</i>
+          </button>
         )}
       </div>
 
@@ -1245,6 +1363,23 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
         />
       </div>
 
+      {!["shatter", "blackout"].includes(phase) && (
+        <div className={styles.guideCard} data-phase={phase}>
+          <span className={styles.guideAvatar} aria-hidden="true">
+            <i />
+            <i />
+            <b />
+          </span>
+          <p>
+            <strong>GODFREY</strong>
+            <span>{announcement}</span>
+          </p>
+          <span className={styles.guideLive} aria-hidden="true">
+            {voiceMode === "vapi" ? "LIVE" : "GUIDE"}
+          </span>
+        </div>
+      )}
+
       <div className={styles.copyLayer}>
         {success && <strong className={styles.success}>{success}</strong>}
         {instruction && (
@@ -1265,7 +1400,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
             {(phase === "zoom-prompt" || phase === "zoom") && (
               <>
                 <span>{Math.round(zoomProgress * 100)}% REVEALED</span>
-                <small>Pinch in, drag, scroll down, tap, or press −</small>
+                <small>Pinch in, scroll down, tap, or press −</small>
               </>
             )}
             {(phase === "drink-prompt" || phase === "drink") && (
@@ -1302,7 +1437,22 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
                 ? `Zoom out. ${Math.round(zoomProgress * 100)} percent revealed. Tap as an accessible alternative.`
                 : `Crack the ice. ${reversalCount} of ${REQUIRED_REVERSALS} shake reversals complete. Tap repeatedly as an accessible alternative.`
           }
-        />
+        >
+          <span>
+            {phase === "break"
+              ? sensorReady
+                ? "Shake it"
+                : "Tap to shake"
+              : phase === "zoom"
+                ? "Pull back"
+                : sensorReady
+                  ? "Flip to drink"
+                  : "Simulate flip"}
+          </span>
+          <i aria-hidden="true">
+            {phase === "break" ? "↕" : phase === "zoom" ? "−" : "↻"}
+          </i>
+        </button>
       )}
 
       {effectsFailed && showFrozenVisual && freezeFrame && (
@@ -1333,6 +1483,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
       <span
         className={styles.liveBadge}
         data-live={mediaMode === "live" ? "true" : "false"}
+        title={runtimeNote}
       >
         <i aria-hidden="true" />
         {mediaMode === "live"
@@ -1342,7 +1493,6 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
             : "READY"}{" "}
         · {voiceModeLabel(voiceMode)}
       </span>
-      <span className={styles.runtimeNote}>{runtimeNote}</span>
       <span className={styles.liveRegion} aria-live="polite">
         {announcement}
       </span>

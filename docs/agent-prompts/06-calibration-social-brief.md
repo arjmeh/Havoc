@@ -40,29 +40,33 @@ Sequence:
 1. The flask waits inside the chamber. On tap the energetic guide asks,
    “Hey—can you hear me?”
 2. Once voice is detected, the flask exits, the live camera replaces it, and
-   the guide says, “Oh, there you are. Let’s do a ridiculously quick
-   calibration.”
-3. Ask for the first thing that comes to mind. Render a live transcript and
-   celebrate with “Heck yeah. Havoc can hear you.”
-4. Ask the player to open their mouth, then cue “Wider. Wiiider! Perfect.”
-   Freeze the captured frame.
-5. Warn about one movement test. Fire a visible freeze beam from the gun’s
-   front/muzzle, freeze the portrait into a cube, and drop it with believable
-   weight. Let the surrounding letters fall completely away while the cube
-   remains.
-6. Ask the player to crack the cube by shaking. Physical motion, alternating
+   the guide says, “Oh, there you are. Perfect. Let’s make sure Havoc can keep
+   up with you.”
+3. Cue “First thing in your head. No thinking.” Render a live transcript and
+   celebrate with “Heck yeah. Loud, clear, slightly concerning.”
+4. Ask for the player’s “most unhinged game face,” then cue “Wider. Wiiider!
+   Perfect.” Freeze the captured frame.
+5. Say, “Don’t move. This next bit is probably safe.” Fire a visible freeze
+   beam from the gun’s front/muzzle, freeze the portrait into a cube, and drop
+   it with believable weight. Let the surrounding letters fall completely away
+   while the cube remains.
+6. Explain the small problem: the player is now an ice cube. Ask them to shake
+   the phone “like you mean it.” Physical motion, alternating
    swipe/wheel/keys, and an accessible tap fallback must all work without
    scrolling the document. Escalate the guide’s encouragement for several
    seconds.
-7. When it refuses to break, drop many ice cubes into the chamber so the phone
-   is revealed to be a glass. Ask, “Zoom out for me, would ya?” Use contained
+7. When it refuses to break, answer, “Fine—if you can’t leave the ice, I’m
+   bringing the ice to you.” Drop many ice cubes into the chamber so the phone
+   is revealed to be a glass. Ask, “Zoom out. Trust me.” Use contained
    pinch, wheel, drag, keyboard, and accessible controls to reveal this glass
    among many colored glasses on a large red table.
-8. The flask returns, says “Let’s get a drink,” and visibly pours polished
+8. The flask returns, says “Look at that—a whole party. Let’s get you a
+   drink,” and visibly pours polished
    purple liquid into the player’s glass. Liquid must have a continuous stream,
    volume, contact, pooling, highlights, and natural gravity—not a flat mask.
 9. Return smoothly to the phone/glass view. Ask the player to flip the phone
-   upside down and drink the secret juice. Physical orientation and desktop
+   upside down and drink the secret juice, adding, “Yes, you are in the
+   glass.” Physical orientation and desktop
    fallbacks drain liquid and ice naturally.
 10. Seal to a fragment-free black frame while the guide lands the joke:
     “Okay, all done. Drinking yourself… pretty weird.”

@@ -81,11 +81,9 @@ type LiquidParticle = {
 };
 
 type OrbitGlyph = {
-  angle: number;
   body: MatterBody | null;
-  bottom: boolean;
   glyph: Text;
-  radius: number;
+  xOffset: number;
 };
 
 type ShardActor = {
@@ -93,13 +91,6 @@ type ShardActor = {
   graphic: Graphics;
   height: number;
   width: number;
-};
-
-type WaveDot = {
-  angle: number;
-  phase: number;
-  speaker: "agent" | "user";
-  sprite: Sprite;
 };
 
 type SceneRuntime = {
@@ -156,21 +147,6 @@ const makeDisplacementTexture = () => {
     image.data[index + 3] = 255;
   }
   context.putImageData(image, 0, 0);
-  return Texture.from(canvas);
-};
-
-const makeWaveDotTexture = () => {
-  const canvas = document.createElement("canvas");
-  canvas.width = 32;
-  canvas.height = 32;
-  const context = canvas.getContext("2d");
-  if (!context) return Texture.WHITE;
-  const gradient = context.createRadialGradient(12, 10, 2, 16, 16, 15);
-  gradient.addColorStop(0, "rgba(255,255,255,1)");
-  gradient.addColorStop(0.58, "rgba(255,255,255,.96)");
-  gradient.addColorStop(1, "rgba(255,255,255,0)");
-  context.fillStyle = gradient;
-  context.fillRect(0, 0, canvas.width, canvas.height);
   return Texture.from(canvas);
 };
 
@@ -268,6 +244,7 @@ export function CalibrationEffects({
   const visibilityRef = useRef(onVisibilityChange);
   const reducedMotionRef = useRef(reducedMotion);
   const zoomProgressRef = useRef(zoomProgress);
+  const freezeFrameRef = useRef(freezeFrame);
 
   phaseRef.current = phase;
   impulseRef.current = impulse;
@@ -276,6 +253,7 @@ export function CalibrationEffects({
   visibilityRef.current = onVisibilityChange;
   reducedMotionRef.current = reducedMotion;
   zoomProgressRef.current = zoomProgress;
+  freezeFrameRef.current = freezeFrame;
 
   useEffect(() => {
     const runtime = runtimeRef.current;
@@ -382,34 +360,40 @@ export function CalibrationEffects({
       });
       const userGlass = new Container({ label: "user-glass" });
       const userGlassShadow = new Graphics()
-        .ellipse(0, 128, 102, 24)
-        .fill({ color: 0x2b0007, alpha: 0.34 });
+        .ellipse(0, 132, 98, 22)
+        .fill({ color: 0x2b0007, alpha: 0.28 });
       const userLiquidMask = new Graphics()
-        .roundRect(-72, -104, 144, 212, 28)
+        .poly([-73, -104, 73, -104, 59, 108, -59, 108])
         .fill(0xffffff);
       const userLiquid = new Graphics()
-        .roundRect(-72, -212, 144, 212, 28)
-        .fill({ color: 0x6c36ff, alpha: 0.95 })
-        .roundRect(-64, -204, 128, 28, 14)
-        .fill({ color: 0xb58cff, alpha: 0.48 });
+        .rect(-76, -216, 152, 220)
+        .fill({ color: 0x6c36ff, alpha: 0.96 })
+        .rect(-62, -216, 22, 220)
+        .fill({ color: 0xc29cff, alpha: 0.22 })
+        .ellipse(0, -208, 70, 12)
+        .fill({ color: 0xd0b6ff, alpha: 0.5 });
       userLiquid.position.y = 108;
       userLiquid.pivot.y = 0;
       userLiquid.mask = userLiquidMask;
       const userGlassBody = new Graphics()
-        .roundRect(-84, -128, 168, 256, 36)
-        .fill({ color: 0xffffff, alpha: 0.11 })
-        .stroke({ color: 0xffffff, width: 6, alpha: 0.88 })
-        .roundRect(-73, -114, 146, 228, 30)
-        .stroke({ color: 0xffd9e1, width: 2, alpha: 0.52 });
+        .poly([-86, -118, 86, -118, 68, 128, -68, 128])
+        .fill({ color: 0xffffff, alpha: 0.1 })
+        .stroke({ color: 0xffffff, width: 6, alpha: 0.9, join: "round" })
+        .poly([-75, -105, 75, -105, 59, 112, -59, 112])
+        .stroke({ color: 0xffd9e1, width: 2, alpha: 0.5, join: "round" });
       const userGlassRim = new Graphics()
-        .ellipse(0, -112, 76, 18)
+        .ellipse(0, -118, 86, 19)
         .fill({ color: 0xfff8fa, alpha: 0.13 })
         .stroke({ color: 0xffffff, width: 4, alpha: 0.95 })
-        .ellipse(0, -108, 62, 11)
+        .ellipse(0, -114, 70, 11)
         .stroke({ color: 0xffb6c5, width: 1.5, alpha: 0.68 });
       const userGlassShine = new Graphics()
-        .roundRect(-67, -90, 10, 150, 5)
-        .fill({ color: 0xffffff, alpha: 0.3 });
+        .moveTo(-67, -91)
+        .bezierCurveTo(-63, -28, -59, 37, -52, 82)
+        .stroke({ color: 0xffffff, width: 9, alpha: 0.28, cap: "round" })
+        .moveTo(53, -85)
+        .bezierCurveTo(49, -42, 46, 12, 41, 39)
+        .stroke({ color: 0xffffff, width: 3, alpha: 0.17, cap: "round" });
       userGlass.addChild(
         userGlassShadow,
         userLiquidMask,
@@ -437,12 +421,14 @@ export function CalibrationEffects({
           .ellipse(0, 68, 54, 12)
           .fill({ color: 0x360009, alpha: 0.24 });
         const fill = new Graphics()
-          .roundRect(-42, -38, 84, 96, 19)
-          .fill({ color: palette[index], alpha: 0.82 });
+          .poly([-41, -39, 41, -39, 33, 57, -33, 57])
+          .fill({ color: palette[index], alpha: 0.84 })
+          .ellipse(0, -38, 40, 8)
+          .fill({ color: 0xffffff, alpha: 0.18 });
         const shell = new Graphics()
-          .roundRect(-48, -62, 96, 130, 24)
+          .poly([-48, -60, 48, -60, 39, 68, -39, 68])
           .fill({ color: 0xffffff, alpha: 0.08 })
-          .stroke({ color: 0xffffff, width: 4, alpha: 0.8 });
+          .stroke({ color: 0xffffff, width: 4, alpha: 0.82, join: "round" });
         const rim = new Graphics()
           .ellipse(0, -50, 42, 10)
           .fill({ color: 0xffffff, alpha: 0.1 })
@@ -471,9 +457,11 @@ export function CalibrationEffects({
             alpha: 0.7,
           })
           .stroke({ color: 0xffffff, width: 2, alpha: 0.92 })
-          .moveTo(-7, -8)
+          .poly([-10, -8, 8, -11, 3, -2])
+          .fill({ color: 0xffffff, alpha: 0.26 })
+          .moveTo(-7, -7)
           .lineTo(7, 7)
-          .stroke({ color: 0xffffff, width: 1, alpha: 0.32 });
+          .stroke({ color: 0xffffff, width: 1, alpha: 0.36 });
         cube.visible = false;
         cube.zIndex = 6;
         iceRainGroup.addChild(cube);
@@ -505,25 +493,16 @@ export function CalibrationEffects({
       const auraGreen = new Graphics();
       const auraBlue = new Graphics();
       const waveLayer = new Container({ label: "reactive-audio-border" });
-      const waveTexture = makeWaveDotTexture();
-      const waveDots: WaveDot[] = Array.from({ length: 72 }, (_, index) => {
-        const angle = -Math.PI + (Math.PI * 2 * index) / 72;
-        const speaker = angle < 0 ? "agent" : "user";
-        const sprite = new Sprite({
-          texture: waveTexture,
-          anchor: 0.5,
-          tint: speaker === "agent" ? 0x7651ff : 0x24d7ef,
-        });
-        sprite.alpha = 0;
-        sprite.scale.set(0.17);
-        waveLayer.addChild(sprite);
-        return {
-          angle,
-          phase: index * 0.63 + (speaker === "agent" ? 1.4 : 0),
-          speaker,
-          sprite,
-        };
-      });
+      const agentWaveGlow = new Graphics({ label: "agent-wave-glow" });
+      const agentWave = new Graphics({ label: "agent-wave" });
+      const userWaveGlow = new Graphics({ label: "user-wave-glow" });
+      const userWave = new Graphics({ label: "user-wave" });
+      waveLayer.addChild(
+        agentWaveGlow,
+        userWaveGlow,
+        agentWave,
+        userWave,
+      );
       const chamberGlass = new Graphics();
       ambientLayer.addChild(
         chamberGlass,
@@ -588,8 +567,10 @@ export function CalibrationEffects({
       });
       metaballContainer.filters = [liquidBlur, liquidThreshold];
       const liquidRibbon = new Graphics({ label: "liquid-ribbon" });
+      const liquidSplash = new Graphics({ label: "liquid-splash" });
       liquidRibbon.blendMode = "screen";
-      liquidLayer.addChild(metaballContainer, liquidRibbon);
+      liquidSplash.blendMode = "screen";
+      liquidLayer.addChild(metaballContainer, liquidRibbon, liquidSplash);
 
       const liquidParticles: LiquidParticle[] = particles.map((particle) => ({
         active: false,
@@ -606,47 +587,31 @@ export function CalibrationEffects({
       let liquidEmissionElapsed = 0;
 
       const orbitLayer = new Container({
-        label: "orbit-copy",
+        label: "impact-copy",
         sortableChildren: true,
       });
       actorLayer.addChild(orbitLayer);
       const orbitGlyphs: OrbitGlyph[] = [];
-      const addOrbitCopy = (
-        copy: string,
-        bottom: boolean,
-        start: number,
-        end: number,
-      ) => {
-        const visibleCharacters = [...copy];
-        visibleCharacters.forEach((character, index) => {
-          const progress =
-            visibleCharacters.length <= 1
-              ? 0
-              : index / (visibleCharacters.length - 1);
-          const angle = start + (end - start) * progress;
-          const glyph = new Text({
-            text: character === " " ? "·" : character,
-            style: {
-              fill: character === " " ? 0x8f8798 : 0x0b0911,
-              fontFamily: "Geist, Helvetica Neue, Arial, sans-serif",
-              fontSize: character === " " ? 8 : 13,
-              fontWeight: "800",
-              letterSpacing: 1.2,
-            },
-          });
-          glyph.anchor.set(0.5);
-          orbitLayer.addChild(glyph);
-          orbitGlyphs.push({
-            angle,
-            body: null,
-            bottom,
-            glyph,
-            radius: bottom ? 171 : 168,
-          });
+      [..."HAVOC"].forEach((character, index) => {
+        const glyph = new Text({
+          text: character,
+          style: {
+            fill: 0x0b0911,
+            fontFamily: "Geist, Helvetica Neue, Arial, sans-serif",
+            fontSize: 18,
+            fontWeight: "900",
+            letterSpacing: -0.6,
+          },
         });
-      };
-      addOrbitCopy("CALIBRATION LAB", false, -2.66, -0.48);
-      addOrbitCopy("TAP TO START", true, 2.52, 0.61);
+        glyph.anchor.set(0.5);
+        glyph.visible = false;
+        orbitLayer.addChild(glyph);
+        orbitGlyphs.push({
+          body: null,
+          glyph,
+          xOffset: (index - 2) * 21,
+        });
+      });
 
       const beamGroup = new Container({ label: "ice-beam" });
       const beamHalo = new Graphics();
@@ -801,25 +766,56 @@ export function CalibrationEffects({
         tableBackdrop
           .clear()
           .rect(0, 0, sceneWidth, sceneHeight)
-          .fill({ color: 0x98152d, alpha: 1 })
-          .rect(0, sceneHeight * 0.57, sceneWidth, sceneHeight * 0.43)
-          .fill({ color: 0x6e091c, alpha: 0.58 });
+          .fill({ color: 0x5c0718, alpha: 1 })
+          .ellipse(
+            sceneWidth * 0.5,
+            sceneHeight * 0.58,
+            sceneWidth * 0.92,
+            sceneHeight * 0.47,
+          )
+          .fill({ color: 0xc62843, alpha: 1 })
+          .ellipse(
+            sceneWidth * 0.5,
+            sceneHeight * 0.51,
+            sceneWidth * 0.86,
+            sceneHeight * 0.38,
+          )
+          .fill({ color: 0xdf3653, alpha: 0.58 })
+          .ellipse(
+            sceneWidth * 0.5,
+            sceneHeight * 0.5,
+            sceneWidth * 0.83,
+            sceneHeight * 0.35,
+          )
+          .stroke({ color: 0xff8297, width: 3, alpha: 0.36 })
+          .rect(0, sceneHeight * 0.78, sceneWidth, sceneHeight * 0.22)
+          .fill({ color: 0x450511, alpha: 0.42 });
         tableGlow
           .clear()
           .ellipse(
             sceneWidth * 0.5,
-            sceneHeight * 0.48,
-            sceneWidth * 0.72,
-            sceneHeight * 0.28,
-          )
-          .fill({ color: 0xff4768, alpha: 0.2 })
-          .ellipse(
-            sceneWidth * 0.2,
+            sceneHeight * 0.45,
+            sceneWidth * 0.64,
             sceneHeight * 0.18,
-            sceneWidth * 0.24,
-            sceneHeight * 0.13,
           )
-          .fill({ color: 0xff8da1, alpha: 0.1 });
+          .fill({ color: 0xff8ca0, alpha: 0.22 })
+          .ellipse(
+            sceneWidth * 0.28,
+            sceneHeight * 0.28,
+            sceneWidth * 0.28,
+            sceneHeight * 0.08,
+          )
+          .fill({ color: 0xffbdc8, alpha: 0.09 })
+          .moveTo(0, sceneHeight * 0.55)
+          .bezierCurveTo(
+            sceneWidth * 0.27,
+            sceneHeight * 0.49,
+            sceneWidth * 0.73,
+            sceneHeight * 0.49,
+            sceneWidth,
+            sceneHeight * 0.55,
+          )
+          .stroke({ color: 0xff718b, width: 2, alpha: 0.24 });
         partyWorld.position.set(sceneWidth / 2, sceneHeight * 0.57);
         userGlass.position.set(0, 0);
         const companionPositions = [
@@ -1027,20 +1023,20 @@ export function CalibrationEffects({
         resizePending = false;
       };
 
-      const positionOrbit = (time: number) => {
+      const positionOrbit = () => {
         if (orbitDropped) return;
-        const offset =
-          reducedMotionRef.current || phaseRef.current !== "idle"
-            ? 0
-            : Math.sin(time * 0.00042) * 0.055;
+        const visible = [
+          "expression-success",
+          "charge",
+          "freeze",
+        ].includes(phaseRef.current);
         orbitGlyphs.forEach((entry) => {
-          const angle = entry.angle + offset;
+          entry.glyph.visible = visible;
           entry.glyph.position.set(
-            centerX + Math.cos(angle) * entry.radius,
-            centerY + Math.sin(angle) * entry.radius,
+            centerX + entry.xOffset,
+            centerY - chamberRadius - 19,
           );
-          entry.glyph.rotation =
-            angle + (entry.bottom ? -Math.PI / 2 : Math.PI / 2);
+          entry.glyph.rotation = 0;
         });
       };
 
@@ -1100,6 +1096,7 @@ export function CalibrationEffects({
         });
 
         liquidRibbon.clear();
+        liquidSplash.clear();
         if (storyPour) {
           const pourProgress = easeOutCubic(
             clamp(runtime.phaseElapsed / 620, 0, 1),
@@ -1115,6 +1112,7 @@ export function CalibrationEffects({
           const pourY = 92;
           const contactX = centerX + sway * 0.18;
           const contactY = sceneHeight * 0.57 - 72;
+          const ripple = 10 + Math.abs(Math.sin(time * 0.014)) * 13;
 
           liquidRibbon
             .moveTo(pourX + sway, pourY)
@@ -1162,6 +1160,35 @@ export function CalibrationEffects({
               color: 0xffffff,
               width: 4,
             });
+          liquidSplash
+            .ellipse(contactX, contactY + 2, ripple, 5)
+            .stroke({
+              color: 0xc8b2ff,
+              width: 4,
+              alpha: 0.56 * liquidAlpha * pourProgress,
+            })
+            .ellipse(contactX, contactY + 3, ripple * 1.75, 8)
+            .stroke({
+              color: 0x6b35ff,
+              width: 2,
+              alpha: 0.36 * liquidAlpha * pourProgress,
+            });
+          for (let index = 0; index < 5; index += 1) {
+            const dropletAngle = time * 0.008 + index * 1.37;
+            const dropletDistance = 8 + (index % 3) * 8;
+            liquidSplash
+              .circle(
+                contactX + Math.cos(dropletAngle) * dropletDistance,
+                contactY -
+                  9 -
+                  Math.abs(Math.sin(dropletAngle)) * (10 + index * 2),
+                2.1 + (index % 2),
+              )
+              .fill({
+                color: index % 2 ? 0xb78cff : 0x6b35ff,
+                alpha: 0.5 * liquidAlpha * pourProgress,
+              });
+          }
           return;
         }
       };
@@ -1200,8 +1227,14 @@ export function CalibrationEffects({
       };
 
       const dropOrbitCopy = () => {
-        if (orbitDropped || reducedMotionRef.current) return;
+        if (orbitDropped) return;
         orbitDropped = true;
+        if (reducedMotionRef.current) {
+          orbitGlyphs.forEach((entry) => {
+            entry.glyph.visible = false;
+          });
+          return;
+        }
         orbitGlyphs.forEach((entry, index) => {
           const body = Bodies.rectangle(
             entry.glyph.x,
@@ -1211,14 +1244,14 @@ export function CalibrationEffects({
             {
               friction: 0.08,
               frictionAir: 0.006,
-              label: "calibration-orbit-letter",
+              label: "calibration-impact-letter",
               restitution: 0.42,
             },
           );
           Body.setAngle(body, entry.glyph.rotation);
           Body.setVelocity(body, {
-            x: ((index % 5) - 2) * 0.38,
-            y: 1.4 + (index % 4) * 0.3,
+            x: (index - 2) * 0.52,
+            y: 2.1 + (index % 3) * 0.38,
           });
           Body.setAngularVelocity(
             body,
@@ -1291,7 +1324,7 @@ export function CalibrationEffects({
                 Composite.remove(engine.world, entry.body);
                 entry.body = null;
               }
-              entry.glyph.visible = true;
+              entry.glyph.visible = false;
               entry.glyph.alpha = 1;
             });
             shards.forEach((shard) => {
@@ -1330,6 +1363,13 @@ export function CalibrationEffects({
             createIceBody();
           }
           if (currentPhase === "break" && iceBody) {
+            orbitGlyphs.forEach((entry) => {
+              if (entry.body) {
+                Composite.remove(engine.world, entry.body);
+                entry.body = null;
+              }
+              entry.glyph.visible = false;
+            });
             Body.setPosition(iceBody, {
               x: centerX,
               y: sceneHeight - 192,
@@ -1390,27 +1430,12 @@ export function CalibrationEffects({
 
         auraRed.alpha =
           currentPhase === "scan" || currentPhase === "scan-exit" ? 1 : 0;
-        auraGreen.alpha =
-          currentPhase !== "idle" &&
-          currentPhase !== "scan" &&
-          currentPhase !== "scan-exit" &&
-          ![
-            "drop",
-            "break",
-            "ice-rain",
-            "zoom-prompt",
-            "zoom",
-            "pour",
-            "return-phone",
-            "drink-prompt",
-            "drink",
-            "drain",
-            "drink-finish",
-            "shatter",
-            "blackout",
-          ].includes(currentPhase)
-            ? 1
-            : 0;
+        auraGreen.alpha = [
+          "voice-success",
+          "expression-success",
+        ].includes(currentPhase)
+          ? 1
+          : 0;
         auraBlue.alpha = [
           "scan",
           "scan-exit",
@@ -1431,62 +1456,50 @@ export function CalibrationEffects({
         auraRed.scale.set(pulse);
         auraGreen.scale.set(pulse);
         const levels = audioLevels.current;
-        waveLayer.visible = auraBlue.alpha > 0;
-        waveDots.forEach((entry) => {
-          const level =
-            entry.speaker === "agent" ? levels.agent : levels.user;
-          const organicWave =
-            0.42 +
-            Math.abs(
-              Math.sin(time * (0.007 + level * 0.012) + entry.phase),
-            ) *
-              0.58;
-          const radius =
-            chamberRadius +
-            10 +
-            organicWave * level * (reducedMotionRef.current ? 4 : 13);
-          entry.sprite.position.set(
-            centerX + Math.cos(entry.angle) * radius,
-            centerY + Math.sin(entry.angle) * radius,
-          );
-          const dotScale = 0.13 + level * organicWave * 0.24;
-          entry.sprite.scale.set(dotScale);
-          entry.sprite.alpha =
-            0.16 + level * organicWave * (auraBlue.alpha > 0 ? 0.84 : 0);
-        });
-        orbitLayer.visible = ![
-          "break",
-          "ice-rain",
-          "zoom-prompt",
-          "zoom",
-          "pour",
-          "return-phone",
-          "drink-prompt",
-          "drink",
-          "drain",
-          "drink-finish",
-          "shatter",
-          "blackout",
-        ].includes(currentPhase);
-        orbitLayer.alpha =
-          currentPhase === "idle"
-            ? 1
-            : [
-                  "drop",
-                  "break",
-                  "ice-rain",
-                  "zoom-prompt",
-                  "zoom",
-                  "pour",
-                  "return-phone",
-                  "drink-prompt",
-                  "drink",
-                  "drain",
-                  "drink-finish",
-                  "shatter",
-                ].includes(currentPhase)
-              ? 0.86
-              : 0.24;
+        const waveActive = auraBlue.alpha > 0 && currentPhase !== "idle";
+        waveLayer.visible = waveActive;
+        const drawAudioArc = (
+          graphic: Graphics,
+          speaker: "agent" | "user",
+          level: number,
+          glow: boolean,
+        ) => {
+          graphic.clear();
+          if (!waveActive) return;
+          const start = speaker === "agent" ? -Math.PI : 0;
+          const color = speaker === "agent" ? 0x7651ff : 0x24d7ef;
+          const pointCount = 46;
+          const motionLevel = reducedMotionRef.current
+            ? Math.min(level, 0.28)
+            : level;
+          for (let index = 0; index <= pointCount; index += 1) {
+            const progress = index / pointCount;
+            const angle = start + progress * Math.PI;
+            const envelope = Math.sin(progress * Math.PI);
+            const waveform =
+              Math.sin(time * 0.009 + index * 0.78) * 0.62 +
+              Math.sin(time * 0.0047 - index * 1.31) * 0.38;
+            const radius =
+              chamberRadius +
+              9 +
+              waveform * envelope * (1.3 + motionLevel * 13);
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+            if (index === 0) graphic.moveTo(x, y);
+            else graphic.lineTo(x, y);
+          }
+          graphic.stroke({
+            color,
+            width: glow ? 11 : 3.2,
+            alpha: glow ? 0.11 + motionLevel * 0.18 : 0.7 + motionLevel * 0.28,
+            cap: "round",
+            join: "round",
+          });
+        };
+        drawAudioArc(agentWaveGlow, "agent", levels.agent, true);
+        drawAudioArc(userWaveGlow, "user", levels.user, true);
+        drawAudioArc(agentWave, "agent", levels.agent, false);
+        drawAudioArc(userWave, "user", levels.user, false);
       };
 
       const updatePartyWorld = (time: number) => {
@@ -1789,6 +1802,20 @@ export function CalibrationEffects({
         phaseSeen: phaseRef.current,
       };
       runtimeRef.current = runtime;
+      const initialFreezeFrame = freezeFrameRef.current;
+      if (initialFreezeFrame) {
+        void loadImageTexture(initialFreezeFrame)
+          .then((texture) => {
+            if (cancelled || runtimeRef.current !== runtime) {
+              texture.destroy(true);
+              return;
+            }
+            runtime.faceTexture?.destroy(true);
+            runtime.faceTexture = texture;
+            runtime.faceSprite.texture = texture;
+          })
+          .catch(() => fallbackRef.current());
+      }
 
       resizeObserver = new ResizeObserver((entries) => {
         const rectangle = entries[0]?.contentRect;
@@ -1818,7 +1845,7 @@ export function CalibrationEffects({
           }
 
           const now = performance.now();
-          positionOrbit(now);
+          positionOrbit();
           updateAmbient(now);
           updatePartyWorld(now);
           updateLiquid(deltaMs, now);
@@ -1864,7 +1891,6 @@ export function CalibrationEffects({
         liquidTexture.destroy(true);
         displacementTexture.destroy(true);
         frostTexture.destroy(true);
-        waveTexture.destroy(true);
         runtimeRef.current = null;
         void Assets.unload(ICE_SHELL_URL).catch(() => undefined);
         app.destroy(
