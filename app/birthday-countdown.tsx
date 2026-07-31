@@ -4,7 +4,9 @@ import { Player } from "@remotion/player";
 import type { PlayerRef } from "@remotion/player";
 import {
   AbsoluteFill,
+  CanvasImage,
   Easing,
+  Interactive,
   interpolate,
   staticFile,
   useCurrentFrame,
@@ -17,12 +19,10 @@ import {
   useState,
 } from "react";
 import type {
-  CSSProperties,
   KeyboardEvent as ReactKeyboardEvent,
   PointerEvent as ReactPointerEvent,
 } from "react";
 
-import styles from "./birthday-countdown.module.css";
 import { FAMOUS_BIRTHDAY_MATCHES } from "./famous-birthdays-data";
 
 const MONTHS = [
@@ -50,30 +50,11 @@ const CONFETTI_COLORS = [
   "#f5c84b",
 ] as const;
 
-const COMPOSITION_WIDTH = 640;
-const COMPOSITION_HEIGHT = 1355;
-const ENTRY_END_FRAME = 16;
-const SPIN_START_FRAME = 17;
-const RESULT_FRAME = 82;
-const CELEBRATION_START_FRAME = 86;
-const EXIT_START_FRAME = 190;
-const FINAL_FRAME = 214;
-const MAX_LEVER_PULL = 82;
-
-const MACHINE = {
-  height: 1138,
-  left: 30,
-  top: 112,
-  width: 540,
-} as const;
-
-const REELS = {
-  gap: 9,
-  height: 187,
-  left: 124,
-  top: 397,
-  width: 328,
-} as const;
+const ENTRY_END_FRAME = 18;
+const SPIN_START_FRAME = 19;
+const RESULT_FRAME = 88;
+const CELEBRATION_START_FRAME = 90;
+const FINAL_FRAME = 262;
 
 type SlotPhase =
   | "entering"
@@ -86,7 +67,6 @@ type BirthdaySlotProps = {
   day: number;
   daysUntil: number;
   famousName: string;
-  leverPull: number;
   monthIndex: number;
   reducedMotion: boolean;
 };
@@ -112,65 +92,8 @@ function getDaysUntilBirthday(monthIndex: number, day: number) {
   return Math.round((upcoming - today) / 86_400_000);
 }
 
-function seededUnit(seed: number) {
-  const value = Math.sin(seed * 12.9898 + 78.233) * 43_758.5453;
-  return value - Math.floor(value);
-}
-
-function getReelPosition(
-  frame: number,
-  stopFrame: number,
-  targetCell: number,
-) {
-  if (frame <= SPIN_START_FRAME) return 0;
-
-  const launchEnd = SPIN_START_FRAME + 9;
-  const brakeStart = stopFrame - 11;
-  const settleStart = stopFrame - 3;
-
-  if (frame < launchEnd) {
-    return interpolate(frame, [SPIN_START_FRAME, launchEnd], [0, 4.4], {
-      easing: Easing.bezier(0.55, 0.02, 0.82, 0.42),
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-  }
-
-  if (frame < brakeStart) {
-    return interpolate(
-      frame,
-      [launchEnd, brakeStart],
-      [4.4, targetCell - 1.15],
-      {
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      },
-    );
-  }
-
-  if (frame < settleStart) {
-    return interpolate(
-      frame,
-      [brakeStart, settleStart],
-      [targetCell - 1.15, targetCell + 0.14],
-      {
-        easing: Easing.bezier(0.12, 0.78, 0.22, 1),
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      },
-    );
-  }
-
-  return interpolate(
-    frame,
-    [settleStart, stopFrame],
-    [targetCell + 0.14, targetCell],
-    {
-      easing: Easing.bezier(0.2, 0.82, 0.24, 1),
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
+function positiveModulo(value: number, divisor: number) {
+  return ((value % divisor) + divisor) % divisor;
 }
 
 function SlotReel({
@@ -182,186 +105,114 @@ function SlotReel({
   index: number;
   targetDigit: number;
 }) {
-  const stopFrame = [58, 68, 78][index];
-  const turns = [6, 8, 10][index];
-  const targetCell = turns * 10 + targetDigit;
-  const position = getReelPosition(frame, stopFrame, targetCell);
-  const cyclePosition = ((position % 10) + 10) % 10;
-  const isWaiting = frame < SPIN_START_FRAME;
-  const isSpinning = frame >= SPIN_START_FRAME && frame < stopFrame;
+  const stopFrame = [50, 60, 70][index];
+  const turns = [12, 15, 18][index];
+  const isWaiting = frame <= ENTRY_END_FRAME;
+  const spinPosition =
+    frame < SPIN_START_FRAME
+      ? 0
+      : interpolate(
+          frame,
+          [SPIN_START_FRAME, stopFrame - 5, stopFrame],
+          [0, turns * 10 + targetDigit - 0.12, turns * 10 + targetDigit],
+          {
+            easing: [
+              Easing.bezier(0.12, 0.72, 0.18, 1),
+              Easing.spring({ damping: 150 }),
+            ],
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          },
+        );
+  const baseDigit = Math.floor(spinPosition);
+  const fraction = spinPosition - baseDigit;
   const stopImpact = interpolate(
     frame,
-    [stopFrame - 2, stopFrame, stopFrame + 2, stopFrame + 4],
-    [0, 1, -0.35, 0],
+    [stopFrame - 1, stopFrame, stopFrame + 2, stopFrame + 4],
+    [0, 9, -4, 0],
     {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
     },
   );
-  const motionBlur = isSpinning
-    ? interpolate(frame, [SPIN_START_FRAME, stopFrame - 9, stopFrame], [0.4, 2.4, 0], {
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      })
-    : 0;
 
   return (
-    <div
-      className={styles.reelWindow}
+    <Interactive.Div
+      name={`Reel ${index + 1}`}
       data-reel-index={index}
       data-reel-state={
         isWaiting ? "waiting" : frame >= stopFrame ? "stopped" : "spinning"
       }
-      data-reel-value={frame >= stopFrame ? targetDigit : undefined}
+      data-reel-value={
+        frame >= stopFrame
+          ? targetDigit
+          : positiveModulo(baseDigit, 10)
+      }
       style={{
-        transform: `translate3d(0, ${stopImpact * 4}px, 0) scaleY(${
-          1 - Math.abs(stopImpact) * 0.018
-        })`,
+        position: "relative",
+        overflow: "hidden",
+        height: 211,
+        borderRadius: 28,
+        background:
+          "linear-gradient(180deg,#d33a39 0%,#f45c54 25%,#ef4b47 60%,#bd272f 100%)",
+        boxShadow:
+          "inset 0 18px 26px rgba(89,10,26,.38), inset 0 -20px 26px rgba(89,10,26,.38), 0 0 0 4px #17131f",
       }}
     >
-      <div className={styles.reelShade} />
-      <span
-        className={styles.reelDash}
-        style={{
-          opacity: interpolate(
-            frame,
-            [SPIN_START_FRAME - 1, SPIN_START_FRAME + 2],
-            [1, 0],
-            {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-            },
-          ),
-        }}
-      >
-        —
-      </span>
       <div
-        className={styles.reelStrip}
         style={{
-          filter: `blur(${motionBlur}px)`,
-          opacity: interpolate(
-            frame,
-            [SPIN_START_FRAME, SPIN_START_FRAME + 2],
-            [0, 1],
-            {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-            },
-          ),
-          transform: `translate3d(0, ${-cyclePosition * REELS.height}px, 0)`,
-        }}
-      >
-        {Array.from({ length: 20 }, (_, cellIndex) => (
-          <span className={styles.reelDigit} key={cellIndex}>
-            {cellIndex % 10}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ConfettiParticle({
-  frame,
-  index,
-  reducedMotion,
-}: {
-  frame: number;
-  index: number;
-  reducedMotion: boolean;
-}) {
-  if (reducedMotion) {
-    const angle = seededUnit(index + 4) * Math.PI * 2;
-    const radius = 130 + seededUnit(index + 18) * 205;
-    const x = COMPOSITION_WIDTH / 2 + Math.cos(angle) * radius;
-    const y = 850 + Math.sin(angle) * radius * 0.62;
-    const opacity =
-      interpolate(frame, [CELEBRATION_START_FRAME, CELEBRATION_START_FRAME + 4], [0, 1], {
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      }) *
-      interpolate(frame, [EXIT_START_FRAME, FINAL_FRAME], [1, 0], {
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      });
-
-    return (
-      <span
-        className={styles.confettiPiece}
-        style={{
-          background: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
-          borderRadius: index % 4 === 0 ? 999 : 2,
-          height: 18 + (index % 3) * 3,
-          left: x,
-          opacity,
-          top: y,
-          transform: `rotate(${index * 37}deg)`,
-          width: 8 + (index % 2) * 3,
-          zIndex: index % 3 === 0 ? 1 : 6,
+          position: "absolute",
+          zIndex: 2,
+          inset: 0,
+          borderRadius: 28,
+          background:
+            "linear-gradient(180deg,rgba(23,19,31,.42),transparent 29%,transparent 70%,rgba(23,19,31,.46))",
+          pointerEvents: "none",
         }}
       />
-    );
-  }
+      {isWaiting ? (
+        <span
+          style={{
+            display: "grid",
+            height: "100%",
+            placeItems: "center",
+            color: "#fffef8",
+            fontSize: 105,
+            fontWeight: 950,
+            lineHeight: 1,
+            textShadow: "0 5px 0 rgba(83,8,25,.45)",
+          }}
+        >
+          —
+        </span>
+      ) : (
+        Array.from({ length: 5 }, (_, offsetIndex) => {
+          const relativeIndex = offsetIndex - 2;
+          const digit = positiveModulo(baseDigit + relativeIndex, 10);
 
-  const groupSize = 60;
-  const wave = Math.floor(index / groupSize);
-  const slot = index % groupSize;
-  const isLeft = slot % 2 === 0;
-  const startFrame =
-    CELEBRATION_START_FRAME + 8 + wave * 25 + (slot % 12) * 0.55;
-  const age = Math.max(0, frame - startFrame);
-  const sourceX = isLeft ? 153 : 487;
-  const sourceY = 955;
-  const lateralSpeed =
-    (isLeft ? 1 : -1) * (3.4 + seededUnit(index + 11) * 4.8);
-  const upwardSpeed = -(13.2 + seededUnit(index + 31) * 7.4);
-  const gravity = 0.34 + seededUnit(index + 47) * 0.08;
-  const x =
-    sourceX +
-    lateralSpeed * age +
-    Math.sin(age * 0.2 + index) * (3 + seededUnit(index + 63) * 7);
-  const y = sourceY + upwardSpeed * age + 0.5 * gravity * age * age;
-  const entranceOpacity = interpolate(
-    frame,
-    [startFrame, startFrame + 2],
-    [0, 1],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
-  const exitOpacity = interpolate(
-    frame,
-    [EXIT_START_FRAME, FINAL_FRAME - 2],
-    [1, 0],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
-  const inBoundsOpacity =
-    x < -40 || x > COMPOSITION_WIDTH + 40 || y > COMPOSITION_HEIGHT + 50
-      ? 0
-      : 1;
-  const width = 8 + Math.round(seededUnit(index + 79) * 7);
-  const height = 15 + Math.round(seededUnit(index + 91) * 11);
-
-  return (
-    <span
-      className={styles.confettiPiece}
-      style={{
-        background: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
-        borderRadius: index % 6 === 0 ? 999 : index % 3 === 0 ? 4 : 2,
-        height,
-        opacity: entranceOpacity * exitOpacity * inBoundsOpacity,
-        transform: `translate3d(${x}px, ${y}px, 0) rotate(${
-          index * 31 + age * (8 + (index % 7))
-        }deg) scaleX(${0.65 + Math.abs(Math.sin(age * 0.16 + index)) * 0.45})`,
-        width,
-        zIndex: index % 5 === 0 ? 6 : 1,
-      }}
-    />
+          return (
+            <span
+              key={`${baseDigit}-${relativeIndex}`}
+              style={{
+                position: "absolute",
+                top: "50%",
+                right: 0,
+                left: 0,
+                color: "#fffef8",
+                fontSize: 131,
+                fontWeight: 950,
+                lineHeight: 1,
+                textAlign: "center",
+                textShadow: "0 6px 0 rgba(83,8,25,.46)",
+                translate: `0px calc(-50% + ${(relativeIndex - fraction) * 169 + stopImpact * 1.38}px)`,
+              }}
+            >
+              {digit}
+            </span>
+          );
+        })
+      )}
+    </Interactive.Div>
   );
 }
 
@@ -369,7 +220,6 @@ function BirthdaySlotComposition({
   day,
   daysUntil,
   famousName,
-  leverPull,
   monthIndex,
   reducedMotion,
 }: BirthdaySlotProps) {
@@ -378,53 +228,9 @@ function BirthdaySlotComposition({
   const resultVisible = reducedMotion
     ? frame >= SPIN_START_FRAME
     : frame >= 72;
-  const entryProgress = interpolate(frame, [0, ENTRY_END_FRAME], [0, 1], {
-    easing: Easing.bezier(0.16, 1, 0.3, 1),
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const exitProgress = interpolate(
-    frame,
-    [EXIT_START_FRAME, FINAL_FRAME],
-    [0, 1],
-    {
-      easing: Easing.bezier(0.4, 0, 1, 1),
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
-  const reelStopShake = reducedMotion
-    ? 0
-    : [58, 68, 78].reduce(
-        (sum, stopFrame, index) =>
-          sum +
-          interpolate(
-            frame,
-            [stopFrame - 1, stopFrame, stopFrame + 2, stopFrame + 4],
-            [0, index % 2 === 0 ? -4 : 4, index % 2 === 0 ? 2 : -2, 0],
-            {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-            },
-          ),
-        0,
-      );
-  const spinRattle =
-    !reducedMotion && frame >= SPIN_START_FRAME && frame < RESULT_FRAME
-      ? Math.sin(frame * 2.6) * 1.6
-      : 0;
   const machineOpacity = interpolate(
     frame,
-    [EXIT_START_FRAME, FINAL_FRAME - 4],
-    [1, 0],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
-  const backgroundOpacity = interpolate(
-    frame,
-    [EXIT_START_FRAME + 4, FINAL_FRAME],
+    [232, 239],
     [1, 0],
     {
       extrapolateLeft: "clamp",
@@ -433,64 +239,87 @@ function BirthdaySlotComposition({
   );
   const famousNameFontSize =
     famousName.length >= 22
-      ? 19
+      ? 22
       : famousName.length >= 19
-        ? 21
+        ? 24
         : famousName.length >= 16
-          ? 24
+          ? 27
           : famousName.length >= 13
-            ? 27
-            : 30;
-  const leverAngle = `${(leverPull / MAX_LEVER_PULL) * 48}deg`;
-  const confettiCount = reducedMotion ? 36 : 180;
+            ? 30
+            : 34;
 
   return (
-    <AbsoluteFill className={styles.composition}>
-      <AbsoluteFill
-        className={styles.compositionBackground}
-        style={{ opacity: backgroundOpacity }}
-      />
-
-      <div
-        className={styles.machineScene}
+    <AbsoluteFill
+      style={{
+        overflow: "hidden",
+        background:
+          frame >= 240
+            ? "transparent"
+            : "radial-gradient(circle at 11% 7%,rgba(201,255,47,.58),transparent 24%),radial-gradient(circle at 92% 17%,rgba(124,58,237,.24),transparent 27%),linear-gradient(180deg,#fffef8 0%,#fff2e7 62%,#eee5ff 100%)",
+        color: "#17131f",
+        fontFamily: "Arial, Helvetica, sans-serif",
+      }}
+    >
+      <Interactive.Div
+        name="Slot machine scene"
         style={{
+          position: "absolute",
+          zIndex: 2,
+          inset: 0,
           opacity: machineOpacity,
-          transform: `translate3d(${reelStopShake + spinRattle}px, ${
-            (1 - entryProgress) * 74 - exitProgress * 74
-          }px, 0) scale(${0.94 + entryProgress * 0.06 - exitProgress * 0.025})`,
+          scale: reducedMotion
+            ? 1
+            : interpolate(frame, [0, 14, 18], [0.94, 1.012, 1], {
+                easing: Easing.spring({ damping: 170 }),
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+                output: "perceptual-scale",
+              }),
+          translate: reducedMotion
+            ? "0px 0px"
+            : interpolate(frame, [0, 18], ["0px 82px", "0px 0px"], {
+                easing: Easing.bezier(0.16, 1, 0.3, 1),
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              }),
         }}
       >
-        <img
-          alt=""
-          className={styles.machineArtwork}
-          draggable={false}
+        <CanvasImage
+          name="Havoc birthday slot machine"
           src={staticFile("havoc-birthday-slot-machine.png")}
+          width={864}
+          height={1821}
           style={{
-            height: MACHINE.height,
-            left: MACHINE.left,
-            top: MACHINE.top,
-            width: MACHINE.width,
+            position: "absolute",
+            top: 195,
+            left: 15,
+            width: 610,
+            height: 1285,
+            // The draggable CSS lever covers the artwork's arm before launch.
+            // Reveal the artwork's real arm for the celebration so it remains
+            // attached to the machine and can be buried by the confetti layer.
+            clipPath:
+              frame >= CELEBRATION_START_FRAME
+                ? "polygon(0 0,100% 0,100% 90.35%,0 90.35%)"
+                : "polygon(0 0,87% 0,87% 90.35%,0 90.35%)",
           }}
         />
 
-        <div className={styles.machineDate}>
-          {MONTHS[monthIndex].slice(0, 3)} {day}
-        </div>
-
         <div
-          className={styles.reels}
           style={{
-            gap: REELS.gap,
-            gridTemplateColumns: "repeat(3, 1fr)",
-            height: REELS.height,
-            left: REELS.left,
-            top: REELS.top,
-            width: REELS.width,
+            position: "absolute",
+            zIndex: 4,
+            top: 517,
+            left: 121,
+            display: "grid",
+            width: 371,
+            gridTemplateColumns: "repeat(3,1fr)",
+            gap: 10,
           }}
         >
           {digits.map((digit, index) => (
             <SlotReel
-              frame={reducedMotion && frame >= SPIN_START_FRAME ? RESULT_FRAME : frame}
+              frame={reducedMotion && frame >= SPIN_START_FRAME ? 88 : frame}
               index={index}
               key={index}
               targetDigit={digit}
@@ -498,118 +327,453 @@ function BirthdaySlotComposition({
           ))}
         </div>
 
-        <div
-          className={styles.daysLabel}
+        <Interactive.Div
+          name="Days label"
           style={{
+            position: "absolute",
+            zIndex: 5,
+            top: 886,
+            left: 140,
+            display: "grid",
+            width: 360,
+            minHeight: 67,
+            placeItems: "center",
+            padding: "0 21px",
+            border: "5px solid #e4b54b",
+            borderRadius: 22,
+            background: "#17131f",
+            boxShadow: "0 7px 0 rgba(23,19,31,.32)",
+            color: "#fffef8",
+            fontSize: 23,
+            fontWeight: 950,
+            letterSpacing: ".05em",
+            lineHeight: 1.05,
+            textAlign: "center",
+            textTransform: "uppercase",
             opacity: resultVisible
-              ? interpolate(frame, [72, 79], [0, 1], {
+              ? interpolate(frame, [72, 80], [0, 1], {
                   extrapolateLeft: "clamp",
                   extrapolateRight: "clamp",
                 })
               : 0,
-            transform: `translate3d(0, ${
-              resultVisible
-                ? interpolate(frame, [72, 79], [-13, 0], {
-                    easing: Easing.bezier(0.16, 1, 0.3, 1),
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                  })
-                : -13
-            }px, 0)`,
+            translate: resultVisible
+              ? interpolate(frame, [72, 80], ["0px -18px", "0px 0px"], {
+                  easing: Easing.bezier(0.16, 1, 0.3, 1),
+                  extrapolateLeft: "clamp",
+                  extrapolateRight: "clamp",
+                })
+              : "0px -18px",
           }}
         >
           {daysUntil === 0
-            ? "Birthday today"
+            ? "Your birthday is today"
             : daysUntil === 1
               ? "Day until your birthday"
               : "Days until your birthday"}
-        </div>
+        </Interactive.Div>
 
-        <div
-          className={styles.twinPlaque}
+        <Interactive.Div
+          name="Birthday twin plaque"
           style={{
+            position: "absolute",
+            zIndex: 5,
+            top: 1153,
+            // The plaque is optically left of the artwork canvas because of the lever.
+            left: 159,
+            display: "flex",
+            width: 288,
+            height: 128,
+            boxSizing: "border-box",
+            alignItems: "center",
+            flexDirection: "column",
+            justifyContent: "center",
+            padding: "12px 20px",
+            color: "#17131f",
+            fontFamily:
+              "var(--font-fredoka), 'Arial Rounded MT Bold', Arial, sans-serif",
             opacity: resultVisible
-              ? interpolate(frame, [75, 82], [0, 1], {
+              ? interpolate(frame, [76, 84], [0, 1], {
                   extrapolateLeft: "clamp",
                   extrapolateRight: "clamp",
                 })
               : 0,
-            transform: `scale(${
-              resultVisible
-                ? interpolate(frame, [75, 79, 82], [1.12, 0.97, 1], {
-                    easing: Easing.bezier(0.16, 1, 0.3, 1),
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                    output: "perceptual-scale",
-                  })
-                : 1.12
-            })`,
+            scale: resultVisible
+              ? interpolate(frame, [76, 80, 82, 84], [1.17, 0.96, 1.03, 1], {
+                  easing: Easing.spring({ damping: 170 }),
+                  extrapolateLeft: "clamp",
+                  extrapolateRight: "clamp",
+                  output: "perceptual-scale",
+                })
+              : 1.17,
+            overflow: "hidden",
+            textAlign: "center",
           }}
         >
-          <span>Your birthday twin</span>
-          <strong style={{ fontSize: famousNameFontSize }}>
+          <span
+            style={{
+              display: "block",
+              width: "100%",
+              fontSize: 16,
+              fontWeight: 800,
+              letterSpacing: ".075em",
+              lineHeight: 1,
+              textAlign: "center",
+              textTransform: "uppercase",
+            }}
+          >
+            Your birthday twin
+          </span>
+          <strong
+            style={{
+              display: "block",
+              width: "100%",
+              maxHeight: 70,
+              marginTop: 8,
+              overflow: "visible",
+              fontSize: famousNameFontSize,
+              fontWeight: 800,
+              letterSpacing: "-.035em",
+              lineHeight: 1.08,
+              overflowWrap: "break-word",
+              textAlign: "center",
+              textWrap: "balance",
+            }}
+          >
             {famousName}
           </strong>
-        </div>
-
-        <div
-          className={styles.leverVisual}
-          style={{ "--slot-lever-angle": leverAngle } as CSSProperties}
-        >
-          <span className={styles.leverBase} />
-          <span className={styles.leverArm}>
-            <i />
-          </span>
-        </div>
-      </div>
+        </Interactive.Div>
+      </Interactive.Div>
 
       {frame >= CELEBRATION_START_FRAME ? (
         <>
-          <img
-            alt=""
-            className={styles.cannons}
-            draggable={false}
-            src={staticFile("havoc-confetti-cannons.png")}
+          <CanvasImage
+            name="Overhead confetti cannon"
+            src={staticFile("havoc-overhead-confetti-cannon.png")}
+            width={864}
+            height={1820}
             style={{
-              opacity:
-                interpolate(
-                  frame,
-                  [
-                    CELEBRATION_START_FRAME,
-                    CELEBRATION_START_FRAME + 7,
-                    EXIT_START_FRAME,
-                    FINAL_FRAME - 3,
-                  ],
-                  [0, 1, 1, 0],
-                  {
-                    extrapolateLeft: "clamp",
-                    extrapolateRight: "clamp",
-                  },
-                ),
-              transform: reducedMotion
-                ? "translate3d(0, 0, 0)"
-                : `translate3d(0, ${interpolate(
+              position: "absolute",
+              zIndex: 35,
+              top: -390,
+              left: 170,
+              width: 300,
+              height: 632,
+              opacity: interpolate(frame, [90, 94, 225, 234], [0, 1, 1, 0], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              }),
+              rotate: reducedMotion
+                ? "0deg"
+                : interpolate(
                     frame,
-                    [CELEBRATION_START_FRAME, CELEBRATION_START_FRAME + 9],
-                    [70, 0],
+                    [90, 100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224, 234],
+                    [
+                      "0deg",
+                      "-6deg",
+                      "9deg",
+                      "-11deg",
+                      "12deg",
+                      "-13deg",
+                      "14deg",
+                      "-15deg",
+                      "15deg",
+                      "-14deg",
+                      "11deg",
+                      "0deg",
+                      "0deg",
+                    ],
                     {
-                      easing: Easing.bezier(0.16, 1, 0.3, 1),
+                      easing: Easing.inOut(Easing.quad),
                       extrapolateLeft: "clamp",
                       extrapolateRight: "clamp",
                     },
-                  )}px, 0)`,
+                  ),
+              scale: interpolate(frame, [90, 100, 103], [0.88, 1.02, 1], {
+                easing: Easing.spring({ damping: 170 }),
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+                output: "perceptual-scale",
+              }),
+              transformOrigin: "50% 15.4%",
+              translate: reducedMotion
+                ? "0px 0px"
+                : interpolate(
+                    frame,
+                    [90, 100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224, 234],
+                    [
+                      "-340px -190px",
+                      "-340px 0px",
+                      "340px 0px",
+                      "-340px 0px",
+                      "340px 0px",
+                      "-340px 0px",
+                      "340px 0px",
+                      "-340px 0px",
+                      "340px 0px",
+                      "-340px 0px",
+                      "340px 0px",
+                      "0px 0px",
+                      "0px -240px",
+                    ],
+                    {
+                      easing: Easing.inOut(Easing.quad),
+                      extrapolateLeft: "clamp",
+                      extrapolateRight: "clamp",
+                    },
+                  ),
             }}
           />
-          {Array.from({ length: confettiCount }, (_, index) => (
-            <ConfettiParticle
-              frame={frame}
-              index={index}
-              key={index}
-              reducedMotion={reducedMotion}
-            />
-          ))}
+
+          {Array.from({ length: reducedMotion ? 2160 : 4096 }, (_, index) => {
+            // The square-root distribution deliberately increases the emission
+            // rate: a trickle at first, then a near-solid burst at full speed.
+            const particleCount = reducedMotion ? 2160 : 4096;
+            const particleColumns = reducedMotion ? 40 : 64;
+            const particleRows = particleCount / particleColumns;
+            const startFrame =
+              102 + 112 * Math.sqrt(index / (particleCount - 1));
+            const birthCannonX = reducedMotion
+              ? 0
+              : interpolate(
+                  startFrame,
+                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
+                  [-340, 340, -340, 340, -340, 340, -340, 340, -340, 340, 0],
+                  {
+                    easing: Easing.inOut(Easing.quad),
+                    extrapolateLeft: "clamp",
+                    extrapolateRight: "clamp",
+                  },
+                );
+            const previousCannonX = reducedMotion
+              ? 0
+              : interpolate(
+                  startFrame - 1,
+                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
+                  [-340, 340, -340, 340, -340, 340, -340, 340, -340, 340, 0],
+                  {
+                    easing: Easing.inOut(Easing.quad),
+                    extrapolateLeft: "clamp",
+                    extrapolateRight: "clamp",
+                  },
+                );
+            const nextCannonX = reducedMotion
+              ? 0
+              : interpolate(
+                  startFrame + 1,
+                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
+                  [-340, 340, -340, 340, -340, 340, -340, 340, -340, 340, 0],
+                  {
+                    easing: Easing.inOut(Easing.quad),
+                    extrapolateLeft: "clamp",
+                    extrapolateRight: "clamp",
+                  },
+                );
+            const birthSwayDegrees = reducedMotion
+              ? 0
+              : interpolate(
+                  startFrame,
+                  [100, 134, 158, 175, 187, 196, 203, 209, 214, 219, 224],
+                  [-6, 9, -11, 12, -13, 14, -15, 15, -14, 11, 0],
+                  {
+                    easing: Easing.inOut(Easing.quad),
+                    extrapolateLeft: "clamp",
+                    extrapolateRight: "clamp",
+                  },
+                );
+            const birthSwayRadians = (birthSwayDegrees * Math.PI) / 180;
+            const mouthOffset = ((index * 47) % 33) - 16;
+            const sourceX =
+              320 +
+              birthCannonX -
+              Math.sin(birthSwayRadians) * 400 +
+              Math.cos(birthSwayRadians) * mouthOffset;
+            const sourceY =
+              -293 +
+              Math.cos(birthSwayRadians) * 400 +
+              Math.sin(birthSwayRadians) * mouthOffset;
+            const inheritedVelocity = Math.max(
+              -150,
+              Math.min(150, (nextCannonX - previousCannonX) * 2.2),
+            );
+            const spreadRadians =
+              ((((index * 37) % 101) / 100) - 0.5) * 0.9;
+            const launchRadians = birthSwayRadians + spreadRadians;
+            const launchDistance = 185 + (index % 11) * 11;
+            const controlX =
+              sourceX -
+              Math.sin(launchRadians) * launchDistance +
+              inheritedVelocity;
+            const controlY =
+              sourceY + Math.cos(launchRadians) * launchDistance;
+            const cellIndex = (index * 487) % particleCount;
+            const column = cellIndex % particleColumns;
+            const row = Math.floor(cellIndex / particleColumns);
+            const jitterX =
+              ((((index * 83) % 103) / 102) - 0.5) * 6;
+            const jitterY =
+              ((((index * 149) % 107) / 106) - 0.5) * 10;
+            const targetX = Math.max(
+              -30,
+              Math.min(
+                670,
+                (column / (particleColumns - 1)) * 640 + jitterX,
+              ),
+            );
+            const targetY = Math.max(
+              -38,
+              Math.min(
+                1393,
+                (row / (particleRows - 1)) * 1355 + jitterY,
+              ),
+            );
+            const settleFrame = Math.min(
+              231,
+              startFrame + 28 + (index % 12),
+            );
+            const flightProgress = interpolate(
+              frame,
+              [startFrame, settleFrame],
+              [0, 1],
+              {
+                easing: Easing.bezier(0.12, 0.72, 0.2, 1),
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              },
+            );
+            const fallProgress = interpolate(
+              frame,
+              [242, 262],
+              [0, 1],
+              {
+                easing: Easing.in(Easing.quad),
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              },
+            );
+            const inverseFlightProgress = 1 - flightProgress;
+            const flutter =
+              Math.sin((frame - startFrame) * 0.58 + index * 1.73) *
+              (1 - flightProgress) *
+              (12 + (index % 5) * 3);
+            const flightX =
+              inverseFlightProgress *
+                inverseFlightProgress *
+                sourceX +
+              2 *
+                inverseFlightProgress *
+                flightProgress *
+                controlX +
+              flightProgress * flightProgress * targetX +
+              flutter;
+            const flightY =
+              inverseFlightProgress *
+                inverseFlightProgress *
+                sourceY +
+              2 *
+                inverseFlightProgress *
+                flightProgress *
+                controlY +
+              flightProgress * flightProgress * targetY +
+              Math.sin(flightProgress * Math.PI) *
+                (90 + (index % 9) * 12);
+            const fallDrift = ((index * 31) % 180) - 90;
+            const entranceOpacity = interpolate(
+              frame,
+              [startFrame, startFrame + 2],
+              [0, 1],
+              {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              },
+            );
+            const exitOpacity = interpolate(
+              fallProgress,
+              [0, 0.82, 1],
+              [1, 1, 0],
+              {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              },
+            );
+            const pieceWidth =
+              index % 11 === 0
+                ? 28
+                : index % 5 === 0
+                  ? 24
+                  : index % 3 === 0
+                    ? 22
+                    : 20;
+            const pieceHeight =
+              index % 13 === 0
+                ? 42
+                : index % 7 === 0
+                  ? 38
+                  : index % 3 === 0
+                    ? 34
+                    : 32;
+
+            return (
+              <span
+                key={index}
+                style={{
+                  position: "absolute",
+                  zIndex: 30 + (index % 3),
+                  top: 0,
+                  left: 0,
+                  width: pieceWidth,
+                  height: pieceHeight,
+                  border: "1px solid rgba(23,19,31,.38)",
+                  borderRadius:
+                    index % 5 === 0
+                      ? 999
+                      : index % 4 === 0
+                        ? 8
+                        : 3,
+                  background:
+                    CONFETTI_COLORS[index % CONFETTI_COLORS.length],
+                  opacity: entranceOpacity * exitOpacity,
+                  rotate: `${
+                    (index % 2 === 0 ? 1 : -1) *
+                      (360 + index * 17) *
+                      flightProgress +
+                    Math.sin((frame - startFrame) * 0.42 + index) *
+                      28 *
+                      (1 - flightProgress) +
+                    720 * fallProgress
+                  }deg`,
+                  translate: reducedMotion
+                    ? `${targetX}px ${targetY}px`
+                    : `${
+                        flightX + fallDrift * fallProgress
+                      }px ${
+                        flightY +
+                        (1450 + ((index * 53) % 420)) * fallProgress
+                      }px`,
+                  willChange: "translate, rotate, opacity",
+                }}
+              />
+            );
+          })}
         </>
       ) : null}
+
+      <div
+        style={{
+          position: "absolute",
+          zIndex: 1,
+          inset: 0,
+          background: "#fffef8",
+          opacity: interpolate(
+            frame,
+            [232, 239, 240, 242],
+            [0, 1, 1, 0],
+            {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            },
+          ),
+        }}
+      />
     </AbsoluteFill>
   );
 }
@@ -632,7 +796,6 @@ export function BirthdayCountdownScreen({
     FAMOUS_BIRTHDAY_MATCHES[`${monthIndex + 1}-${day}`] ?? "someone iconic";
   const playerRef = useRef<PlayerRef>(null);
   const animationFrameRef = useRef<number | null>(null);
-  const timeoutRefs = useRef<Set<number>>(new Set());
   const leverButtonRef = useRef<HTMLButtonElement>(null);
   const continueButtonRef = useRef<HTMLButtonElement>(null);
   const pullStartRef = useRef<number | null>(null);
@@ -646,19 +809,6 @@ export function BirthdayCountdownScreen({
         : `${daysUntil} ${daysUntil === 1 ? "day" : "days"} until your birthday. You share your big day with ${famousName}.`,
     [daysUntil, famousName],
   );
-
-  const clearScheduledWork = useCallback(() => {
-    timeoutRefs.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
-    timeoutRefs.current.clear();
-  }, []);
-
-  const schedule = useCallback((callback: () => void, delay: number) => {
-    const timeoutId = window.setTimeout(() => {
-      timeoutRefs.current.delete(timeoutId);
-      callback();
-    }, delay);
-    timeoutRefs.current.add(timeoutId);
-  }, []);
 
   const stopAnimation = useCallback(() => {
     if (animationFrameRef.current !== null) {
@@ -705,25 +855,25 @@ export function BirthdayCountdownScreen({
   const startSpin = useCallback(() => {
     if (phase !== "ready") return;
     committedPullRef.current = true;
-    setLeverPull(MAX_LEVER_PULL);
+    setLeverPull(82);
     setPhase("spinning");
     navigator.vibrate?.(16);
 
-    schedule(() => setLeverPull(0), reducedMotion ? 70 : 180);
+    window.setTimeout(() => setLeverPull(0), reducedMotion ? 80 : 170);
     playFrames(
       SPIN_START_FRAME,
       RESULT_FRAME,
-      reducedMotion ? 190 : 1650,
+      reducedMotion ? 220 : 2050,
       () => {
         setPhase("revealed");
-        navigator.vibrate?.([12, 36, 16]);
-        schedule(
+        navigator.vibrate?.([12, 42, 16]);
+        window.setTimeout(
           () => continueButtonRef.current?.focus({ preventScroll: true }),
           30,
         );
       },
     );
-  }, [phase, playFrames, reducedMotion, schedule]);
+  }, [phase, playFrames, reducedMotion]);
 
   const startCelebration = useCallback(() => {
     if (phase !== "revealed") return;
@@ -733,31 +883,21 @@ export function BirthdayCountdownScreen({
     playFrames(
       CELEBRATION_START_FRAME,
       FINAL_FRAME,
-      reducedMotion ? 820 : 3400,
+      reducedMotion ? 1300 : 4800,
       next,
     );
   }, [next, onTransitionStart, phase, playFrames, reducedMotion]);
 
   useEffect(() => {
-    playFrames(0, ENTRY_END_FRAME, reducedMotion ? 70 : 440, () => {
+    playFrames(0, ENTRY_END_FRAME, reducedMotion ? 90 : 480, () => {
       setPhase("ready");
-      schedule(
+      window.setTimeout(
         () => leverButtonRef.current?.focus({ preventScroll: true }),
         30,
       );
     });
-
-    return () => {
-      stopAnimation();
-      clearScheduledWork();
-    };
-  }, [
-    clearScheduledWork,
-    playFrames,
-    reducedMotion,
-    schedule,
-    stopAnimation,
-  ]);
+    return stopAnimation;
+  }, [playFrames, reducedMotion, stopAnimation]);
 
   const onLeverPointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (phase !== "ready") return;
@@ -770,10 +910,7 @@ export function BirthdayCountdownScreen({
   const onLeverPointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (phase !== "ready" || pullStartRef.current === null) return;
     event.preventDefault();
-    const distance = Math.max(
-      0,
-      Math.min(MAX_LEVER_PULL + 6, event.clientY - pullStartRef.current),
-    );
+    const distance = Math.max(0, Math.min(88, event.clientY - pullStartRef.current));
     setLeverPull(distance);
   };
 
@@ -786,7 +923,7 @@ export function BirthdayCountdownScreen({
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
 
-    if (distance >= 30) {
+    if (distance >= 32) {
       startSpin();
       return;
     }
@@ -802,89 +939,91 @@ export function BirthdayCountdownScreen({
 
   return (
     <div
-      className={`screen birthday-countdown-screen birthday-slot-screen ${styles.screen}`}
+      className="screen birthday-countdown-screen birthday-slot-screen"
       data-countdown-days={daysUntil}
       data-slot-phase={phase}
-      data-testid="birthday-slot-screen"
       aria-label={`Birthday slot machine for ${MONTHS[monthIndex]} ${day}`}
     >
-      <div className={styles.visualStage}>
-        <div className={styles.playerLayer} aria-hidden="true">
-          <Player
-            className={styles.player}
-            ref={playerRef}
-            component={BirthdaySlotComposition}
-            inputProps={{
-              day,
-              daysUntil,
-              famousName,
-              leverPull,
-              monthIndex,
-              reducedMotion,
-            }}
-            durationInFrames={FINAL_FRAME + 1}
-            compositionWidth={COMPOSITION_WIDTH}
-            compositionHeight={COMPOSITION_HEIGHT}
-            fps={30}
-            autoPlay={false}
-            acknowledgeRemotionLicense
-            controls={false}
-            loop={false}
-            clickToPlay={false}
-            style={{
-              height: "100%",
-              inset: 0,
-              pointerEvents: "none",
-              position: "absolute",
-              width: "100%",
-            }}
-          />
-        </div>
-
-        <button
-          ref={leverButtonRef}
-          type="button"
-          className={styles.leverHit}
-          data-testid="birthday-slot-lever"
-          disabled={phase !== "ready"}
-          onClick={() => {
-            if (committedPullRef.current) {
-              committedPullRef.current = false;
-              return;
-            }
-            startSpin();
+      <div className="birthday-slot-player" aria-hidden="true">
+        <Player
+          className="birthday-slot-remotion-player"
+          ref={playerRef}
+          component={BirthdaySlotComposition}
+          inputProps={{
+            day,
+            daysUntil,
+            famousName,
+            monthIndex,
+            reducedMotion,
           }}
-          onKeyDown={onLeverKeyDown}
-          onPointerDown={onLeverPointerDown}
-          onPointerMove={onLeverPointerMove}
-          onPointerUp={finishLeverPull}
-          onPointerCancel={(event) => {
-            pullStartRef.current = null;
-            setLeverPull(0);
-            if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-              event.currentTarget.releasePointerCapture(event.pointerId);
-            }
+          durationInFrames={263}
+          compositionWidth={640}
+          compositionHeight={1355}
+          fps={30}
+          autoPlay={false}
+          acknowledgeRemotionLicense
+          controls={false}
+          loop={false}
+          clickToPlay={false}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none",
           }}
-          aria-label="Pull the lever to reveal days until your birthday"
-        >
-          {phase === "ready" ? (
-            <span className={styles.leverCue} aria-hidden="true">
-              <b>Pull</b>
-              <i>↓</i>
-            </span>
-          ) : null}
-        </button>
+        />
       </div>
+
+      <button
+        ref={leverButtonRef}
+        type="button"
+        className="birthday-slot-lever"
+        disabled={phase !== "ready"}
+        onClick={() => {
+          if (committedPullRef.current) {
+            committedPullRef.current = false;
+            return;
+          }
+          startSpin();
+        }}
+        onKeyDown={onLeverKeyDown}
+        onPointerDown={onLeverPointerDown}
+        onPointerMove={onLeverPointerMove}
+        onPointerUp={finishLeverPull}
+        onPointerCancel={(event) => {
+          pullStartRef.current = null;
+          setLeverPull(0);
+          if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId);
+          }
+        }}
+        style={{ "--lever-pull": `${leverPull}px` } as React.CSSProperties}
+        aria-label="Pull the lever to reveal days until your birthday"
+      >
+        <span className="slot-lever-base" aria-hidden="true" />
+        <span className="slot-lever-stem" aria-hidden="true" />
+        <span className="slot-lever-knob" aria-hidden="true" />
+        {phase === "ready" ? (
+          <span
+            className="slot-lever-cue"
+            style={{ right: "105%" }}
+            aria-hidden="true"
+          >
+            <b>Pull down</b>
+            <i>↓</i>
+          </span>
+        ) : null}
+      </button>
 
       {phase === "revealed" ? (
         <button
           ref={continueButtonRef}
           type="button"
-          className={styles.continueButton}
-          data-testid="birthday-slot-continue"
+          className="birthday-slot-continue"
           onClick={startCelebration}
         >
-          Continue
+          Tap to continue
         </button>
       ) : null}
 
