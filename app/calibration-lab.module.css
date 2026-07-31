@@ -428,8 +428,8 @@
 }
 
 .heroFlask[data-phase="pour"] {
-  top: -13px;
-  left: 64%;
+  top: -30px;
+  left: 42%;
   width: clamp(220px, 65vw, 254px);
   opacity: 1;
   animation: storyFlaskPour 3.9s cubic-bezier(0.18, 0.78, 0.2, 1) both;
@@ -792,16 +792,16 @@
   }
   16% {
     opacity: 1;
-    transform: translate(-46%, 2%) rotate(78deg) scale(1);
+    transform: translate(-46%, 2%) rotate(112deg) scale(1);
   }
   30%,
   82% {
     opacity: 1;
-    transform: translate(-48%, 4%) rotate(103deg) scale(1);
+    transform: translate(-48%, 4%) rotate(140deg) scale(1);
   }
   88% {
     opacity: 1;
-    transform: translate(-47%, 1%) rotate(84deg) scale(0.98);
+    transform: translate(-47%, 1%) rotate(116deg) scale(0.98);
   }
   100% {
     opacity: 0;
@@ -937,7 +937,26 @@
   }
 }
 
-@media (max-height: 700px) and (orientation: landscape) {
+@media (min-width: 901px) and (max-height: 700px) {
+  .lab {
+    --chamber-size: min(46vh, 264px);
+  }
+
+  .chamber {
+    top: 150px;
+  }
+
+  .heroFlask {
+    top: 168px;
+    width: 176px;
+  }
+
+  .startButton {
+    top: calc(150px + var(--chamber-size) + 18px);
+  }
+}
+
+@media (max-width: 900px) and (max-height: 700px) and (orientation: landscape) {
   :global(.app-viewport):has(.lab) {
     width: 100%;
     max-width: none;
@@ -993,6 +1012,10 @@
     transform: translateY(4px);
   }
 
+  .liveBadge {
+    display: none;
+  }
+
   .gunRig {
     left: 20%;
   }
@@ -1014,7 +1037,7 @@
 
   .heroFlask[data-phase="pour"] {
     opacity: 1;
-    transform: translate(-48%, 4%) rotate(103deg);
+    transform: translate(-48%, 4%) rotate(140deg);
   }
 
   .gunRig[data-phase="charge"],

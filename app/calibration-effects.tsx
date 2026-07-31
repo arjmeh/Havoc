@@ -479,12 +479,12 @@ export function CalibrationEffects({
 
       const iceRainGroup = new Container({ label: "ice-rain" });
       iceRainGroup.zIndex = 5;
-      const iceRainCubes = Array.from({ length: 18 }, (_, index) => {
+      const iceRainCubes = Array.from({ length: 10 }, (_, index) => {
         const cube = new Sprite({
           texture: fieldIceTexture,
           anchor: 0.5,
         });
-        const size = 58 + (index % 4) * 5;
+        const size = 44 + (index % 3) * 4;
         cube.width = size;
         cube.height = size;
         cube.alpha = 0.92;
@@ -594,8 +594,6 @@ export function CalibrationEffects({
       metaballContainer.filters = [liquidBlur, liquidThreshold];
       const liquidRibbon = new Graphics({ label: "liquid-ribbon" });
       const liquidSplash = new Graphics({ label: "liquid-splash" });
-      liquidRibbon.blendMode = "screen";
-      liquidSplash.blendMode = "screen";
       liquidLayer.addChild(metaballContainer, liquidRibbon, liquidSplash);
 
       const liquidParticles: LiquidParticle[] = particles.map((particle) => ({
@@ -787,9 +785,24 @@ export function CalibrationEffects({
       const rebuildStaticScene = () => {
         sceneWidth = Math.max(pendingSize.width, 1);
         sceneHeight = Math.max(pendingSize.height, 1);
+        const hostRectangle = host.getBoundingClientRect();
+        const labElement = host.closest("[data-phase]") as HTMLElement | null;
+        const chamberElement =
+          labElement?.querySelector("video")?.parentElement ?? null;
+        const chamberRectangle = chamberElement?.getBoundingClientRect();
         const compactLandscape =
           sceneHeight < 700 && sceneWidth > sceneHeight;
-        if (compactLandscape) {
+        if (
+          chamberRectangle &&
+          chamberRectangle.width > 1 &&
+          chamberRectangle.height > 1
+        ) {
+          chamberRadius = chamberRectangle.width / 2;
+          centerX =
+            chamberRectangle.left - hostRectangle.left + chamberRadius;
+          centerY =
+            chamberRectangle.top - hostRectangle.top + chamberRadius;
+        } else if (compactLandscape) {
           const chamberSize = Math.min(sceneHeight * 0.67, 252);
           chamberRadius = chamberSize / 2;
           centerX = sceneWidth * 0.2;
@@ -846,7 +859,7 @@ export function CalibrationEffects({
           )
           .fill({ color: 0xffffff, alpha: 0.5 });
         partyWorld.position.set(sceneWidth / 2, sceneHeight * 0.56);
-        userGlass.position.set(0, 72);
+        userGlass.position.set(0, 34);
         userGlass.zIndex = 100;
         companionGlasses.forEach((glass, index) => {
           const row = Math.floor(index / 9);
@@ -1078,10 +1091,10 @@ export function CalibrationEffects({
         const cycle = nextLiquidIndex % 5;
         Body.setPosition(item.body, {
           x: storyPour
-            ? centerX + Math.min(sceneWidth * 0.3, 116) + cycle * 1.2
+            ? centerX + Math.min(sceneWidth * 0.42, 142) + cycle * 1.2
             : centerX + chamberRadius * 0.53 + cycle * 1.8,
           y: storyPour
-            ? 72 - (cycle % 2) * 7
+            ? Math.min(sceneHeight * 0.29, 230) - (cycle % 2) * 7
             : centerY - chamberRadius - 78 - (cycle % 2) * 6,
         });
         Body.setVelocity(item.body, {
@@ -1139,8 +1152,8 @@ export function CalibrationEffects({
           );
           const liquidAlpha = 1 - fadeProgress;
           const sway = Math.sin(time * 0.015) * 4;
-          const pourX = centerX + Math.min(sceneWidth * 0.3, 116);
-          const pourY = 92;
+          const pourX = centerX + Math.min(sceneWidth * 0.42, 142);
+          const pourY = Math.min(sceneHeight * 0.29, 230);
           const contactX = centerX + sway * 0.18;
           const contactY =
             partyWorld.position.y + (userGlass.y - 104) * 0.6;
@@ -1738,13 +1751,13 @@ export function CalibrationEffects({
         }
 
         iceRainCubes.forEach((cube, index) => {
-          const column = index % 5;
-          const row = Math.floor(index / 5);
+          const column = index % 3;
+          const row = Math.floor(index / 3);
           const settleX =
-            (column - 2) * 28 +
-            Math.sin(index * 2.17) * 6 +
+            (column - 1) * 46 +
+            Math.sin(index * 2.17) * 4 +
             renderedLiquidTilt * (14 + row * 2);
-          const settleY = -74 + row * 42 + (index % 3) * 3;
+          const settleY = -30 + row * 30 + (index % 3) * 2;
           const fallProgress =
             currentPhase === "ice-rain"
               ? easeOutCubic(clamp((elapsed - index * 48) / 980, 0, 1))
@@ -1783,7 +1796,7 @@ export function CalibrationEffects({
           partyWorld.position.y +
             (userGlass.y + 18 + renderedLiquidTilt * 18) * worldScale,
         );
-        iceGroup.scale.set(worldScale * 0.23);
+        iceGroup.scale.set(worldScale * 0.19);
         iceGroup.rotation =
           partyWorld.rotation + renderedLiquidTilt * 0.18;
         shellSprite.alpha = 1;

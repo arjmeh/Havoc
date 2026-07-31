@@ -2890,6 +2890,16 @@
   }
 }
 
+@media (max-width: 900px) and (max-height: 700px) and (orientation: landscape) {
+  .app-device-stage:has(.app-viewport[data-screen="calibration"]),
+  .app-viewport[data-screen="calibration"] {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .app-viewport {
     transition-duration: .01ms;

@@ -169,6 +169,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
   const nextRef = useRef(next);
   const phaseRef = useRef<CalibrationPhase>("idle");
   const phaseElapsedRef = useRef(0);
+  const lastEngineTickAtRef = useRef<number | null>(null);
   const phaseCuesRef = useRef(new Set<string>());
   const initialGuideSpokenRef = useRef(false);
   const voiceHeardRef = useRef(false);
@@ -242,6 +243,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
   const transitionTo = useCallback((nextPhase: CalibrationPhase) => {
     phaseRef.current = nextPhase;
     phaseElapsedRef.current = 0;
+    lastEngineTickAtRef.current = performance.now();
     phaseCuesRef.current.clear();
     setPhase(nextPhase);
   }, []);
@@ -406,9 +408,13 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
   );
 
   const onEngineTick = useCallback(
-    (deltaMs: number) => {
+    (_deltaMs: number) => {
       const currentPhase = phaseRef.current;
-      phaseElapsedRef.current += Math.min(deltaMs, 50);
+      const now = performance.now();
+      const previousTick = lastEngineTickAtRef.current ?? now;
+      lastEngineTickAtRef.current = now;
+      const tickDelta = Math.max(0, Math.min(now - previousTick, 50));
+      phaseElapsedRef.current += tickDelta;
       const elapsed = phaseElapsedRef.current;
 
       if (currentPhase === "scan") {
@@ -524,7 +530,7 @@ export function CalibrationLabScreen({ next }: { next: () => void }) {
         if (zoomAutoRef.current) {
           const nextProgress = Math.min(
             1,
-            zoomProgressRef.current + Math.min(deltaMs, 50) / 1650,
+            zoomProgressRef.current + tickDelta / 1650,
           );
           zoomProgressRef.current = nextProgress;
           setZoomProgress(nextProgress);
