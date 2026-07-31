@@ -13,7 +13,9 @@
     "test": "npm run typecheck && npm run build"
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "^1.0.0",
     "@remotion/player": "^4.0.501",
+    "@vapi-ai/web": "^2.6.1",
     "matter-js": "^0.20.0",
     "next": "16.2.12",
     "pixi.js": "^8.19.0",

@@ -5,7 +5,13 @@ import type { CSSProperties } from "react";
 import dynamic from "next/dynamic";
 
 import { getAgeLine } from "./age-copy";
+import {
+  DEFAULT_HAVOC_AVATAR_ID,
+  HAVOC_AVATARS,
+} from "./avatar-catalog";
 import { BirthdayCalendarScreen } from "./birthday-calendar";
+import { FriendsOnboardingScreen } from "./friends-onboarding";
+import { IdentityOnboardingScreen } from "./identity-onboarding";
 
 const CalibrationLabScreen = dynamic(
   () =>
@@ -22,6 +28,7 @@ const screens = [
   { id: "permissions", group: "Entry & setup", label: "Permissions", job: "Explain before asking", emoji: "🎥" },
   { id: "calibration", group: "Entry & setup", label: "Calibration", job: "Setup becomes play", emoji: "🧪" },
   { id: "identity", group: "Entry & setup", label: "Havoc Identity", job: "Make the player recognizable", emoji: "🪪" },
+  { id: "friends-setup", group: "Entry & setup", label: "Find friends", job: "Bring the group with you", emoji: "🫂" },
   { id: "home", group: "Play hub", label: "Home", job: "Instant ignition", emoji: "🏠" },
   { id: "daily", group: "Play hub", label: "Daily Havoc", job: "Fresh challenge", emoji: "⚡" },
   { id: "friends", group: "Play hub", label: "Friends", job: "Social continuity", emoji: "🫂" },
@@ -887,7 +894,16 @@ function AppScreen({ index, setIndex }: { index: number; setIndex: (value: numbe
   );
   if (id === "permissions") return <PermissionsScreen next={next} />;
   if (id === "calibration") return <CalibrationLabScreen next={next} />;
-  if (id === "identity") return <div className="screen identity-screen" aria-label="Havoc identity" />;
+  if (id === "identity") return <IdentityOnboardingScreen
+    avatarCatalog={HAVOC_AVATARS}
+    initialProfile={{ avatarId: DEFAULT_HAVOC_AVATAR_ID }}
+    onComplete={() => setIndex(screenIndex("friends-setup"))}
+  />;
+  if (id === "friends-setup") return <FriendsOnboardingScreen
+    heroAnimationSrc="/havoc-friends-trio.webp"
+    heroPosterSrc="/havoc-friends-trio-still.webp"
+    onComplete={() => setIndex(screenIndex("home"))}
+  />;
   if (id === "home") return <HomeScreen next={() => setIndex(screenIndex("create"))} />;
   if (id === "daily") return <DailyScreen />;
   if (id === "friends") return <FriendsScreen />;
@@ -908,10 +924,31 @@ function AppScreen({ index, setIndex }: { index: number; setIndex: (value: numbe
 
 export default function Home() {
   const [step, setStep] = useState(0);
+  const [reviewMode, setReviewMode] = useState(false);
   const next = () => setStep((value) => Math.min(value + 1, screens.length - 1));
   const previous = () => setStep((value) => Math.max(value - 1, 0));
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const canReview = process.env.NODE_ENV === "development";
+    const requestedReview = canReview && params.get("review") === "1";
+    setReviewMode(requestedReview);
+
+    if (canReview) {
+      const requestedScreen = params.get("screen");
+      const requestedIndex = requestedScreen ? screenIndex(requestedScreen) : -1;
+      if (requestedIndex >= 0) setStep(requestedIndex);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("havoc-app-body", !reviewMode);
+    return () => document.body.classList.remove("havoc-app-body");
+  }, [reviewMode]);
+
+  useEffect(() => {
+    if (!reviewMode) return;
+
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       if (
@@ -928,7 +965,8 @@ export default function Home() {
         activeScreen === "age" ||
         activeScreen === "birthday" ||
         activeScreen === "calibration" ||
-        activeScreen === "identity"
+        activeScreen === "identity" ||
+        activeScreen === "friends-setup"
       ) return;
 
       if (event.key === "ArrowRight") next();
@@ -936,9 +974,21 @@ export default function Home() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [step]);
+  }, [reviewMode, step]);
 
-  return <main>
+  if (!reviewMode) {
+    return <main className="app-shell" aria-label="Havoc">
+      <div
+        className="app-viewport"
+        data-testid="havoc-app"
+        data-screen={screens[step].id}
+      >
+        <AppScreen index={step} setIndex={setStep} />
+      </div>
+    </main>;
+  }
+
+  return <main className="review-shell">
     <header className="site-header">
       <a className="brand" href="#prototype"><span>💥</span> HAVOC</a>
       <span className="header-chip">Friends in → game on ✦</span>

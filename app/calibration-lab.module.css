@@ -13,7 +13,9 @@
   touch-action: manipulation;
 }
 
-.lab[data-phase="break"] {
+.lab[data-phase="break"],
+.lab[data-phase="zoom"],
+.lab[data-phase="drink"] {
   overscroll-behavior: none;
   touch-action: none;
 }
@@ -81,6 +83,16 @@
   object-position: center center;
   background: #ffffff;
   transform: scale(1.02);
+  transition: opacity 300ms ease;
+}
+
+.lab[data-media="live"] .cameraVideo {
+  transform: scale(-1.02, 1.02);
+}
+
+.lab[data-phase="scan"] .cameraVideo,
+.lab[data-phase="scan-exit"] .cameraVideo {
+  opacity: 0;
 }
 
 .startButton {
@@ -117,9 +129,9 @@
 .heroFlask {
   position: absolute;
   z-index: 8;
-  top: 22px;
+  top: calc(clamp(184px, 24.8%, 202px) + 24px);
   left: 50%;
-  width: clamp(240px, 69vw, 266px);
+  width: clamp(170px, 52vw, 205px);
   aspect-ratio: 1;
   transform: translateX(-50%);
   transform-origin: 52% 78%;
@@ -153,21 +165,29 @@
   animation: flaskScan 760ms ease-in-out infinite alternate;
 }
 
-.heroFlask[data-phase="face-hold"] {
-  animation: flaskPourBounce 2.1s cubic-bezier(0.2, 0.76, 0.22, 1) both;
+.heroFlask[data-phase="scan-exit"] {
+  animation: flaskExit 1.25s cubic-bezier(0.2, 0.78, 0.22, 1) both;
 }
 
-.heroFlask[data-phase="face-hold"] .flaskFull {
-  animation: fullFlaskDrain 880ms ease-out both;
-}
-
-.heroFlask[data-phase="face-hold"] .flaskEmpty {
-  animation: emptyFlaskReveal 880ms ease-out both;
-}
-
-.heroFlask:not([data-phase="idle"]):not([data-phase="scan"]):not([data-phase="face-hold"]) {
+.heroFlask:not([data-phase="idle"]):not([data-phase="scan"]):not([data-phase="scan-exit"]):not([data-phase="pour"]) {
   opacity: 0;
   visibility: hidden;
+}
+
+.heroFlask[data-phase="pour"] {
+  top: -18px;
+  left: 62%;
+  width: clamp(216px, 64vw, 248px);
+  opacity: 1;
+  animation: storyFlaskPour 3.9s cubic-bezier(0.18, 0.78, 0.2, 1) both;
+}
+
+.heroFlask[data-phase="pour"] .flaskFull {
+  animation: storyFlaskDrain 3.9s ease-in-out both;
+}
+
+.heroFlask[data-phase="pour"] .flaskEmpty {
+  animation: storyFlaskEmpty 3.9s ease-in-out both;
 }
 
 .gunRig {
@@ -304,11 +324,21 @@
   animation: cursorBlink 650ms steps(1) infinite;
 }
 
-.lab[data-phase="break"] .copyLayer {
+.lab[data-phase="break"] .copyLayer,
+.lab[data-phase="zoom-prompt"] .copyLayer,
+.lab[data-phase="zoom"] .copyLayer,
+.lab[data-phase="drink-prompt"] .copyLayer,
+.lab[data-phase="drink"] .copyLayer,
+.lab[data-phase="drain"] .copyLayer {
   top: 104px;
 }
 
-.lab[data-phase="break"] .instruction strong {
+.lab[data-phase="break"] .instruction strong,
+.lab[data-phase="zoom-prompt"] .instruction strong,
+.lab[data-phase="zoom"] .instruction strong,
+.lab[data-phase="drink-prompt"] .instruction strong,
+.lab[data-phase="drink"] .instruction strong,
+.lab[data-phase="drain"] .instruction strong {
   font-size: clamp(27px, 8.5vw, 35px);
   letter-spacing: -0.055em;
 }
@@ -400,28 +430,52 @@
   filter: contrast(1.18) saturate(0.72);
 }
 
-.demoLabel {
+.liveBadge {
   position: absolute;
   z-index: 15;
   right: 0;
-  bottom: max(15px, env(safe-area-inset-bottom));
+  bottom: max(20px, env(safe-area-inset-bottom));
   left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  color: #948d9b;
+  color: #716878;
   font-size: 8px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.12em;
+  pointer-events: none;
+  transition: opacity 180ms ease;
 }
 
-.demoLabel i {
+.liveBadge i {
   width: 5px;
   aspect-ratio: 1;
   border-radius: 50%;
+  background: #998fa1;
+  box-shadow: 0 0 7px #998fa1;
+}
+
+.liveBadge[data-live="true"] i {
   background: #2ee7d1;
   box-shadow: 0 0 7px #2ee7d1;
+}
+
+.runtimeNote {
+  position: absolute;
+  z-index: 15;
+  right: 24px;
+  bottom: max(38px, calc(env(safe-area-inset-bottom) + 18px));
+  left: 24px;
+  overflow: hidden;
+  color: #aaa3af;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .liveRegion {
@@ -449,7 +503,8 @@
   transition: none;
 }
 
-.lab[data-phase="blackout"] .demoLabel {
+.lab[data-phase="blackout"] .liveBadge,
+.lab[data-phase="blackout"] .runtimeNote {
   opacity: 0;
 }
 
@@ -480,6 +535,21 @@
   }
   to {
     transform: translateX(-50%) rotate(4deg);
+  }
+}
+
+@keyframes flaskExit {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) rotate(0deg) scale(1);
+  }
+  26% {
+    opacity: 1;
+    transform: translate(-56%, 12px) rotate(-10deg) scale(0.98);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(55%, -330px) rotate(34deg) scale(0.68);
   }
 }
 
@@ -527,6 +597,52 @@
     opacity: 0;
   }
   76%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes storyFlaskPour {
+  0% {
+    opacity: 0;
+    transform: translate(-16%, -46%) rotate(18deg) scale(0.74);
+  }
+  16% {
+    opacity: 1;
+    transform: translate(-46%, 2%) rotate(78deg) scale(1);
+  }
+  30%,
+  82% {
+    opacity: 1;
+    transform: translate(-48%, 4%) rotate(103deg) scale(1);
+  }
+  88% {
+    opacity: 1;
+    transform: translate(-47%, 1%) rotate(84deg) scale(0.98);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-18%, -48%) rotate(22deg) scale(0.76);
+  }
+}
+
+@keyframes storyFlaskDrain {
+  0%,
+  72% {
+    opacity: 1;
+  }
+  86%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes storyFlaskEmpty {
+  0%,
+  68% {
+    opacity: 0;
+  }
+  84%,
   100% {
     opacity: 1;
   }
@@ -604,10 +720,6 @@
   .copyLayer {
     top: 520px;
   }
-
-  .heroFlask {
-    top: 25px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -620,8 +732,13 @@
   }
 
   .heroFlask[data-phase="face-hold"],
-  .heroFlask:not([data-phase="idle"]):not([data-phase="scan"]) {
+  .heroFlask:not([data-phase="idle"]):not([data-phase="scan"]):not([data-phase="pour"]) {
     opacity: 0;
+  }
+
+  .heroFlask[data-phase="pour"] {
+    opacity: 1;
+    transform: translate(-48%, 4%) rotate(103deg);
   }
 
   .gunRig[data-phase="charge"],
